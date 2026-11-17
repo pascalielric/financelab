@@ -1,0 +1,40 @@
+name: Refresh market data
+
+# Runs every weekday after the US close (and once more after the Swiss close) and on demand.
+# It downloads prices and earnings data with yfinance and commits the JSON files in data/,
+# which the static website then reads. No API keys are needed.
+on:
+  schedule:
+    - cron: "40 21 * * 1-5"
+    - cron: "10 17 * * 1-5"
+  workflow_dispatch:
+  push:
+    paths:
+      - "pipeline/**"
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pipeline/requirements.txt
+      - run: pip install -r pipeline/requirements.txt
+      - name: Fetch prices
+        run: python pipeline/fetch_prices.py
+      - name: Build earnings briefings
+        run: python pipeline/earnings_preview.py
+        continue-on-error: true
+      - name: Commit data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          git diff --cached --quiet || git commit -m "Refresh market data"
+          git push
