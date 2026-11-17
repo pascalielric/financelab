@@ -4,19 +4,20 @@
   const G = window.GIVAUDAN;
   const state = { scen: "base", tvMode: "blended", price: G.referencePrice, priceLabel: "Reference price CHF " + UI.fmt(G.referencePrice) + " (" + G.referencePriceDate + ")", o: {} };
 
+  const shift = function (v) { return (v >= 0 ? "+" : "\u2212") + Math.abs(v * 100).toFixed(2) + " pt"; };
   const CTRL = [
-    { k: "g", label: "Revenue growth, all years (shift)", min: -0.03, max: 0.03, step: 0.0025, v: 0, f: function (v) { return (v >= 0 ? "+" : "") + (v * 100).toFixed(2) + " pt"; } },
-    { k: "m", label: "EBITDA margin, all years (shift)", min: -0.03, max: 0.03, step: 0.0025, v: 0, f: function (v) { return (v >= 0 ? "+" : "") + (v * 100).toFixed(2) + " pt"; } },
-    { k: "capexPct", label: "Capex, % of sales", min: 0.03, max: 0.06, step: 0.001, f: UI.pct },
-    { k: "nwcPct", label: "Net working capital, % of sales", min: 0.18, max: 0.30, step: 0.005, f: UI.pct },
-    { k: "taxRate", label: "Tax rate", min: 0.12, max: 0.25, step: 0.005, f: UI.pct },
-    { k: "rf", label: "Risk free rate", min: 0, max: 0.03, step: 0.0005, f: function (v) { return UI.pct(v, 2); } },
-    { k: "beta", label: "Equity beta", min: 0.6, max: 1.3, step: 0.01, f: function (v) { return v.toFixed(2); } },
-    { k: "erp", label: "Equity risk premium", min: 0.04, max: 0.075, step: 0.0025, f: function (v) { return UI.pct(v, 2); } },
-    { k: "kd", label: "Pre tax cost of debt", min: 0.01, max: 0.05, step: 0.0025, f: function (v) { return UI.pct(v, 2); } },
-    { k: "debtWeight", label: "Debt / (debt + equity)", min: 0, max: 0.3, step: 0.01, f: function (v) { return UI.pct(v, 0); } },
-    { k: "tgr", label: "Terminal growth rate", min: 0.005, max: 0.03, step: 0.0025, f: function (v) { return UI.pct(v, 2); } },
-    { k: "exitMultiple", label: "Exit EV/EBITDA multiple", min: 12, max: 26, step: 0.5, f: function (v) { return v.toFixed(1) + "x"; } }
+    { k: "g", label: "Growth shift", tip: "Revenue growth, added to every forecast year", min: -0.03, max: 0.03, step: 0.0025, f: shift },
+    { k: "m", label: "Margin shift", tip: "EBITDA margin, added to every forecast year", min: -0.03, max: 0.03, step: 0.0025, f: shift },
+    { k: "capexPct", label: "Capex / sales", tip: "Capital expenditure as a share of sales", min: 0.03, max: 0.06, step: 0.001, f: UI.pct },
+    { k: "nwcPct", label: "Working capital / sales", tip: "Net working capital as a share of sales", min: 0.18, max: 0.30, step: 0.005, f: UI.pct },
+    { k: "taxRate", label: "Tax rate", tip: "Tax rate on operating profit", min: 0.12, max: 0.25, step: 0.005, f: UI.pct },
+    { k: "rf", label: "Risk free rate", tip: "Swiss 10 year government bond yield", min: 0, max: 0.03, step: 0.0005, f: function (v) { return UI.pct(v, 2); } },
+    { k: "beta", label: "Equity beta", tip: "Sensitivity of the share to the market", min: 0.6, max: 1.3, step: 0.01, f: function (v) { return v.toFixed(2); } },
+    { k: "erp", label: "Equity risk premium", tip: "Extra return investors demand for equities", min: 0.04, max: 0.075, step: 0.0025, f: function (v) { return UI.pct(v, 2); } },
+    { k: "kd", label: "Cost of debt", tip: "Pre tax cost of debt", min: 0.01, max: 0.05, step: 0.0025, f: function (v) { return UI.pct(v, 2); } },
+    { k: "debtWeight", label: "Debt weight", tip: "Debt / (debt + equity) at market values", min: 0, max: 0.3, step: 0.01, f: function (v) { return UI.pct(v, 0); } },
+    { k: "tgr", label: "Terminal growth", tip: "Growth of free cash flow after FY31E", min: 0.005, max: 0.03, step: 0.0025, f: function (v) { return UI.pct(v, 2); } },
+    { k: "exitMultiple", label: "Exit multiple", tip: "EV / EBITDA multiple applied to FY31E", min: 12, max: 26, step: 0.5, f: function (v) { return v.toFixed(1) + "x"; } }
   ];
 
   function defaults() {
@@ -37,8 +38,8 @@
   function buildControls() {
     const el = document.getElementById("controls");
     el.innerHTML = CTRL.map(function (c) {
-      return '<div class="ctl"><label>' + c.label + ' <output id="o_' + c.k + '"></output></label><input type="range" id="c_' + c.k + '" min="' + c.min + '" max="' + c.max + '" step="' + c.step + '"></div>';
-    }).join("") + '<div class="ctl" style="align-self:end"><button class="btn ghost" id="reset">Reset to scenario defaults</button></div>';
+      return '<div class="ctl" title="' + c.tip + '"><label><span>' + c.label + '</span><output id="o_' + c.k + '"></output></label><input type="range" id="c_' + c.k + '" min="' + c.min + '" max="' + c.max + '" step="' + c.step + '"></div>';
+    }).join("");
     CTRL.forEach(function (c) {
       document.getElementById("c_" + c.k).oninput = function (e) { state.o[c.k] = +e.target.value; render(); };
     });
@@ -93,8 +94,8 @@
     // Charts
     const xs = heads;
     UI.plot("chRev", [
-      { type: "bar", x: xs, y: hv(function (h) { return h.revenue; }).concat(pv(function (x) { return x.revenue; })), name: "Revenue (CHF m)", marker: { color: xs.map(function (_, i) { return i < 2 ? "#13294B" : "#6C8EBF"; }) } },
-      { type: "scatter", mode: "lines+markers", x: xs, y: hv(function (h) { return h.ebitda / h.revenue; }).concat(pv(function (x) { return x.margin; })), name: "EBITDA margin", yaxis: "y2", line: { color: "#C8102E", width: 2.5 } }
+      { type: "bar", x: xs, y: hv(function (h) { return h.revenue; }).concat(pv(function (x) { return x.revenue; })), name: "Revenue (CHF m)", marker: { color: xs.map(function (_, i) { return i < 2 ? "#111111" : "#8C877C"; }) } },
+      { type: "scatter", mode: "lines+markers", x: xs, y: hv(function (h) { return h.ebitda / h.revenue; }).concat(pv(function (x) { return x.margin; })), name: "EBITDA margin", yaxis: "y2", line: { color: "#7A1E1E", width: 2.5 } }
     ], { yaxis2: { overlaying: "y", side: "right", tickformat: ".1%", showgrid: false, range: [0.2, 0.28] }, margin: { l: 56, r: 56, t: 20, b: 44 } });
 
     const sel = state.tvMode === "exit" ? r.exit : r.gordon;
@@ -105,7 +106,7 @@
       x: ["PV of UFCF<br>FY27 to FY31", "PV of terminal<br>value", "Enterprise<br>value", "Net debt", "Pensions", "Equity<br>value"],
       y: [r.pvSum, pvTv, 0, -G.netDebt, -G.otherClaims, 0],
       text: [r.pvSum, pvTv, ev, -G.netDebt, -G.otherClaims, eq].map(function (v) { return UI.fmt(v); }), textposition: "outside",
-      connector: { line: { color: "#C9D1DB" } }, increasing: { marker: { color: "#6C8EBF" } }, decreasing: { marker: { color: "#C8102E" } }, totals: { marker: { color: "#13294B" } }
+      connector: { line: { color: "#CFC9BC" } }, increasing: { marker: { color: "#8C877C" } }, decreasing: { marker: { color: "#7A1E1E" } }, totals: { marker: { color: "#111111" } }
     }], { showlegend: false, margin: { l: 56, r: 20, t: 30, b: 70 }, yaxis: { range: [0, ev * 1.15] }, xaxis: { tickangle: 0, tickfont: { size: 11 } } });
 
     // WACC and TV tables
@@ -113,7 +114,7 @@
       ["Risk free rate", UI.pct(a.rf, 2), "Swiss 10 year Confederation yield"],
       ["Equity beta", a.beta.toFixed(2), "5 year beta vs. global equities"],
       ["Equity risk premium", UI.pct(a.erp, 2), "Blended, global revenue exposure"],
-      ["Cost of equity (CAPM)", UI.pct(r.wacc.ke, 2), "rf + beta × ERP"],
+      ["Cost of equity", UI.pct(r.wacc.ke, 2), "Capital asset pricing model (CAPM)"],
       ["Pre tax cost of debt", UI.pct(a.kd, 2), "Bond yields plus spread"],
       ["After tax cost of debt", UI.pct(r.wacc.kdAfterTax, 2), "× (1 − tax rate)"],
       ["Equity weight / debt weight", UI.pct(r.wacc.we, 0) + " / " + UI.pct(r.wacc.wd, 0), "Market values"],
@@ -152,21 +153,34 @@
     const x1 = DCF.sensitivity(a, [r.r + 0.005, r.r - 0.005], [a.exitMultiple - 2, a.exitMultiple + 2], "exit");
     const ebitdaNtm = r.rows[0].ebitda;
     const comps = G.compsRange.map(function (m) { return (m * ebitdaNtm - G.netDebt - G.otherClaims) / G.sharesOut; });
+    const w52 = state.w52 || [G.week52Low, G.week52High];
     const bars = [
-      ["52 week trading range", G.week52Low, G.week52High],
-      ["Trading comparables (" + G.compsRange[0] + "x to " + G.compsRange[1] + "x FY27E EBITDA)", comps[0], comps[1]],
-      ["DCF, exit multiple (WACC ±0.5 pt, multiple ±2x)", x1[0][0], x1[1][1]],
-      ["DCF, Gordon growth (WACC ±0.5 pt, growth ±0.5 pt)", g1[0][0], g1[1][1]],
-      ["DCF scenarios, blended (bear to bull)", bear.blended.perShare, bull.blended.perShare]
+      ["DCF scenarios, blended", "Bear to bull case", bear.blended.perShare, bull.blended.perShare, "#111111"],
+      ["DCF, Gordon growth", "WACC \u00b10.5 pt, growth \u00b10.5 pt", g1[0][0], g1[1][1], "#3A3A3A"],
+      ["DCF, exit multiple", "WACC \u00b10.5 pt, multiple \u00b12x", x1[0][0], x1[1][1], "#6E6A61"],
+      ["Trading comparables", G.compsRange[0] + "x to " + G.compsRange[1] + "x FY27E EBITDA", comps[0], comps[1], "#9C978C"],
+      ["52 week trading range", state.w52 ? "SIX closing prices" : "Reported range", w52[0], w52[1], "#CFC9BC"]
     ];
+    const keys = bars.map(function (b, i) { return "r" + i; });
+    const lo = Math.min.apply(null, bars.map(function (b) { return b[2]; }).concat([state.price]));
+    const hi = Math.max.apply(null, bars.map(function (b) { return b[3]; }).concat([state.price]));
+    const xr = [Math.floor(lo * 0.86 / 250) * 250, Math.ceil(hi * 1.07 / 250) * 250];
+    const ann = [];
+    bars.forEach(function (b, i) {
+      ann.push({ x: b[2], y: keys[i], xanchor: "right", xshift: -8, text: UI.fmt(b[2]), showarrow: false, font: { size: 14, color: "#111111" }, bgcolor: "#FCFBF8" });
+      ann.push({ x: b[3], y: keys[i], xanchor: "left", xshift: 8, text: UI.fmt(b[3]), showarrow: false, font: { size: 14, color: "#111111" }, bgcolor: "#FCFBF8" });
+    });
+    ann.push({ x: state.price, yref: "paper", y: 1.0, yanchor: "bottom", text: "Share price CHF " + UI.fmt(state.price), showarrow: false, font: { size: 13, color: "#7A1E1E" }, bgcolor: "#FCFBF8" });
     UI.plot("chFF", [
-      { type: "bar", orientation: "h", y: bars.map(function (b) { return b[0]; }), x: bars.map(function (b) { return b[1]; }), marker: { color: "rgba(0,0,0,0)" }, hoverinfo: "skip", showlegend: false },
-      { type: "bar", orientation: "h", y: bars.map(function (b) { return b[0]; }), x: bars.map(function (b) { return b[2] - b[1]; }), marker: { color: ["#B9C4D2", "#6C8EBF", "#2E7D9A", "#13294B", "#B8892B"] },
-        text: bars.map(function (b) { return UI.fmt(b[1]) + " to " + UI.fmt(b[2]); }), textposition: "inside", insidetextanchor: "middle", textfont: { color: "#fff" }, hoverinfo: "skip", showlegend: false }
+      { type: "bar", orientation: "h", y: keys, x: bars.map(function (b) { return b[3] - b[2]; }), base: bars.map(function (b) { return b[2]; }), width: 0.46,
+        marker: { color: bars.map(function (b) { return b[4]; }) }, hovertemplate: "%{customdata}<extra></extra>",
+        customdata: bars.map(function (b) { return b[0] + ": CHF " + UI.fmt(b[2]) + " to " + UI.fmt(b[3]); }), showlegend: false }
     ], {
-      barmode: "stack", margin: { l: 330, r: 30, t: 30, b: 44 }, xaxis: { title: "CHF per share", tickformat: ",.0f", gridcolor: "#EEF1F5" },
-      shapes: [{ type: "line", x0: state.price, x1: state.price, yref: "paper", y0: 0, y1: 1, line: { color: "#C8102E", width: 2, dash: "dash" } }],
-      annotations: [{ x: state.price, yref: "paper", y: 1.07, text: "Share price CHF " + UI.fmt(state.price), showarrow: false, font: { color: "#C8102E", size: 12 } }]
+      margin: { l: 250, r: 30, t: 40, b: 56 }, height: 400,
+      xaxis: { title: "Value per share, CHF", tickformat: ",.0f", range: xr, dtick: 500, zeroline: false },
+      yaxis: { tickvals: keys, ticktext: bars.map(function (b) { return b[0] + "<br><span style=\"font-size:12px;color:#6E6A61\">" + b[1] + "</span>"; }), autorange: "reversed", showgrid: false, tickfont: { size: 14 }, ticks: "" },
+      shapes: [{ type: "line", x0: state.price, x1: state.price, yref: "paper", y0: 0, y1: 1, line: { color: "#7A1E1E", width: 1.5, dash: "dot" } }],
+      annotations: ann
     });
   }
 
@@ -197,20 +211,14 @@
   document.addEventListener("DOMContentLoaded", function () {
     defaults(); buildControls(); syncControls(); staticContent();
     seg("scen", "s", "scen"); seg("tvm", "m", "tvMode");
-    document.getElementById("livePx").onclick = async function () {
-      const btn = this; btn.disabled = true;
-      try {
-        const local = await API.localQuote("GIVN.SW");
-        if (local) { state.price = local.price; state.priceLabel = "Close CHF " + UI.fmt(local.price) + " on " + local.date + " (SIX, daily refresh)"; }
-        else {
-          const q = await API.quote(G.adr), fx = await API.quote("OANDA:USD_CHF").catch(function () { return null; });
-          if (!fx) throw new Error("Live CHF price needs the daily data refresh (see README) or an FX capable Finnhub plan.");
-          state.price = q.price * 50 * fx.price; state.priceLabel = "Live, derived from ADR " + G.adr;
-        }
-        render();
-      } catch (e) { document.getElementById("pxNote").textContent = e.message; }
-      btn.disabled = false;
-    };
+    // Use the latest SIX close from the daily data refresh when available
+    API.localPrices("GIVN.SW").then(function (lp) {
+      if (!lp || !lp.series.length) return;
+      const ser = lp.series, last = ser[ser.length - 1], yr = ser.slice(-252).map(function (p) { return p.close; });
+      state.price = last.close; state.w52 = [Math.min.apply(null, yr), Math.max.apply(null, yr)];
+      state.priceLabel = "Share price CHF " + UI.fmt(last.close) + ", SIX close " + new Date(last.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+      render();
+    });
     render();
   });
 })();

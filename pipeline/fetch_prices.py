@@ -17,7 +17,7 @@ def to_series(df):
 def main():
     wl = watchlist()
     symbols = list(dict.fromkeys(wl["benchmarks"] + wl["prices"] + wl["earnings"]))
-    done = []
+    done, meta = [], {}
     for sym in symbols:
         try:
             t = yf.Ticker(sym)
@@ -39,10 +39,11 @@ def main():
                 "dates": dates, "close": close,
             })
             done.append(sym)
+            meta[sym] = {"name": clean(info.get("shortName") or info.get("longName") or sym), "currency": clean(info.get("currency"))}
             print("ok  ", sym, len(dates), "days, last", dates[-1], close[-1])
         except Exception as e:  # keep going: one bad ticker must not break the refresh
             print("fail", sym, e)
-    update_index("prices", done)
+    update_index("prices", done, meta)
     if not done:
         sys.exit("No price data downloaded")
 

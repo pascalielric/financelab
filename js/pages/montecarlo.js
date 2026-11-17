@@ -3,18 +3,42 @@
   "use strict";
   const $ = function (id) { return document.getElementById(id); };
   const ERP = 0.055, STEPS = 52;
-  const PORTS = {
-    saved: null,
-    swiss: { name: "Swiss blue chips", syms: ["NESN.SW", "ABBN.SW", "NOVN.SW", "UBSG.SW", "ZURN.SW", "GIVN.SW", "PGHN.SW"], w: [0.238, 0.19, 0.19, 0.114, 0.114, 0.077, 0.077], bench: "^SSMI" },
-    global: { name: "Global quality and tech", syms: ["MSFT", "AAPL", "NVDA", "GOOGL", "JPM", "JNJ", "NESN.SW", "BRK-B"], w: [0.2, 0.15, 0.12, 0.12, 0.1, 0.1, 0.11, 0.1], bench: "SPY" },
-    balanced: { name: "Balanced multi asset", syms: ["VT", "CHSPI.SW", "TLT", "GLD", "QQQ"], w: [0.45, 0.15, 0.2, 0.1, 0.1], bench: "VT" }
-  };
+  let saved = null, ownRows = null, mode = "model", ownEd = null;
+  try { const v = JSON.parse(localStorage.getItem("fin_portfolio_weights")); if (v && v.syms && v.syms.length > 1) saved = v; } catch (e) {}
+  try { const v = JSON.parse(localStorage.getItem("fin_custom_mc")); if (v && v.rows && v.rows.length) ownRows = v.rows; } catch (e) {}
+
+  function options() {
+    return PF.PRESETS.map(function (p) { return '<option value="' + p.id + '">' + p.name + "</option>"; }).join("") +
+      (saved ? '<option value="saved">My holdings from the Portfolio Risk page</option>' : "");
+  }
+  function presetById(id) {
+    if (id === "saved" && saved) {
+      const tot = saved.w.reduce(function (a, b) { return a + b; }, 0);
+      return { name: "My holdings from the Portfolio Risk page", bench: saved.bench || "SPY", desc: "The holdings you last analysed on the Portfolio Risk page.", h: saved.syms.map(function (s, i) { return [s, +(saved.w[i] / tot * 100).toFixed(1)]; }) };
+    }
+    return PF.PRESETS.find(function (p) { return p.id === id; });
+  }
+  function describe() {
+    const p = presetById($("pSel").value);
+    $("pDesc").innerHTML = "<b>" + p.name + ".</b> " + UI.esc(p.desc) + '<span class="holdings">' + UI.esc(PF.holdingsText(p.h)) + "</span>";
+  }
+  function getPortfolio() {
+    let h, bench, name;
+    if (mode === "own") {
+      h = ownRows.filter(function (r) { return r[0] && +r[1] > 0; }); bench = $("ownBench").value; name = "Your portfolio";
+    } else { const p = presetById($("pSel").value); h = p.h; bench = p.bench; name = p.name; }
+    const tot = h.reduce(function (a, r) { return a + (+r[1]); }, 0);
+    return { name: name, syms: h.map(function (r) { return r[0].toUpperCase(); }), w: h.map(function (r) { return +r[1] / tot; }), bench: bench };
+  }
 
   function status(msg, cls) { const s = $("pStatus"); s.className = "status " + (cls || ""); s.textContent = msg; s.classList.toggle("hidden", !msg); }
   function labels() { $("o_yrs").textContent = $("yrs").value + " years"; $("o_n").textContent = UI.fmt(+$("n").value); $("o_rf").textContent = UI.pct(+$("rf").value, 2); }
 
   async function runPortfolio() {
-    const P = PORTS[$("pSel").value]; const years = +$("yrs").value, nPaths = +$("n").value, v0 = +$("v0").value, rf = +$("rf").value;
+    const P = getPortfolio();
+    if (P.syms.length < 2) { status("Enter at least two holdings with a weight.", "err"); return; }
+    if (new Set(P.syms).size !== P.syms.length) { status("Each ticker should appear once.", "err"); return; }
+    const years = +$("yrs").value, nPaths = +$("n").value, v0 = +$("v0").value, rf = +$("rf").value;
     $("runP").disabled = true; status("Loading prices…");
     try {
       const h = await API.history(P.syms.concat([P.bench]), 757, status);
@@ -60,7 +84,7 @@
       status("");
       $("pRes").classList.remove("hidden");
       const demo = h.demoSymbols || [];
-      $("pDemo").innerHTML = demo.length ? '<div class="callout warn"><strong>Simulated demo prices in use for: ' + demo.join(", ") + '.</strong> Volatilities and correlations below are therefore illustrative. Real prices load once the daily data refresh has run.</div>' : "";
+      $("pDemo").innerHTML = demo.length ? '<div class="callout warn"><strong>No market data for ' + demo.join(", ") + '.</strong> ' + (demo.length > 1 ? "These holdings use" : "This holding uses") + ' simulated prices, so the results below are only illustrative. Pick tickers from the search list to use real data.</div>' : '<p class="note" style="margin-top:18px">' + UI.esc(P.name) + ": daily closes from " + al.dates[0] + " to " + al.dates[al.dates.length - 1] + " (Yahoo Finance).</p>";
       $("pKpis").innerHTML =
         '<div class="kpi dark"><div class="label">Median final value</div><div class="value">' + UI.fmt(q(0.5)) + '</div><div class="sub">' + UI.signPct(cagr(q(0.5))) + " per year</div></div>" +
         '<div class="kpi"><div class="label">5th percentile</div><div class="value neg">' + UI.fmt(q(0.05)) + '</div><div class="sub">' + UI.signPct(cagr(q(0.05))) + " per year</div></div>" +
@@ -69,17 +93,17 @@
         '<div class="kpi"><div class="label">Median worst drawdown</div><div class="value">' + UI.pct(-UI.quantile(Array.from(mdd).sort(function (a, b) { return a - b; }), 0.5)) + '</div><div class="sub">along the path</div></div>';
 
       const xs = []; for (let t = 0; t <= T; t++) xs.push(t / STEPS);
-      const traces = sample.slice(0, 25).map(function (s) { return { x: xs, y: s, mode: "lines", line: { color: "rgba(19,41,75,.10)", width: 1 }, hoverinfo: "skip", showlegend: false }; });
+      const traces = sample.slice(0, 25).map(function (s) { return { x: xs, y: s, mode: "lines", line: { color: "rgba(17,17,17,.10)", width: 1 }, hoverinfo: "skip", showlegend: false }; });
       traces.push({ x: xs, y: bands[4], mode: "lines", line: { width: 0 }, showlegend: false, hoverinfo: "skip" });
-      traces.push({ x: xs, y: bands[0], mode: "lines", line: { width: 0 }, fill: "tonexty", fillcolor: "rgba(108,142,191,.22)", name: "5th to 95th percentile" });
+      traces.push({ x: xs, y: bands[0], mode: "lines", line: { width: 0 }, fill: "tonexty", fillcolor: "rgba(140,135,124,.22)", name: "5th to 95th percentile" });
       traces.push({ x: xs, y: bands[3], mode: "lines", line: { width: 0 }, showlegend: false, hoverinfo: "skip" });
-      traces.push({ x: xs, y: bands[1], mode: "lines", line: { width: 0 }, fill: "tonexty", fillcolor: "rgba(108,142,191,.38)", name: "25th to 75th percentile" });
-      traces.push({ x: xs, y: bands[2], mode: "lines", line: { color: "#13294B", width: 2.5 }, name: "Median" });
-      UI.plot("chFan", traces, { xaxis: { title: "Years" }, yaxis: { tickformat: ",.0f" }, shapes: [{ type: "line", x0: 0, x1: years, y0: v0, y1: v0, line: { color: "#C8102E", dash: "dot", width: 1.5 } }] });
-      UI.plot("chTerm", [{ type: "histogram", x: fin.filter(function (v) { return v <= q(0.995); }), nbinsx: 70, marker: { color: "#6C8EBF" } }], {
-        showlegend: false, bargap: 0.03, xaxis: { tickformat: ",.0f" },
-        shapes: [{ type: "line", x0: v0, x1: v0, yref: "paper", y0: 0, y1: 1, line: { color: "#C8102E", dash: "dash", width: 2 } }, { type: "line", x0: q(0.5), x1: q(0.5), yref: "paper", y0: 0, y1: 1, line: { color: "#13294B", width: 2 } }],
-        annotations: [{ x: v0, yref: "paper", y: 1.05, text: "Start", showarrow: false, font: { color: "#C8102E" } }, { x: q(0.5), yref: "paper", y: 1.11, text: "Median", showarrow: false, font: { color: "#13294B" } }]
+      traces.push({ x: xs, y: bands[1], mode: "lines", line: { width: 0 }, fill: "tonexty", fillcolor: "rgba(140,135,124,.38)", name: "25th to 75th percentile" });
+      traces.push({ x: xs, y: bands[2], mode: "lines", line: { color: "#111111", width: 2.5 }, name: "Median" });
+      UI.plot("chFan", traces, { xaxis: { title: "Years" }, yaxis: { tickformat: ",.0f" }, shapes: [{ type: "line", x0: 0, x1: years, y0: v0, y1: v0, line: { color: "#7A1E1E", dash: "dot", width: 1.5 } }] });
+      UI.plot("chTerm", [{ type: "histogram", x: fin.filter(function (v) { return v <= q(0.995); }), nbinsx: 70, marker: { color: "#8C877C" } }], {
+        showlegend: false, bargap: 0.03, margin: { l: 60, r: 24, t: 34, b: 52 }, xaxis: { tickformat: ",.0f", title: "Portfolio value at the horizon" }, yaxis: { title: "Number of paths" },
+        shapes: [{ type: "line", x0: v0, x1: v0, yref: "paper", y0: 0, y1: 1, line: { color: "#7A1E1E", dash: "dash", width: 2 } }, { type: "line", x0: q(0.5), x1: q(0.5), yref: "paper", y0: 0, y1: 1, line: { color: "#111111", width: 2 } }],
+        annotations: [{ x: v0, yref: "paper", y: 1, yanchor: "bottom", xanchor: v0 < q(0.5) ? "right" : "left", xshift: v0 < q(0.5) ? -6 : 6, text: "Start", showarrow: false, font: { size: 13, color: "#7A1E1E" } }, { x: q(0.5), yref: "paper", y: 1, yanchor: "bottom", xanchor: v0 < q(0.5) ? "left" : "right", xshift: v0 < q(0.5) ? 6 : -6, text: "Median", showarrow: false, font: { size: 13, color: "#111111" } }]
       });
       UI.table("pTable", [{ h: "Final value after " + years + " years", f: function (x) { return x[0]; } }, { h: "Value", n: 1, f: function (x) { return UI.fmt(x[1]); } }, { h: "Return p.a.", n: 1, f: function (x) { return UI.signPct(cagr(x[1])); } }],
         [["1st percentile", q(0.01)], ["5th percentile", q(0.05)], ["25th percentile", q(0.25)], ["Median", q(0.5)], ["Mean", meanV], ["75th percentile", q(0.75)], ["95th percentile", q(0.95)], ["99th percentile", q(0.99)]]);
@@ -94,6 +118,8 @@
 
   // ---------- Stochastic DCF ----------
   const G = window.GIVAUDAN, sc = G.scenarios.base;
+  let givPx = null;
+  API.localQuote("GIVN.SW").then(function (q) { if (q) givPx = q.price; });
   const DCTRL = [
     { k: "sg", label: "Revenue growth, std. dev.", min: 0, max: 0.03, step: 0.0025, v: 0.01, f: function (v) { return (v * 100).toFixed(2) + " pt"; } },
     { k: "sm", label: "EBITDA margin, std. dev.", min: 0, max: 0.03, step: 0.0025, v: 0.01, f: function (v) { return (v * 100).toFixed(2) + " pt"; } },
@@ -107,7 +133,7 @@
     return Object.assign({}, a, { growth: a.growth.map(function (v) { return v + dg; }), ebitdaMargin: a.ebitdaMargin.map(function (v) { return v + dm; }), waccOverride: w, tgr: t, exitMultiple: x });
   }
   function runDcf() {
-    const a = baseIn(), w0 = DCF.run(a).r, rnd = UI.rng(13579), N = 10000, out = new Array(N), price = G.referencePrice;
+    const a = baseIn(), w0 = DCF.run(a).r, rnd = UI.rng(13579), N = 10000, out = new Array(N), price = givPx || G.referencePrice;
     for (let i = 0; i < N; i++) {
       const t = Math.min(0.03, Math.max(0.005, a.tgr + ds.st * UI.gauss(rnd)));
       const w = Math.max(t + 0.01, w0 + ds.sw * UI.gauss(rnd));
@@ -121,28 +147,39 @@
       '<div class="kpi"><div class="label">Probability above share price</div><div class="value">' + UI.pct(pAbove, 0) + '</div><div class="sub">Price CHF ' + UI.fmt(price) + "</div></div>" +
       '<div class="kpi"><div class="label">Mean</div><div class="value">CHF ' + UI.fmt(UI.mean(out)) + '</div><div class="sub">Right skewed: mean above median</div></div>' +
       '<div class="kpi"><div class="label">Coefficient of variation</div><div class="value">' + UI.pct(UI.std(out) / UI.mean(out), 0) + '</div><div class="sub">Std. dev. / mean</div></div>';
-    UI.plot("chDcf", [{ type: "histogram", x: out.filter(function (v) { return v < q(0.995); }), nbinsx: 80, marker: { color: "#6C8EBF" } }], {
-      showlegend: false, bargap: 0.03, xaxis: { tickformat: ",.0f", title: "CHF per share" },
-      shapes: [{ type: "line", x0: price, x1: price, yref: "paper", y0: 0, y1: 1, line: { color: "#C8102E", dash: "dash", width: 2 } }, { type: "line", x0: q(0.5), x1: q(0.5), yref: "paper", y0: 0, y1: 1, line: { color: "#13294B", width: 2 } }],
-      annotations: [{ x: price, yref: "paper", y: 1.05, text: "Share price", showarrow: false, font: { color: "#C8102E" } }, { x: q(0.5), yref: "paper", y: 1.11, text: "Median", showarrow: false, font: { color: "#13294B" } }]
+    UI.plot("chDcf", [{ type: "histogram", x: out.filter(function (v) { return v < q(0.995); }), nbinsx: 80, marker: { color: "#8C877C" } }], {
+      showlegend: false, bargap: 0.03, margin: { l: 60, r: 24, t: 34, b: 52 }, xaxis: { tickformat: ",.0f", title: "Value per share, CHF" }, yaxis: { title: "Number of runs" },
+      shapes: [{ type: "line", x0: price, x1: price, yref: "paper", y0: 0, y1: 1, line: { color: "#7A1E1E", dash: "dash", width: 2 } }, { type: "line", x0: q(0.5), x1: q(0.5), yref: "paper", y0: 0, y1: 1, line: { color: "#111111", width: 2 } }],
+      annotations: [{ x: price, yref: "paper", y: 1, yanchor: "bottom", xanchor: price < q(0.5) ? "right" : "left", xshift: price < q(0.5) ? -6 : 6, text: "Share price", showarrow: false, font: { size: 13, color: "#7A1E1E" } }, { x: q(0.5), yref: "paper", y: 1, yanchor: "bottom", xanchor: price < q(0.5) ? "left" : "right", xshift: price < q(0.5) ? 6 : -6, text: "Median", showarrow: false, font: { size: 13, color: "#111111" } }]
     });
     const one = function (dg, dm, dw, dt, dx) { return DCF.run(shifted(a, dg, dm, w0 + dw, a.tgr + dt, a.exitMultiple + dx)).blended.perShare; };
     const tor = [["Revenue growth", one(-ds.sg, 0, 0, 0, 0), one(ds.sg, 0, 0, 0, 0)], ["EBITDA margin", one(0, -ds.sm, 0, 0, 0), one(0, ds.sm, 0, 0, 0)], ["WACC", one(0, 0, ds.sw, 0, 0), one(0, 0, -ds.sw, 0, 0)],
       ["Terminal growth", one(0, 0, 0, -ds.st, 0), one(0, 0, 0, ds.st, 0)], ["Exit multiple", one(0, 0, 0, 0, -ds.sx), one(0, 0, 0, 0, ds.sx)]].sort(function (x, y) { return Math.abs(x[2] - x[1]) - Math.abs(y[2] - y[1]); });
     UI.plot("chTor", [
-      { type: "bar", orientation: "h", y: tor.map(function (t) { return t[0]; }), x: tor.map(function (t) { return t[1] - base; }), base: base, marker: { color: "#C8102E" }, name: "Unfavourable", text: tor.map(function (t) { return UI.fmt(t[1]); }), textposition: "outside" },
-      { type: "bar", orientation: "h", y: tor.map(function (t) { return t[0]; }), x: tor.map(function (t) { return t[2] - base; }), base: base, marker: { color: "#1B7F5B" }, name: "Favourable", text: tor.map(function (t) { return UI.fmt(t[2]); }), textposition: "outside" }
+      { type: "bar", orientation: "h", y: tor.map(function (t) { return t[0]; }), x: tor.map(function (t) { return t[1] - base; }), base: base, marker: { color: "#7A1E1E" }, name: "Unfavourable", text: tor.map(function (t) { return UI.fmt(t[1]); }), textposition: "outside" },
+      { type: "bar", orientation: "h", y: tor.map(function (t) { return t[0]; }), x: tor.map(function (t) { return t[2] - base; }), base: base, marker: { color: "#2F4A36" }, name: "Favourable", text: tor.map(function (t) { return UI.fmt(t[2]); }), textposition: "outside" }
     ], { barmode: "overlay", margin: { l: 120, r: 50, t: 20, b: 60 }, xaxis: { title: "CHF per share", tickformat: ",.0f", range: [Math.min.apply(null, tor.map(function (t) { return t[1]; })) - 150, Math.max.apply(null, tor.map(function (t) { return t[2]; })) + 150] }, legend: { orientation: "h", y: -0.28 } });
     UI.table("dTable", [{ h: "Percentile", f: function (x) { return x[0]; } }, { h: "Value per share (CHF)", n: 1, f: function (x) { return UI.fmt(x[1]); } }, { h: "vs. share price", n: 1, f: function (x) { return '<span class="' + UI.cls(x[1] / price - 1) + '">' + UI.signPct(x[1] / price - 1) + "</span>"; } }],
       [["5th", q(0.05)], ["25th", q(0.25)], ["50th (median)", q(0.5)], ["75th", q(0.75)], ["95th", q(0.95)]]);
   }
 
   document.addEventListener("DOMContentLoaded", function () {
-    try { const s = JSON.parse(localStorage.getItem("fin_portfolio_weights")); if (s && s.syms && s.syms.length > 1) PORTS.saved = { name: "My portfolio (from the Portfolio Risk page)", syms: s.syms, w: s.w, bench: s.bench || "SPY" }; } catch (e) {}
-    $("pSel").innerHTML = Object.keys(PORTS).filter(function (k) { return PORTS[k]; }).map(function (k) { return '<option value="' + k + '">' + PORTS[k].name + "</option>"; }).join("");
+    $("pSel").innerHTML = options(); $("ownFrom").innerHTML = options();
+    if (!ownRows) ownRows = PF.PRESETS[2].h.map(function (r) { return r.slice(); });
+    const saveOwn = function () { try { localStorage.setItem("fin_custom_mc", JSON.stringify({ rows: ownRows })); } catch (e) {} };
+    ownEd = PF.editor($("ownEditor"), ownRows, { mode: "weight", onChange: function (r) { ownRows = r; saveOwn(); } });
+    $("ownCopy").onclick = function () { ownRows = presetById($("ownFrom").value).h.map(function (r) { return r.slice(); }); ownEd.set(ownRows); saveOwn(); };
+    $("pSel").onchange = function () { describe(); runPortfolio(); };
+    describe();
+    document.querySelectorAll("#pMode button").forEach(function (b) {
+      b.onclick = function () {
+        document.querySelectorAll("#pMode button").forEach(function (x) { x.classList.remove("on"); }); b.classList.add("on");
+        mode = b.dataset.m; $("modelBox").classList.toggle("hidden", mode !== "model"); $("ownBox").classList.toggle("hidden", mode !== "own");
+      };
+    });
     ["yrs", "n", "rf"].forEach(function (id) { $(id).oninput = labels; }); labels();
     $("runP").onclick = runPortfolio;
-    $("dControls").innerHTML = DCTRL.map(function (c) { ds[c.k] = c.v; return '<div class="ctl"><label>' + c.label + ' <output id="o_' + c.k + '">' + c.f(c.v) + '</output></label><input type="range" id="c_' + c.k + '" min="' + c.min + '" max="' + c.max + '" step="' + c.step + '" value="' + c.v + '"></div>'; }).join("");
+    $("dControls").innerHTML = DCTRL.map(function (c) { ds[c.k] = c.v; return '<div class="ctl"><label><span>' + c.label + '</span><output id="o_' + c.k + '">' + c.f(c.v) + '</output></label><input type="range" id="c_' + c.k + '" min="' + c.min + '" max="' + c.max + '" step="' + c.step + '" value="' + c.v + '"></div>'; }).join("");
     DCTRL.forEach(function (c) { $("c_" + c.k).oninput = function (e) { ds[c.k] = +e.target.value; $("o_" + c.k).textContent = c.f(ds[c.k]); }; });
     $("runD").onclick = runDcf;
     document.querySelectorAll(".tabs button").forEach(function (b) {

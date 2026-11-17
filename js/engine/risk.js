@@ -184,6 +184,34 @@
     const mv = minVariance(C, cap); const mvs = stats(mu, C, mv, rf); mvs.w = mv;
     return { points: out, maxSharpe: best, minVar: mvs };
   }
+  /* Frontier portfolio with the highest expected return at or below a target volatility. */
+  function frontierAtVol(mu, C, target, cap) {
+    let lo = Math.log(0.02), hi = Math.log(5000), w = null;
+    const wLo = mvo(mu, C, Math.exp(lo), cap);
+    if (portVol(C, wLo) <= target) return wLo;                 // even the highest return mix is below target risk
+    const wHi = mvo(mu, C, Math.exp(hi), cap);
+    if (portVol(C, wHi) > target) return wHi;                  // target risk below the minimum achievable
+    w = wHi;
+    for (let k = 0; k < 34; k++) {
+      const mid = (lo + hi) / 2, wm = mvo(mu, C, Math.exp(mid), cap, w);
+      if (portVol(C, wm) > target) lo = mid; else { hi = mid; w = wm; }
+    }
+    return w;
+  }
+  /* Frontier portfolio with the lowest volatility that still reaches a target expected return. */
+  function frontierAtRet(mu, C, target, cap) {
+    let lo = Math.log(0.02), hi = Math.log(5000), w = null;
+    const wHi = mvo(mu, C, Math.exp(hi), cap);
+    if (dot(wHi, mu) >= target) return wHi;                   // the minimum risk mix already earns the target
+    const wLo = mvo(mu, C, Math.exp(lo), cap);
+    if (dot(wLo, mu) < target) return wLo;
+    w = wLo;
+    for (let k = 0; k < 34; k++) {
+      const mid = (lo + hi) / 2, wm = mvo(mu, C, Math.exp(mid), cap, w);
+      if (dot(wm, mu) >= target) { lo = mid; w = wm; } else hi = mid;
+    }
+    return w;
+  }
   function riskParity(C) {
     const n = C.length; let w = C.map(function (row, i) { return 1 / Math.sqrt(row[i]); });
     let s = w.reduce(function (a, b) { return a + b; }, 0); w = w.map(function (x) { return x / s; });
@@ -200,7 +228,7 @@
 
   const api = { N_YEAR, mean, std, variance, dot, matVec, percentile, zScore, logReturns, align, covMatrix, corrMatrix, cholesky, portfolioReturns, portVol,
     parametricVar, historicalVar, cvarEmpirical, cvarParametric, marginalVar, componentVar, riskContribution, monteCarloVar,
-    drawdown, downsideDeviation, beta, summary, STRESS, stress, projectSimplex, mvo, minVariance, stats, frontier, riskParity };
+    drawdown, downsideDeviation, beta, summary, STRESS, stress, projectSimplex, mvo, minVariance, stats, frontier, frontierAtVol, frontierAtRet, riskParity };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.RISK = api;
 })(typeof window !== "undefined" ? window : this);

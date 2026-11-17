@@ -4,8 +4,6 @@
 <title>Givaudan DCF · Finance Lab</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <script src="vendor/plotly.min.js"></script>
 <script src="js/config.js"></script><script src="js/ui.js"></script><script src="js/api.js"></script>
@@ -14,27 +12,37 @@
 <body>
 <main class="wrap">
   <div class="page-head">
-    <div class="eyebrow">Investment Banking · Valuation</div>
+    <div class="eyebrow">Investment banking &nbsp;&middot;&nbsp; Valuation</div>
     <h1>Givaudan SA: discounted cash flow valuation</h1>
-    <p class="lead">Five year unlevered free cash flow (UFCF) model for the global leader in flavours and fragrances. Change any assumption and the valuation, sensitivities and football field update instantly. All figures in CHF millions unless stated.</p>
-    <div class="downloads" style="margin:14px 0 18px">
-      <a class="btn" href="downloads/Givaudan_Valuation_Deck.pdf">Valuation deck (PDF)</a>
-      <a class="btn ghost" href="downloads/Givaudan_Valuation_Deck.pptx">Deck (PowerPoint)</a>
+    <p class="lead">Five year unlevered free cash flow model for the global leader in flavours and fragrances. Change any assumption and the valuation, sensitivities and football field update instantly. All figures in CHF millions unless stated.</p>
+    <div class="profile-strip">
+      <div><div class="label">The company</div><div class="about">World's largest maker of flavours and fragrances, Vernier (Geneva). Flavours for food and beverage brands; perfumes, product scents and cosmetic ingredients.</div></div>
+      <div><div class="label">Sales 2025</div><div class="value">CHF 7.5bn</div></div>
+      <div><div class="label">EBITDA margin 2025</div><div class="value">23.4%</div></div>
+      <div><div class="label">Employees</div><div class="value">17&rsquo;580</div></div>
+      <div><div class="label">Listing</div><div class="value">SIX: GIVN</div></div>
+    </div>
+    <div class="downloads">
+      <a class="btn" href="downloads/Givaudan_Valuation_Deck.pdf">Valuation deck, PDF</a>
+      <a class="btn ghost" href="downloads/Givaudan_Valuation_Deck.pptx">Deck, PowerPoint</a>
       <a class="btn ghost" href="downloads/Givaudan_DCF_Model.xlsx">Excel model</a>
     </div>
   </div>
 
-  <div class="row" style="margin:18px 0 14px;justify-content:space-between">
-    <div class="row"><strong>Scenario</strong><div class="seg" id="scen"><button data-s="bear">Bear</button><button data-s="base" class="on">Base</button><button data-s="bull">Bull</button></div>
-    <strong style="margin-left:14px">Terminal value</strong><div class="seg" id="tvm"><button data-m="blended" class="on">Blended</button><button data-m="gordon">Gordon growth</button><button data-m="exit">Exit multiple</button></div></div>
-    <div class="row"><span class="note" id="pxNote"></span><button class="btn ghost" id="livePx">Use live price</button></div>
+  <div class="toolbar">
+    <div class="group"><span>Scenario</span><div class="seg" id="scen"><button data-s="bear">Bear</button><button data-s="base" class="on">Base</button><button data-s="bull">Bull</button></div></div>
+    <div class="group"><span>Terminal value</span><div class="seg" id="tvm"><button data-m="blended" class="on">Blended</button><button data-m="gordon">Gordon growth</button><button data-m="exit">Exit multiple</button></div></div>
+    <div class="group"><span class="note" id="pxNote" style="text-transform:none;letter-spacing:0"></span></div>
   </div>
 
   <div class="grid g5" id="kpis"></div>
 
   <h2><span class="section-num">01</span>Assumptions</h2>
-  <div class="card"><div class="controls" id="controls"></div>
-    <p class="note" style="margin-top:12px">WACC = weighted average cost of capital. CAPM = capital asset pricing model: cost of equity = risk free rate + beta × equity risk premium. EBITDA = earnings before interest, taxes, depreciation and amortisation.</p></div>
+  <div class="legend-line"><b>WACC</b> weighted average cost of capital<span class="sep">&middot;</span><b>EBITDA</b> earnings before interest, taxes, depreciation and amortisation<span class="sep">&middot;</span><b>Capex</b> capital expenditure<span class="sep">&middot;</span><b>EV</b> enterprise value</div>
+  <div class="card">
+    <div class="card-head"><h3>Drag to change; the whole model recalculates</h3><button class="btn ghost small" id="reset">Reset to scenario</button></div>
+    <div class="controls" id="controls"></div>
+  </div>
 
   <h2><span class="section-num">02</span>Free cash flow forecast</h2>
   <div id="fcfTable"></div>

@@ -11,7 +11,7 @@
     const cfg = window.SITE_CONFIG || {};
     const el = document.createElement("header");
     el.className = "topbar";
-    el.innerHTML = '<div class="wrap"><a class="brand" href="index.html">' + esc(cfg.ownerName || "Finance") + ' <span>Finance Lab</span></a><nav class="nav">' +
+    el.innerHTML = '<div class="wrap"><a class="brand" href="index.html">' + esc(cfg.ownerName || "Finance") + ' <span>&nbsp;&middot;&nbsp; Finance Lab</span></a><nav class="nav">' +
       PAGES.map(function (p) { return '<a href="' + p[0] + '"' + (p[0] === here ? ' class="active"' : "") + ">" + p[1] + "</a>"; }).join("") +
       '</nav><div class="spacer"></div><button class="data-pill" id="dataPill"><span class="dot"></span><span id="dataPillTxt"></span></button></div>';
     document.body.prepend(el);
@@ -61,7 +61,7 @@
 
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function fmt(v, d) { if (v == null || !isFinite(v)) return "n.a."; d = d == null ? 0 : d; const s = Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d }).replace(/,/g, "’"); return v < 0 ? "(" + s + ")" : s; }
-  function pct(v, d) { if (v == null || !isFinite(v)) return "n.a."; return (v * 100).toFixed(d == null ? 1 : d) + "%"; }
+  function pct(v, d) { if (v == null || !isFinite(v)) return "n.a."; return (v * 100).toFixed(d == null ? 1 : d).replace(/^-/, "\u2212") + "%"; }
   function mult(v, d) { if (v == null || !isFinite(v)) return "n.a."; return v.toFixed(d == null ? 1 : d) + "x"; }
   function signPct(v, d) { if (v == null || !isFinite(v)) return "n.a."; return (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(d == null ? 1 : d) + "%"; }
   function cls(v) { return v >= 0 ? "pos" : "neg"; }
@@ -106,20 +106,32 @@
   function heat(v, lo, mid, hi) {
     if (!isFinite(v)) return "#fff";
     const t = v >= mid ? Math.min(1, (v - mid) / (hi - mid || 1)) : -Math.min(1, (mid - v) / (mid - lo || 1));
-    if (t >= 0) return "rgba(27,127,91," + (0.06 + 0.32 * t).toFixed(2) + ")";
-    return "rgba(180,35,24," + (0.06 + 0.30 * -t).toFixed(2) + ")";
+    if (t >= 0) return "rgba(47,74,54," + (0.05 + 0.22 * t).toFixed(2) + ")";
+    return "rgba(122,30,30," + (0.05 + 0.22 * -t).toFixed(2) + ")";
   }
 
-  // Plotly defaults
-  const COLORS = ["#13294B", "#C8102E", "#2E7D9A", "#B8892B", "#6C8EBF", "#1B7F5B", "#8E5572", "#5B6770", "#D97B29", "#4C9F70"];
+  // Plotly defaults: one typeface, warm greys, oxblood only where it carries meaning
+  const INK = "#111111", MUTED = "#6E6A61", RULE = "#E4DFD3", NEG = "#7A1E1E", POS = "#2F4A36", BRASS = "#8C6D3F";
+  const COLORS = [INK, "#8C877C", NEG, "#4A4A4A", "#B9B3A6", POS, BRASS, "#5E5A52", "#CFC9BC", "#2E2E2E"];
+  const FONT = "Times New Roman, Times, Liberation Serif, serif";
+  function axis(extra) { return Object.assign({ gridcolor: RULE, zerolinecolor: "#BDB7AA", linecolor: "#BDB7AA", tickfont: { size: 13 }, title: { font: { size: 13, color: MUTED } }, automargin: true }, extra || {}); }
   function layout(extra) {
-    return Object.assign({
-      font: { family: "Inter, Arial, sans-serif", size: 12, color: "#33475B" },
-      margin: { l: 56, r: 20, t: 30, b: 44 }, paper_bgcolor: "#fff", plot_bgcolor: "#fff",
-      xaxis: { gridcolor: "#EEF1F5", zerolinecolor: "#D5DCE4", linecolor: "#D5DCE4" },
-      yaxis: { gridcolor: "#EEF1F5", zerolinecolor: "#D5DCE4", linecolor: "#D5DCE4" },
-      legend: { orientation: "h", y: -0.18 }, colorway: COLORS, hoverlabel: { font: { family: "Inter, Arial" } }
-    }, extra || {});
+    extra = extra || {};
+    const out = Object.assign({
+      font: { family: FONT, size: 13, color: "#2E2E2E" },
+      margin: { l: 60, r: 24, t: 24, b: 48 }, paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)",
+      separators: ".\u2019", legend: { orientation: "h", y: -0.2, font: { size: 13 } }, colorway: COLORS,
+      hoverlabel: { font: { family: FONT, size: 13 }, bgcolor: "#FCFBF8", bordercolor: INK }
+    }, extra);
+    ["xaxis", "yaxis", "yaxis2", "xaxis2"].forEach(function (k) {
+      if (k in extra || k === "xaxis" || k === "yaxis") {
+        const e = extra[k] || {};
+        if (typeof e.title === "string") e.title = { text: e.title };
+        out[k] = axis(e);
+        if (e.title) out[k].title = Object.assign({ font: { size: 13, color: MUTED } }, e.title);
+      }
+    });
+    return out;
   }
   function plot(id, data, lay) { Plotly.react(id, data, layout(lay), { displayModeBar: false, responsive: true }); }
 
@@ -149,5 +161,5 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () { header(); footer(); });
-  window.UI = { esc, fmt, pct, mult, signPct, cls, table, fin, sens, heat, plot, layout, COLORS, rng, gauss, mean, std, quantile, covMatrix, cholesky, download, refreshPill, keyModal };
+  window.UI = { INK, MUTED, NEG, POS, BRASS, RULE, FONT, esc, fmt, pct, mult, signPct, cls, table, fin, sens, heat, plot, layout, COLORS, rng, gauss, mean, std, quantile, covMatrix, cholesky, download, refreshPill, keyModal };
 })();

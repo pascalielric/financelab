@@ -4,16 +4,16 @@
   const T = window.TEMENOS;
   const state = { c: "base", o: {} };
   const CTRL = [
-    { k: "premium", label: "Offer premium to unaffected price", min: 0, max: 0.6, step: 0.01, f: function (v) { return UI.pct(v, 0); } },
-    { k: "tlb", label: "Term Loan B, x EBITDA", min: 2, max: 6, step: 0.25, f: function (v) { return v.toFixed(2) + "x"; } },
-    { k: "notes", label: "Senior secured notes, x EBITDA", min: 0, max: 3, step: 0.25, f: function (v) { return v.toFixed(2) + "x"; } },
-    { k: "tlbRate", label: "Term loan interest rate", min: 0.05, max: 0.10, step: 0.0025, f: function (v) { return UI.pct(v, 2); } },
-    { k: "notesRate", label: "Notes coupon", min: 0.06, max: 0.11, step: 0.0025, f: function (v) { return UI.pct(v, 2); } },
-    { k: "exitMultiple", label: "Exit EV/EBITDA multiple", min: 11, max: 23, step: 0.5, f: function (v) { return v.toFixed(1) + "x"; } },
-    { k: "g", label: "Revenue growth, all years (shift)", min: -0.04, max: 0.04, step: 0.005, f: function (v) { return (v >= 0 ? "+" : "") + (v * 100).toFixed(1) + " pt"; } },
-    { k: "m", label: "EBITDA margin, all years (shift)", min: -0.05, max: 0.05, step: 0.005, f: function (v) { return (v >= 0 ? "+" : "") + (v * 100).toFixed(1) + " pt"; } },
-    { k: "sweepPct", label: "Cash sweep, % of excess cash", min: 0, max: 1, step: 0.25, f: function (v) { return UI.pct(v, 0); } },
-    { k: "mipPct", label: "Management incentive, % of gain", min: 0, max: 0.15, step: 0.01, f: function (v) { return UI.pct(v, 0); } }
+    { k: "premium", label: "Offer premium", tip: "Premium to the unaffected share price", min: 0, max: 0.6, step: 0.01, f: function (v) { return UI.pct(v, 0); } },
+    { k: "tlb", label: "Term loan", tip: "Term Loan B, senior secured institutional loan, as a multiple of EBITDA", min: 2, max: 6, step: 0.25, f: function (v) { return v.toFixed(2) + "x"; } },
+    { k: "notes", label: "Secured notes", tip: "Senior secured notes as a multiple of EBITDA", min: 0, max: 3, step: 0.25, f: function (v) { return v.toFixed(2) + "x"; } },
+    { k: "tlbRate", label: "Term loan rate", tip: "Interest rate on the term loan", min: 0.05, max: 0.10, step: 0.0025, f: function (v) { return UI.pct(v, 2); } },
+    { k: "notesRate", label: "Notes coupon", tip: "Fixed coupon on the notes", min: 0.06, max: 0.11, step: 0.0025, f: function (v) { return UI.pct(v, 2); } },
+    { k: "exitMultiple", label: "Exit multiple", tip: "EV / EBITDA multiple at exit", min: 11, max: 23, step: 0.5, f: function (v) { return v.toFixed(1) + "x"; } },
+    { k: "g", label: "Growth shift", tip: "Revenue growth, added to every year", min: -0.04, max: 0.04, step: 0.005, f: function (v) { return (v >= 0 ? "+" : "\u2212") + Math.abs(v * 100).toFixed(1) + " pt"; } },
+    { k: "m", label: "Margin shift", tip: "EBITDA margin, added to every year", min: -0.05, max: 0.05, step: 0.005, f: function (v) { return (v >= 0 ? "+" : "\u2212") + Math.abs(v * 100).toFixed(1) + " pt"; } },
+    { k: "sweepPct", label: "Cash sweep", tip: "Share of excess cash used to repay the term loan", min: 0, max: 1, step: 0.25, f: function (v) { return UI.pct(v, 0); } },
+    { k: "mipPct", label: "Management plan", tip: "Management incentive, share of the equity gain", min: 0, max: 0.15, step: 0.01, f: function (v) { return UI.pct(v, 0); } }
   ];
   function defaults() {
     const m = T.model, cs = T.cases[state.c];
@@ -31,8 +31,8 @@
   }
   function buildControls() {
     document.getElementById("controls").innerHTML = CTRL.map(function (c) {
-      return '<div class="ctl"><label>' + c.label + ' <output id="o_' + c.k + '"></output></label><input type="range" id="c_' + c.k + '" min="' + c.min + '" max="' + c.max + '" step="' + c.step + '"></div>';
-    }).join("") + '<div class="ctl" style="align-self:end"><button class="btn ghost" id="reset">Reset to case defaults</button></div>';
+      return '<div class="ctl" title="' + c.tip + '"><label><span>' + c.label + '</span><output id="o_' + c.k + '"></output></label><input type="range" id="c_' + c.k + '" min="' + c.min + '" max="' + c.max + '" step="' + c.step + '"></div>';
+    }).join("");
     CTRL.forEach(function (c) { document.getElementById("c_" + c.k).oninput = function (e) { state.o[c.k] = +e.target.value; render(); }; });
     document.getElementById("reset").onclick = function () { defaults(); sync(); render(); };
   }
@@ -78,10 +78,10 @@
     ], 0);
 
     UI.plot("chDebt", [
-      { type: "bar", x: heads, y: p(function (x) { return x.balances[0]; }, r.tranches[0].amount), name: "Term Loan B", marker: { color: "#13294B" } },
-      { type: "bar", x: heads, y: p(function (x) { return x.balances[1]; }, r.tranches[1].amount), name: "Senior secured notes", marker: { color: "#6C8EBF" } },
-      { type: "scatter", mode: "lines+markers+text", x: heads, y: p(function (x) { return x.leverage; }, (r.debt0 - a.minCash) / a.ebitda0), name: "Net debt / EBITDA", yaxis: "y2", line: { color: "#C8102E", width: 2.5 },
-        text: p(function (x) { return x.leverage.toFixed(1) + "x"; }, ((r.debt0 - a.minCash) / a.ebitda0).toFixed(1) + "x"), textposition: "top center", textfont: { color: "#C8102E" } }
+      { type: "bar", x: heads, y: p(function (x) { return x.balances[0]; }, r.tranches[0].amount), name: "Term Loan B", marker: { color: "#111111" } },
+      { type: "bar", x: heads, y: p(function (x) { return x.balances[1]; }, r.tranches[1].amount), name: "Senior secured notes", marker: { color: "#8C877C" } },
+      { type: "scatter", mode: "lines+markers+text", x: heads, y: p(function (x) { return x.leverage; }, (r.debt0 - a.minCash) / a.ebitda0), name: "Net debt / EBITDA", yaxis: "y2", line: { color: "#7A1E1E", width: 2.5 },
+        text: p(function (x) { return x.leverage.toFixed(1) + "x"; }, ((r.debt0 - a.minCash) / a.ebitda0).toFixed(1) + "x"), textposition: "top center", textfont: { color: "#7A1E1E" } }
     ], { barmode: "stack", yaxis: { title: "USD m" }, yaxis2: { overlaying: "y", side: "right", showgrid: false, range: [0, 8], ticksuffix: "x" }, margin: { l: 60, r: 50, t: 20, b: 44 } });
 
     UI.plot("chBridge", [{
@@ -89,7 +89,7 @@
       x: ["Equity<br>at entry"].concat(r.bridge.map(function (b) { return b.item.replace(" and ", "<br>and ").replace("Multiple ", "Multiple<br>").replace("Management ", "Management<br>").replace("EBITDA ", "EBITDA<br>"); })).concat(["Equity<br>at exit"]),
       y: [r.sponsorEquity].concat(r.bridge.map(function (b) { return b.value; })).concat([0]),
       text: [r.sponsorEquity].concat(r.bridge.map(function (b) { return b.value; })).concat([r.exitEquity]).map(function (v) { return UI.fmt(v); }), textposition: "outside",
-      connector: { line: { color: "#C9D1DB" } }, increasing: { marker: { color: "#1B7F5B" } }, decreasing: { marker: { color: "#C8102E" } }, totals: { marker: { color: "#13294B" } }
+      connector: { line: { color: "#CFC9BC" } }, increasing: { marker: { color: "#2F4A36" } }, decreasing: { marker: { color: "#7A1E1E" } }, totals: { marker: { color: "#111111" } }
     }], { showlegend: false, yaxis: { title: "USD m", range: [0, Math.max(r.exitEquity, r.sponsorEquity + r.bridge[0].value + Math.max(0, r.bridge[1].value) + r.bridge[2].value) * 1.15] }, xaxis: { tickangle: 0, tickfont: { size: 11 } }, margin: { l: 60, r: 20, t: 30, b: 70 } });
 
     UI.table("retTable", [{ h: "Exit and returns", f: function (x) { return x[0]; } }, { h: "USD m", n: 1, f: function (x) { return x[1]; } }], [

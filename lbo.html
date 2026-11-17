@@ -4,8 +4,6 @@
 <title>Temenos LBO · Finance Lab</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <script src="vendor/plotly.min.js"></script>
 <script src="js/config.js"></script><script src="js/ui.js"></script><script src="js/api.js"></script>
@@ -14,22 +12,34 @@
 <body>
 <main class="wrap">
   <div class="page-head">
-    <div class="eyebrow">Private Equity · Leveraged Buyout</div>
+    <div class="eyebrow">Private equity &nbsp;&middot;&nbsp; Leveraged buyout</div>
     <h1>Project Lancy: take private of Temenos AG</h1>
-    <p class="lead">Illustrative sponsor buyout of the Swiss core banking software leader. Temenos has attracted repeated private equity interest; this model tests what a financial buyer could pay and still earn a target return. The answer is disciplined: the base case does not support a customary premium. Figures in USD millions (Temenos reporting currency); the offer price is in CHF.</p>
-    <div class="downloads" style="margin:14px 0 18px">
-      <a class="btn" href="downloads/Temenos_LBO_IC_Deck.pdf">Investment committee deck (PDF)</a>
-      <a class="btn ghost" href="downloads/Temenos_LBO_IC_Deck.pptx">Deck (PowerPoint)</a>
+    <p class="lead">Illustrative sponsor buyout of the Swiss core banking software leader. The model tests what a financial buyer could pay and still earn a target return. The answer is disciplined: the base case does not support a customary premium. Figures in USD millions, the reporting currency; the offer price is in CHF.</p>
+    <div class="profile-strip">
+      <div><div class="label">The company</div><div class="about">Leading independent core banking software supplier, Grand Lancy (Geneva). Banks run accounts, payments and digital channels on its platform, on premise or as a cloud service.</div></div>
+      <div><div class="label">Revenue 2025</div><div class="value">USD 1.07bn</div></div>
+      <div><div class="label">Recurring revenue</div><div class="value">USD 860m</div></div>
+      <div><div class="label">Core banking clients</div><div class="value">950+</div></div>
+      <div><div class="label">Listing</div><div class="value">SIX: TEMN</div></div>
+    </div>
+    <div class="downloads">
+      <a class="btn" href="downloads/Temenos_LBO_IC_Deck.pdf">Investment committee deck, PDF</a>
+      <a class="btn ghost" href="downloads/Temenos_LBO_IC_Deck.pptx">Deck, PowerPoint</a>
       <a class="btn ghost" href="downloads/Temenos_LBO_Model.xlsx">Excel model</a>
     </div>
   </div>
 
-  <div class="row" style="margin:18px 0 14px"><strong>Operating case</strong><div class="seg" id="case"><button data-c="downside">Downside</button><button data-c="base" class="on">Base</button><button data-c="upside">Upside</button></div></div>
+  <div class="toolbar">
+    <div class="group"><span>Operating case</span><div class="seg" id="case"><button data-c="downside">Downside</button><button data-c="base" class="on">Base</button><button data-c="upside">Upside</button></div></div>
+  </div>
   <div class="grid g5" id="kpis"></div>
 
   <h2><span class="section-num">01</span>Transaction assumptions</h2>
-  <div class="card"><div class="controls" id="controls"></div>
-  <p class="note" style="margin-top:12px">IRR = internal rate of return. MOIC = multiple on invested capital. EV = enterprise value. EBITDA is non IFRS, as reported by Temenos (it excludes share based payments and restructuring). Term Loan B = senior secured institutional loan; SOFR = secured overnight financing rate.</p></div>
+  <div class="legend-line"><b>IRR</b> internal rate of return<span class="sep">&middot;</span><b>MOIC</b> multiple on invested capital<span class="sep">&middot;</span><b>EV</b> enterprise value<span class="sep">&middot;</span><b>EBITDA</b> earnings before interest, taxes, depreciation and amortisation (non IFRS)</div>
+  <div class="card">
+    <div class="card-head"><h3>Drag to change; debt schedule and returns recalculate</h3><button class="btn ghost small" id="reset">Reset to case</button></div>
+    <div class="controls c5" id="controls"></div>
+  </div>
 
   <h2><span class="section-num">02</span>Sources and uses</h2>
   <div class="grid g2"><div id="sources"></div><div id="uses"></div></div>

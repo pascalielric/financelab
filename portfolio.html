@@ -4,42 +4,40 @@
 <title>Portfolio risk and optimisation · Finance Lab</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <script src="vendor/plotly.min.js"></script>
 <script src="js/config.js"></script><script src="js/ui.js"></script><script src="js/api.js"></script>
-<script src="js/engine/risk.js"></script>
+<script src="js/engine/risk.js"></script><script src="js/portfolio-kit.js"></script>
 </head>
 <body>
 <main class="wrap">
   <div class="page-head">
-    <div class="eyebrow">Asset Management · Risk</div>
+    <div class="eyebrow">Asset management &nbsp;&middot;&nbsp; Risk</div>
     <h1>Portfolio risk and optimisation</h1>
     <p class="lead">Enter any portfolio. The tool pulls market prices, measures realised and forward looking risk, attributes that risk to each position, stress tests it and shows how the same holdings could be reweighted along the efficient frontier.</p>
   </div>
 
   <h2><span class="section-num">01</span>Portfolio</h2>
-  <div class="grid g2">
+  <div class="grid" style="grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)">
     <div class="card">
-      <div class="row" style="justify-content:space-between;margin-bottom:10px"><h3 style="margin:0">Holdings</h3>
-        <div class="row"><select id="preset" style="width:auto"><option value="">Load example…</option><option value="swiss">Swiss blue chips</option><option value="global">Global quality and tech</option><option value="balanced">Balanced multi asset</option></select></div></div>
-      <div class="table-wrap"><table class="portfolio-table"><thead><tr><th>Ticker</th><th class="n">Position value</th><th class="n">Weight</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
-      <div class="row" style="margin-top:10px"><button class="btn ghost" id="add">Add position</button><span class="note" id="universe"></span></div>
+      <div class="card-head"><h3>Holdings</h3><select id="preset" style="width:auto;min-width:260px"></select></div>
+      <div class="preset-desc hidden" id="presetDesc" style="margin:0 0 16px"></div>
+      <div id="rows"></div>
+      <p class="note" id="universe" style="margin-top:10px"></p>
     </div>
     <div class="card">
-      <h3>Settings</h3>
-      <div class="controls">
-        <div class="ctl"><label>Benchmark</label><select id="bench"><option value="SPY">S&amp;P 500 (SPY)</option><option value="^SSMI">Swiss Market Index (^SSMI)</option><option value="URTH">MSCI World (URTH)</option><option value="VT">Global equities (VT)</option></select></div>
-        <div class="ctl"><label>History</label><select id="lookback"><option value="252">1 year</option><option value="504" selected>2 years</option><option value="756">3 years</option></select></div>
-        <div class="ctl"><label>VaR confidence</label><select id="conf"><option value="0.95">95%</option><option value="0.99">99%</option></select></div>
-        <div class="ctl"><label>VaR horizon</label><select id="hor"><option value="1">1 day</option><option value="10">10 days</option><option value="21">1 month (21 days)</option></select></div>
-        <div class="ctl"><label>Risk free rate <output id="o_rf"></output></label><input type="range" id="rf" min="0" max="0.06" step="0.0025" value="0.02"></div>
-        <div class="ctl"><label>Max weight per position <output id="o_cap"></output></label><input type="range" id="cap" min="0.1" max="1" step="0.05" value="0.4"></div>
-        <div class="ctl"><label>Expected returns for optimisation</label><select id="muMode"><option value="capm">CAPM implied (rf + beta × 5.5%)</option><option value="hist">Historical average</option></select></div>
+      <div class="card-head"><h3>Settings</h3></div>
+      <div class="controls" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px">
+        <div class="ctl"><span class="field-label">Benchmark</span><select id="bench"><option value="SPY">S&amp;P 500 (SPY)</option><option value="^SSMI">Swiss Market Index</option><option value="URTH">MSCI World (URTH)</option><option value="VT">Global equities (VT)</option></select></div>
+        <div class="ctl"><span class="field-label">History</span><select id="lookback"><option value="252">1 year</option><option value="504" selected>2 years</option><option value="756">3 years</option></select></div>
+        <div class="ctl"><span class="field-label">VaR confidence</span><select id="conf"><option value="0.95">95%</option><option value="0.99">99%</option></select></div>
+        <div class="ctl"><span class="field-label">VaR horizon</span><select id="hor"><option value="1">1 day</option><option value="10">10 days</option><option value="21">1 month</option></select></div>
+        <div class="ctl"><label><span>Risk free rate</span><output id="o_rf"></output></label><input type="range" id="rf" min="0" max="0.06" step="0.0025" value="0.02"></div>
+        <div class="ctl"><label><span>Max position size</span><output id="o_cap"></output></label><input type="range" id="cap" min="0.1" max="1" step="0.05" value="0.4"></div>
+        <div class="ctl" style="grid-column:1 / -1"><span class="field-label">Expected returns for optimisation</span><select id="muMode"><option value="capm">Risk based, from each holding's beta</option><option value="hist">Historical average</option></select></div>
       </div>
-      <div class="row" style="margin-top:16px"><button class="btn" id="run">Analyse portfolio</button><span id="status" class="status hidden"></span></div>
-      <p class="note" style="margin-top:10px">Tickers use Yahoo Finance notation (NESN.SW, AAPL, ^SSMI). Position values are treated as being in one base currency; currency risk between listing currencies is not modelled.</p>
+      <div class="row" style="margin-top:22px"><button class="btn" id="run">Analyse portfolio</button><span id="status" class="status hidden"></span></div>
+      <p class="note" style="margin-top:14px">VaR: value at risk. Position values are treated as one base currency; currency risk between listings is not modelled.</p>
     </div>
   </div>
 
@@ -71,12 +69,18 @@
     <div id="stressTable"></div>
     <p class="note">Each scenario applies a market shock scaled by every position's beta to the selected benchmark. It ignores second order effects such as correlation spikes and liquidity, so real losses in a crisis are typically larger for low beta assets than this suggests.</p>
 
-    <h2><span class="section-num">06</span>Optimisation</h2>
-    <div class="grid g2">
-      <div class="card"><h3>Efficient frontier (long only)</h3><div id="chEF" class="chart" style="min-height:400px"></div></div>
-      <div><div id="optTable"></div><div id="optStats" style="margin-top:14px"></div>
-      <p class="note">Mean variance optimisation maximises expected return minus a penalty for variance. It is very sensitive to expected return inputs, which is why CAPM implied returns are the default and a position cap is applied. Risk parity ignores expected returns and equalises each position's contribution to risk.</p></div>
+    <h2><span class="section-num">06</span>Modern portfolio theory: where this portfolio stands</h2>
+    <div class="card">
+      <p class="chart-title" id="efHead"></p>
+      <p class="chart-sub" id="efSub"></p>
+      <div id="chEF" class="chart" style="min-height:540px"></div>
+      <p class="note" style="margin-top:6px">Each grey dot is one holding on its own. The efficient frontier is the best expected return available for each level of risk by mixing those holdings. The capital market line runs from the risk free rate through the ideal portfolio: combining that portfolio with cash gives the best possible trade off. Arrows show the two shortest ways from your portfolio to the frontier.</p>
     </div>
+    <h3 style="margin-top:30px">How to reach the frontier</h3>
+    <div class="grid g3" id="suggest"></div>
+    <h3 style="margin-top:34px">Weights by option</h3><div id="optTable"></div>
+    <h3 style="margin-top:28px">Risk and return by option</h3><div id="optStats"></div>
+    <p class="note" style="margin-top:14px">Optimised weights respect the position cap and allow no short selling. Expected returns are estimates: risk based returns assume each holding is rewarded only for its market risk, which keeps the optimiser from chasing past winners. Treat the options as a direction of travel, not a trade list.</p>
     <div class="row" style="margin-top:18px"><button class="btn ghost" id="csv">Export results (CSV)</button><a class="btn ghost" href="monte-carlo.html">Simulate this portfolio forward</a></div>
   </div>
 
@@ -88,7 +92,7 @@
     <p><strong>Monte Carlo VaR.</strong> 20'000 correlated return paths generated with a Cholesky decomposition of the covariance matrix.</p>
     <p><strong>Risk attribution.</strong> Component VaR of position i is w<sub>i</sub> × marginal VaR<sub>i</sub>, where marginal VaR is z × (Σw)<sub>i</sub> / σ<sub>p</sub>. Components add up to total parametric VaR.</p>
     <p><strong>Ratios.</strong> Sharpe uses total volatility; Sortino uses downside deviation below the risk free rate; Treynor uses beta; Calmar divides return by maximum drawdown; Omega is the ratio of gains to losses around the risk free rate; M² rescales the portfolio to benchmark volatility.</p>
-    <p><strong>Optimisation.</strong> Projected gradient ascent on w′μ − (λ/2)·w′Σw under full investment, no short sales and the position cap, solved for 40 values of risk aversion λ to trace the frontier. The method was checked against a quadratic programming reference solver.</p>
+    <p><strong>Optimisation.</strong> Mean variance optimisation (Markowitz): for each level of risk aversion the optimiser finds the mix with the best trade off between expected return and variance, fully invested, without short sales and within the position cap. Tracing 40 levels gives the frontier. Options A and B are solved directly for the current risk and the current return. Expected returns by default follow the capital asset pricing model (CAPM), with a 5.5% equity risk premium. The solver was checked against a quadratic programming reference.</p>
     <p><strong>Limits.</strong> Two to three years of history understate tail risk; correlations rise in crises; VaR says nothing about losses beyond the threshold, which is why CVaR and stress tests are shown next to it.</p>
   </div>
 </main>

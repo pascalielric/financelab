@@ -37,13 +37,15 @@ def write_json(path, obj):
         json.dump(obj, f, separators=(",", ":"), default=clean)
 
 
-def update_index(key, symbols):
+def update_index(key, symbols, meta=None):
     path = os.path.join(DATA, "index.json")
     ix = {}
     if os.path.exists(path):
         with open(path) as f:
             ix = json.load(f)
     ix[key] = sorted(symbols)
+    if meta:
+        ix.setdefault("meta", {}).update(meta)
     ix["updated"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     ix["source"] = "Yahoo Finance via yfinance"
     write_json(path, ix)
