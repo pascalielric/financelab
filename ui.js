@@ -1,0 +1,153 @@
+/* Shared UI: header, footer, formatting, tables, charts, math helpers, data key modal. */
+(function () {
+  "use strict";
+  const PAGES = [
+    ["index.html", "Home"], ["dcf.html", "DCF"], ["lbo.html", "LBO"], ["monte-carlo.html", "Monte Carlo"],
+    ["portfolio.html", "Portfolio Risk"], ["earnings.html", "Earnings"]
+  ];
+
+  function header() {
+    const here = location.pathname.split("/").pop() || "index.html";
+    const cfg = window.SITE_CONFIG || {};
+    const el = document.createElement("header");
+    el.className = "topbar";
+    el.innerHTML = '<div class="wrap"><a class="brand" href="index.html">' + esc(cfg.ownerName || "Finance") + ' <span>Finance Lab</span></a><nav class="nav">' +
+      PAGES.map(function (p) { return '<a href="' + p[0] + '"' + (p[0] === here ? ' class="active"' : "") + ">" + p[1] + "</a>"; }).join("") +
+      '</nav><div class="spacer"></div><button class="data-pill" id="dataPill"><span class="dot"></span><span id="dataPillTxt"></span></button></div>';
+    document.body.prepend(el);
+    refreshPill();
+    document.getElementById("dataPill").onclick = keyModal;
+  }
+  function refreshPill() {
+    const pill = document.getElementById("dataPill");
+    if (!pill || !window.API) return;
+    const set = function (on, txt) { pill.classList.toggle("live", on); document.getElementById("dataPillTxt").textContent = txt; };
+    set(API.hasLive(), API.hasLive() ? "Live data" : "Demo data");
+    API.localIndex().then(function (ix) {
+      if (ix && ix.updated) set(true, (API.hasLive() ? "Live + daily data · " : "Market data as of ") + ix.updated.slice(0, 10));
+    });
+  }
+
+  function footer() {
+    const cfg = window.SITE_CONFIG || {};
+    const links = [];
+    if (cfg.email) links.push('<a href="mailto:' + esc(cfg.email) + '">' + esc(cfg.email) + "</a>");
+    if (cfg.linkedin) links.push('<a href="' + esc(cfg.linkedin) + '">LinkedIn</a>');
+    if (cfg.github) links.push('<a href="' + esc(cfg.github) + '">GitHub</a>');
+    const f = document.createElement("footer");
+    f.innerHTML = '<div class="wrap"><div class="row" style="justify-content:space-between"><div><strong>' + esc(cfg.ownerName || "") + "</strong> · " + esc(cfg.ownerTitle || "") +
+      (links.length ? " · " + links.join(" · ") : "") + '</div><div>Built with plain HTML, JavaScript and Plotly. Market data: Yahoo Finance (daily refresh), Finnhub and Twelve Data (live, optional).</div></div>' +
+      '<p class="note" style="margin-top:10px">Educational portfolio project. Nothing on this site is investment advice or a recommendation to buy or sell any security. Company figures are taken from public filings; projections are the author&#39;s own assumptions.</p></div>';
+    document.body.appendChild(f);
+  }
+
+  function keyModal() {
+    const k = API.keys();
+    const bg = document.createElement("div");
+    bg.className = "modal-bg";
+    bg.innerHTML = '<div class="modal"><h3>Live market data</h3><p>This site uses two free data providers. Keys you enter here stay in your browser only.</p>' +
+      '<div class="ctl"><label>Finnhub key <a href="https://finnhub.io/register" target="_blank" rel="noopener">get one</a></label><input id="kFh" type="text" value="' + esc(k.finnhub) + '" placeholder="quotes, earnings, profiles"></div><br>' +
+      '<div class="ctl"><label>Twelve Data key <a href="https://twelvedata.com/register" target="_blank" rel="noopener">get one</a></label><input id="kTd" type="text" value="' + esc(k.twelve) + '" placeholder="daily price history"></div>' +
+      '<p class="note">Without keys, price history tools run on simulated demo prices and are labelled as such. Free plans cover mainly US listings, so use US tickers or ADRs (for example NSRGY for Nestle).</p>' +
+      '<div class="row" style="justify-content:flex-end"><button class="btn ghost" id="kCancel">Cancel</button><button class="btn" id="kSave">Save and reload</button></div></div>';
+    document.body.appendChild(bg);
+    bg.onclick = function (e) { if (e.target === bg) bg.remove(); };
+    document.getElementById("kCancel").onclick = function () { bg.remove(); };
+    document.getElementById("kSave").onclick = function () {
+      API.setKeys({ finnhub: document.getElementById("kFh").value.trim(), twelve: document.getElementById("kTd").value.trim() });
+      location.reload();
+    };
+  }
+
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function fmt(v, d) { if (v == null || !isFinite(v)) return "n.a."; d = d == null ? 0 : d; const s = Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d }).replace(/,/g, "’"); return v < 0 ? "(" + s + ")" : s; }
+  function pct(v, d) { if (v == null || !isFinite(v)) return "n.a."; return (v * 100).toFixed(d == null ? 1 : d) + "%"; }
+  function mult(v, d) { if (v == null || !isFinite(v)) return "n.a."; return v.toFixed(d == null ? 1 : d) + "x"; }
+  function signPct(v, d) { if (v == null || !isFinite(v)) return "n.a."; return (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(d == null ? 1 : d) + "%"; }
+  function cls(v) { return v >= 0 ? "pos" : "neg"; }
+
+  /* Simple table: cols = [{h, n(umeric), f(row)}], rows = array, opts.rowClass(row) */
+  function table(el, cols, rows, opts) {
+    opts = opts || {};
+    let h = '<div class="table-wrap"><table' + (opts.cls ? ' class="' + opts.cls + '"' : "") + "><thead><tr>" +
+      cols.map(function (c) { return "<th" + (c.n ? ' class="n"' : "") + ">" + c.h + "</th>"; }).join("") + "</tr></thead><tbody>";
+    rows.forEach(function (r) {
+      h += "<tr" + (opts.rowClass ? ' class="' + (opts.rowClass(r) || "") + '"' : "") + ">" +
+        cols.map(function (c) { return "<td" + (c.n ? ' class="n"' : "") + ">" + c.f(r) + "</td>"; }).join("") + "</tr>";
+    });
+    h += "</tbody></table></div>";
+    (typeof el === "string" ? document.getElementById(el) : el).innerHTML = h;
+  }
+
+  /* Financial statement style table: header years, lines = [{label, vals[], f, cls}] */
+  function fin(el, heads, lines, estFrom) {
+    let h = '<div class="table-wrap"><table><thead><tr><th></th>' + heads.map(function (y, i) { return '<th class="n">' + y + "</th>"; }).join("") + "</tr></thead><tbody>";
+    lines.forEach(function (l) {
+      h += '<tr class="' + (l.cls || "") + '"><td>' + l.label + "</td>" + l.vals.map(function (v, i) {
+        return '<td class="n' + (estFrom != null && i >= estFrom ? " est" : "") + '">' + (v === "" || v == null ? "" : (l.f ? l.f(v) : fmt(v))) + "</td>";
+      }).join("") + "</tr>";
+    });
+    h += "</tbody></table></div>";
+    (typeof el === "string" ? document.getElementById(el) : el).innerHTML = h;
+  }
+
+  function sens(el, rowLabel, colLabel, rowVals, colVals, grid, rf, cf, vf, baseR, baseC, colorFn) {
+    let h = '<div class="table-wrap"><table class="sens"><thead><tr><th class="corner">' + rowLabel + " ↓ / " + colLabel + " →</th>" +
+      colVals.map(function (c) { return '<th class="n">' + cf(c) + "</th>"; }).join("") + "</tr></thead><tbody>";
+    grid.forEach(function (row, i) {
+      h += "<tr><th>" + rf(rowVals[i]) + "</th>" + row.map(function (v, j) {
+        const st = colorFn ? ' style="background:' + colorFn(v) + '"' : "";
+        return '<td class="n' + (i === baseR && j === baseC ? " base" : "") + '"' + st + ">" + vf(v) + "</td>";
+      }).join("") + "</tr>";
+    });
+    h += "</tbody></table></div>";
+    document.getElementById(el).innerHTML = h;
+  }
+  function heat(v, lo, mid, hi) {
+    if (!isFinite(v)) return "#fff";
+    const t = v >= mid ? Math.min(1, (v - mid) / (hi - mid || 1)) : -Math.min(1, (mid - v) / (mid - lo || 1));
+    if (t >= 0) return "rgba(27,127,91," + (0.06 + 0.32 * t).toFixed(2) + ")";
+    return "rgba(180,35,24," + (0.06 + 0.30 * -t).toFixed(2) + ")";
+  }
+
+  // Plotly defaults
+  const COLORS = ["#13294B", "#C8102E", "#2E7D9A", "#B8892B", "#6C8EBF", "#1B7F5B", "#8E5572", "#5B6770", "#D97B29", "#4C9F70"];
+  function layout(extra) {
+    return Object.assign({
+      font: { family: "Inter, Arial, sans-serif", size: 12, color: "#33475B" },
+      margin: { l: 56, r: 20, t: 30, b: 44 }, paper_bgcolor: "#fff", plot_bgcolor: "#fff",
+      xaxis: { gridcolor: "#EEF1F5", zerolinecolor: "#D5DCE4", linecolor: "#D5DCE4" },
+      yaxis: { gridcolor: "#EEF1F5", zerolinecolor: "#D5DCE4", linecolor: "#D5DCE4" },
+      legend: { orientation: "h", y: -0.18 }, colorway: COLORS, hoverlabel: { font: { family: "Inter, Arial" } }
+    }, extra || {});
+  }
+  function plot(id, data, lay) { Plotly.react(id, data, layout(lay), { displayModeBar: false, responsive: true }); }
+
+  // Math helpers
+  function rng(seed) { let s = seed >>> 0 || 1; return function () { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
+  function gauss(r) { let u = 0, v = 0; while (u === 0) u = r(); while (v === 0) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+  function mean(a) { return a.reduce(function (s, v) { return s + v; }, 0) / a.length; }
+  function std(a) { const m = mean(a); return Math.sqrt(a.reduce(function (s, v) { return s + (v - m) * (v - m); }, 0) / (a.length - 1)); }
+  function quantile(sorted, q) { const pos = (sorted.length - 1) * q, b = Math.floor(pos), r = pos - b; return sorted[b + 1] !== undefined ? sorted[b] + r * (sorted[b + 1] - sorted[b]) : sorted[b]; }
+  function covMatrix(R) { // R: assets x T
+    const n = R.length, T = R[0].length, m = R.map(mean);
+    const C = [];
+    for (let i = 0; i < n; i++) { C.push([]); for (let j = 0; j < n; j++) { let s = 0; for (let t = 0; t < T; t++) s += (R[i][t] - m[i]) * (R[j][t] - m[j]); C[i].push(s / (T - 1)); } }
+    return C;
+  }
+  function cholesky(A) {
+    const n = A.length, L = A.map(function () { return new Array(n).fill(0); });
+    for (let i = 0; i < n; i++) for (let j = 0; j <= i; j++) {
+      let s = A[i][j]; for (let k = 0; k < j; k++) s -= L[i][k] * L[j][k];
+      if (i === j) L[i][i] = Math.sqrt(Math.max(s, 1e-12)); else L[i][j] = s / L[j][j];
+    }
+    return L;
+  }
+  function download(name, text, type) {
+    const blob = new Blob([text], { type: type || "text/csv" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  }
+
+  document.addEventListener("DOMContentLoaded", function () { header(); footer(); });
+  window.UI = { esc, fmt, pct, mult, signPct, cls, table, fin, sens, heat, plot, layout, COLORS, rng, gauss, mean, std, quantile, covMatrix, cholesky, download, refreshPill, keyModal };
+})();

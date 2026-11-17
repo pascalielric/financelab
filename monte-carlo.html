@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Monte Carlo simulation · Finance Lab</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="vendor/plotly.min.js"></script>
+<script src="js/config.js"></script><script src="js/ui.js"></script><script src="js/api.js"></script>
+<script src="js/engine/risk.js"></script><script src="js/engine/dcf.js"></script><script src="js/data/givaudan.js"></script>
+</head>
+<body>
+<main class="wrap">
+  <div class="page-head">
+    <div class="eyebrow">Quantitative Methods</div>
+    <h1>Monte Carlo simulation</h1>
+    <p class="lead">Two applications of the same idea: replace single point assumptions with distributions and look at the full range of outcomes. First for a portfolio's future value, then for the Givaudan valuation.</p>
+  </div>
+  <div class="tabs"><button class="on" data-t="port">Portfolio paths</button><button data-t="dcf">Stochastic DCF</button></div>
+
+  <section id="t_port">
+    <div class="card">
+      <div class="controls">
+        <div class="ctl"><label>Portfolio</label><select id="pSel"></select></div>
+        <div class="ctl"><label>Method</label><select id="method"><option value="gbm">Correlated geometric Brownian motion</option><option value="boot">Historical block bootstrap</option></select></div>
+        <div class="ctl"><label>Expected return</label><select id="drift"><option value="capm">CAPM implied (rf + beta × 5.5%)</option><option value="hist">Historical average</option></select></div>
+        <div class="ctl"><label>Horizon <output id="o_yrs"></output></label><input type="range" id="yrs" min="1" max="15" step="1" value="5"></div>
+        <div class="ctl"><label>Number of paths <output id="o_n"></output></label><input type="range" id="n" min="1000" max="10000" step="1000" value="5000"></div>
+        <div class="ctl"><label>Starting value</label><input type="number" id="v0" value="100000" step="10000"></div>
+        <div class="ctl"><label>Risk free rate <output id="o_rf"></output></label><input type="range" id="rf" min="0" max="0.06" step="0.0025" value="0.02"></div>
+        <div class="ctl" style="align-self:end"><button class="btn" id="runP">Run simulation</button></div>
+      </div>
+      <div id="pStatus" class="status hidden" style="margin-top:12px"></div>
+    </div>
+    <div id="pRes" class="hidden">
+      <div id="pDemo"></div>
+      <div class="grid g5" id="pKpis" style="margin-top:20px"></div>
+      <div class="grid g2" style="margin-top:18px">
+        <div class="card"><h3>Range of outcomes over time</h3><div id="chFan" class="chart" style="min-height:380px"></div></div>
+        <div class="card"><h3>Distribution of final value</h3><div id="chTerm" class="chart" style="min-height:380px"></div></div>
+      </div>
+      <div class="grid g2" style="margin-top:18px"><div id="pTable"></div><div id="pTable2"></div></div>
+    </div>
+    <h2>Method</h2>
+    <div class="card method">
+      <p><strong>Geometric Brownian motion.</strong> Each asset follows dS/S = μ dt + σ dW. Weekly log returns are drawn as (μ − ½σ²)Δt + L·z·√Δt, where L is the Cholesky factor of the annualised covariance matrix and z a vector of independent standard normal draws, so simulated assets keep their historical correlations.</p>
+      <p><strong>Block bootstrap.</strong> Instead of assuming normality, the simulation resamples actual five day blocks of joint historical returns. This preserves fat tails, skew and short term clustering that GBM misses, at the price of being limited to what happened in the sample.</p>
+      <p><strong>Rebalancing.</strong> The portfolio is rebalanced to its target weights every week, so the portfolio return of a step is the weighted average of the simple asset returns.</p>
+      <p><strong>Reading the result.</strong> The fan shows the 5th to 95th percentile band. The left tail matters more than the median: horizon VaR and CVaR summarise it, and the probability of loss shows how often the path ends below the start.</p>
+    </div>
+  </section>
+
+  <section id="t_dcf" class="hidden">
+    <div class="card">
+      <p style="margin-top:0">Each run draws growth, margin, discount rate and terminal assumptions for the <a href="dcf.html">Givaudan DCF</a> from the distributions below and recomputes value per share.</p>
+      <div class="controls" id="dControls"></div>
+      <div class="row" style="margin-top:14px"><button class="btn" id="runD">Run 10'000 valuations</button></div>
+    </div>
+    <div class="grid g5" id="dKpis" style="margin-top:20px"></div>
+    <div class="grid g2" style="margin-top:18px">
+      <div class="card"><h3>Distribution of value per share (CHF)</h3><div id="chDcf" class="chart" style="min-height:380px"></div></div>
+      <div class="card"><h3>Which assumption moves value most (±1 standard deviation)</h3><div id="chTor" class="chart" style="min-height:380px"></div></div>
+    </div>
+    <div style="margin-top:18px" id="dTable"></div>
+    <p class="note">Draws are independent normal distributions (terminal growth is truncated between 0.5% and 3.0%, WACC is floored 1 point above terminal growth). The headline value uses the average of the Gordon growth and exit multiple terminal values, as on the DCF page.</p>
+  </section>
+</main>
+<script src="js/pages/montecarlo.js"></script>
+</body>
+</html>

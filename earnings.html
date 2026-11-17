@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Earnings scenarios · Finance Lab</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="vendor/plotly.min.js"></script>
+<script src="js/config.js"></script><script src="js/ui.js"></script><script src="js/api.js"></script>
+<script src="js/engine/earnings.js"></script>
+</head>
+<body>
+<main class="wrap">
+  <div class="page-head">
+    <div class="eyebrow">Equity Research · Event Analysis</div>
+    <h1>Earnings preview: bull, base and bear</h1>
+    <p class="lead">Pick a stock to see when it reports next, what analysts expect, how it has performed against expectations, how the share price reacted to past reports, and three scenarios with probabilities for the next one.</p>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <div class="row">
+      <select id="pick" style="width:auto;min-width:220px"></select>
+      <input type="text" id="tick" placeholder="or type a US ticker, e.g. TSLA" style="width:240px;text-transform:uppercase">
+      <button class="btn" id="go">Analyse</button>
+      <span id="status" class="status hidden"></span>
+    </div>
+  </div>
+
+  <div id="out" class="hidden">
+    <div id="srcNote"></div>
+    <div class="row" style="margin-top:22px;justify-content:space-between;align-items:flex-end">
+      <div><h2 id="coName" style="margin:0"></h2><div class="note" id="coMeta"></div></div>
+      <div id="lean"></div>
+    </div>
+    <div class="grid g5" id="kpis" style="margin-top:14px"></div>
+
+    <h2><span class="section-num">01</span>Scenarios for the next report</h2>
+    <div class="grid g3" id="scen"></div>
+    <div class="callout" id="pred" style="margin-top:16px"></div>
+    <div class="grid g2" style="margin-top:8px">
+      <div class="card"><h3>Scenario probabilities and next day price</h3><div id="chScen" class="chart"></div></div>
+      <div class="card"><h3>Twelve month scenario value</h3><div id="chTwelve" class="chart"></div><div id="twelveNote" class="note"></div></div>
+    </div>
+
+    <h2><span class="section-num">02</span>What analysts expect</h2>
+    <div id="consTable"></div>
+    <div class="grid g2" style="margin-top:18px"><div id="sentTable"></div><div class="card"><h3>Analyst ratings</h3><div id="chRate" style="height:110px"></div></div></div>
+
+    <h2><span class="section-num">03</span>Track record</h2>
+    <div class="grid g2">
+      <div class="card"><h3>Reported EPS vs. consensus</h3><div id="chEps" class="chart"></div></div>
+      <div class="card"><h3>Earnings surprise vs. next day share price move</h3><div id="chReact" class="chart"></div></div>
+    </div>
+    <div id="histTable" style="margin-top:18px"></div>
+
+    <h2><span class="section-num">04</span>What to watch</h2>
+    <div class="grid g2"><div class="card"><ul id="watch" style="margin:0;padding-left:18px"></ul></div><div class="card"><h3>Revenue and operating margin by quarter</h3><div id="chQ" class="chart" style="min-height:260px"></div></div></div>
+  </div>
+
+  <h2><span class="section-num">05</span>How the prediction works</h2>
+  <div class="card method">
+    <p><strong>Expected surprise.</strong> The average of past EPS surprises, shrunk half way to zero, because companies that beat habitually see analysts adjust over time.</p>
+    <p><strong>Beat probability.</strong> The average of two estimates: the Laplace smoothed historical beat rate, (beats + 1) / (reports + 2), and the probability that a normally distributed surprise with the expected mean and historical dispersion is positive.</p>
+    <p><strong>Scenarios.</strong> The EPS surprise is treated as normally distributed around the expected surprise with the historical dispersion. Bear is a miss (surprise below zero), bull is a beat larger than the company's usual margin, base is everything in between. Each scenario's EPS is the average outcome inside its region.</p>
+    <p><strong>Price reaction.</strong> An event study measures the one day move after each past report (next session for reports after the close). Where there are at least four observations with a positive relationship, a regression of move on surprise maps each scenario to a price; otherwise the average absolute move is scaled by the size of the surprise.</p>
+    <p><strong>Scenario probabilities.</strong> Bear is one minus the beat probability. The beat probability is split between base and bull in the proportions the distribution implies.</p>
+    <p><strong>Twelve month view.</strong> Forward EPS (high, average, low estimate) times the forward price to earnings (P/E) ratio, re rated +10% in the bull and −15% in the bear case.</p>
+    <p><strong>Limits.</strong> Eight to sixteen past reports are a small sample. Reactions depend more on guidance and positioning than on the EPS number itself, and consensus data can lag. The model is a structured starting point for judgement, and its stated confidence is low by design. EPS = earnings per share.</p>
+  </div>
+</main>
+<script src="js/pages/earnings.js"></script>
+</body>
+</html>

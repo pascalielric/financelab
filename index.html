@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finance Lab · Valuation, LBO and Risk Models</title>
+<meta name="description" content="Interactive DCF, LBO, Monte Carlo, portfolio risk and earnings models with IB and PE style pitch decks.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="js/config.js"></script><script src="js/ui.js"></script><script src="js/api.js"></script>
+</head>
+<body>
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Finance Lab</div>
+    <h1 id="heroName">Valuation, buyout and risk models, built from first principles</h1>
+    <p>Five working projects covering the core toolkit of investment banking, private equity and asset management. Every model is interactive, every assumption is visible, and the two transaction cases come with a presentation ready pitch deck and a formula driven Excel model.</p>
+    <div class="skills"><span>DCF and WACC</span><span>LBO and debt schedules</span><span>Monte Carlo simulation</span><span>Mean variance optimisation</span><span>VaR and CVaR</span><span>Earnings scenario analysis</span><span>Live market data APIs</span></div>
+  </div>
+</section>
+
+<main class="wrap">
+  <h2><span class="section-num">01</span>Projects</h2>
+  <div class="grid g3">
+    <a class="card project-card" href="dcf.html"><span class="tag">Investment Banking</span><h3>Givaudan DCF</h3><p>Five year unlevered free cash flow model of the world's largest flavours and fragrances company, with CAPM based WACC, Gordon growth and exit multiple terminal values, sensitivities and a football field.</p><span class="more">Open model and valuation deck</span></a>
+    <a class="card project-card" href="lbo.html"><span class="tag">Private Equity</span><h3>Temenos take private LBO</h3><p>Sponsor buyout of the Swiss banking software leader: sources and uses, two tranche debt structure with cash sweep, returns analysis, value creation bridge and a walk away price for a target IRR.</p><span class="more">Open model and IC deck</span></a>
+    <a class="card project-card" href="monte-carlo.html"><span class="tag">Quant</span><h3>Monte Carlo simulation</h3><p>Correlated geometric Brownian motion and historical bootstrap for a portfolio, plus a stochastic DCF that turns assumption uncertainty into a distribution of value per share.</p><span class="more">Run simulation</span></a>
+    <a class="card project-card" href="portfolio.html"><span class="tag">Asset Management</span><h3>Portfolio risk and optimisation</h3><p>Enter your holdings, pull live prices, and get volatility, beta, historical and parametric VaR, CVaR, drawdown, risk contributions and the long only efficient frontier.</p><span class="more">Analyse a portfolio</span></a>
+    <a class="card project-card" href="earnings.html"><span class="tag">Equity Research</span><h3>Earnings bull, base and bear</h3><p>For Swiss and US stocks: next report date, consensus, surprise history, share price reaction to past reports, three scenarios with probabilities and a prediction.</p><span class="more">Analyse a stock</span></a>
+    <div class="card project-card" style="background:var(--bg-2)"><span class="tag">Deliverables</span><h3>Decks and models</h3><p>Board ready valuation deck (Givaudan), investment committee memo deck (Temenos), and both Excel models with live formulas.</p>
+      <div class="downloads" style="margin-top:10px">
+        <a class="btn ghost" href="downloads/Givaudan_Valuation_Deck.pdf">Givaudan deck</a>
+        <a class="btn ghost" href="downloads/Temenos_LBO_IC_Deck.pdf">Temenos IC deck</a>
+      </div></div>
+  </div>
+
+  <h2><span class="section-num">02</span>What each project demonstrates</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Project</th><th>Core concepts</th><th>Typical use</th></tr></thead>
+    <tbody>
+      <tr><td>DCF</td><td>UFCF build, CAPM, WACC, mid year discounting, terminal value cross checks, EV to equity bridge</td><td>Fairness opinions, M&amp;A advisory, equity research</td></tr>
+      <tr><td>LBO</td><td>Leverage capacity, debt sizing by tranche, cash sweep, IRR and MOIC, value creation attribution, bid strategy</td><td>Sponsor investment committees, leveraged finance</td></tr>
+      <tr><td>Monte Carlo</td><td>Correlated GBM via Cholesky decomposition, bootstrap resampling, fat tails, valuation under uncertainty</td><td>Risk management, structuring, valuation ranges</td></tr>
+      <tr><td>Portfolio</td><td>Covariance estimation, Sharpe, beta, VaR, CVaR, risk budgeting, constrained mean variance optimisation</td><td>Asset management, wealth management, treasury</td></tr>
+      <tr><td>Earnings</td><td>Consensus vs. actuals, surprise statistics, event study of announcement returns, scenario weighted targets</td><td>Equity research, event driven trading</td></tr>
+    </tbody></table></div>
+
+  <h2><span class="section-num">03</span>About</h2>
+  <div class="grid g2">
+    <div class="card"><h3>Background</h3><p id="aboutText">I am a Master's student in Management, Technology and Economics at ETH Zurich with a BSc in Food Science, also from ETH. The combination lets me read a business from both sides: the science that creates the product and the economics that create the value. That is why the DCF covers Givaudan, whose flavours business sits exactly at that intersection.</p><p>I built this site to show how I think about valuation and risk, not only that I can fill in a template: assumptions are sourced, judgement calls are explained, and each model can be stress tested live.</p></div>
+    <div class="card"><h3>How it is built</h3><p>Static HTML and JavaScript hosted on GitHub Pages, charts with Plotly. The valuation engines are plain JavaScript functions shared by the website, the Excel models and the decks, so every number ties out across formats.</p><p>Prices and earnings data are refreshed every weekday by an automated pipeline (Python, yfinance, GitHub Actions). The badge in the header shows the date of the last refresh.</p></div>
+  </div>
+</main>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var c = window.SITE_CONFIG || {};
+    if (c.ownerName) document.title = c.ownerName + " · Finance Lab";
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Temenos LBO · Finance Lab</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="vendor/plotly.min.js"></script>
+<script src="js/config.js"></script><script src="js/ui.js"></script><script src="js/api.js"></script>
+<script src="js/engine/lbo.js"></script><script src="js/data/temenos.js"></script>
+</head>
+<body>
+<main class="wrap">
+  <div class="page-head">
+    <div class="eyebrow">Private Equity · Leveraged Buyout</div>
+    <h1>Project Lancy: take private of Temenos AG</h1>
+    <p class="lead">Illustrative sponsor buyout of the Swiss core banking software leader. Temenos has attracted repeated private equity interest; this model tests what a financial buyer could pay and still earn a target return. The answer is disciplined: the base case does not support a customary premium. Figures in USD millions (Temenos reporting currency); the offer price is in CHF.</p>
+    <div class="downloads" style="margin:14px 0 18px">
+      <a class="btn" href="downloads/Temenos_LBO_IC_Deck.pdf">Investment committee deck (PDF)</a>
+      <a class="btn ghost" href="downloads/Temenos_LBO_IC_Deck.pptx">Deck (PowerPoint)</a>
+      <a class="btn ghost" href="downloads/Temenos_LBO_Model.xlsx">Excel model</a>
+    </div>
+  </div>
+
+  <div class="row" style="margin:18px 0 14px"><strong>Operating case</strong><div class="seg" id="case"><button data-c="downside">Downside</button><button data-c="base" class="on">Base</button><button data-c="upside">Upside</button></div></div>
+  <div class="grid g5" id="kpis"></div>
+
+  <h2><span class="section-num">01</span>Transaction assumptions</h2>
+  <div class="card"><div class="controls" id="controls"></div>
+  <p class="note" style="margin-top:12px">IRR = internal rate of return. MOIC = multiple on invested capital. EV = enterprise value. EBITDA is non IFRS, as reported by Temenos (it excludes share based payments and restructuring). Term Loan B = senior secured institutional loan; SOFR = secured overnight financing rate.</p></div>
+
+  <h2><span class="section-num">02</span>Sources and uses</h2>
+  <div class="grid g2"><div id="sources"></div><div id="uses"></div></div>
+
+  <h2><span class="section-num">03</span>Operating model and debt schedule</h2>
+  <div id="opTable"></div>
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card"><h3>Deleveraging profile</h3><div id="chDebt" class="chart"></div></div>
+    <div class="card"><h3>Value creation bridge: sponsor equity at entry to exit</h3><div id="chBridge" class="chart"></div></div>
+  </div>
+
+  <h2><span class="section-num">04</span>Returns</h2>
+  <div class="grid g2">
+    <div><div id="retTable"></div></div>
+    <div><div id="walkTable"></div></div>
+  </div>
+
+  <h2><span class="section-num">05</span>Sensitivity analysis</h2>
+  <div class="grid g2">
+    <div><h3>IRR: offer premium vs. exit multiple</h3><div id="sens1"></div></div>
+    <div><h3>IRR: total leverage vs. exit multiple</h3><div id="sens2"></div></div>
+  </div>
+  <p class="note">Green cells clear a 20% IRR hurdle, red cells fall below 15%. The outlined cell is the current case.</p>
+
+  <h2><span class="section-num">06</span>Investment thesis and key risks</h2>
+  <div class="grid g2">
+    <div class="card"><h3>Why the asset suits a buyout</h3><ul>
+      <li>Mission critical core banking software with annual recurring revenue (ARR) of USD 904m at Q3 2026, growing 12% in constant currency</li>
+      <li>Recurring product revenue is about 91% of total product revenue, which supports leverage of 6.0x EBITDA</li>
+      <li>Non IFRS EBIT margin of 34.7% in FY25 with management targeting EBIT of about USD 480m by FY28; the base case runs modestly ahead of that path, the upside case well ahead</li>
+      <li>Cash conversion: FY25 free cash flow of USD 256m, guided to grow about 16% in FY26</li>
+      <li>Clear exits: sale to a strategic acquirer, a larger software sponsor, or a relisting</li></ul></div>
+    <div class="card"><h3>What could go wrong</h3><ul>
+      <li>Price: the board rejected earlier approaches on valuation; at a customary 25% premium the base case returns about 14%, and above a premium of about 22% it falls below 15%</li>
+      <li>Multiple compression: one turn of exit multiple moves IRR by about 1.5 points</li>
+      <li>Subscription transition and deal timing make quarterly revenue lumpy (Q2 2026 saw deals slip into Q3)</li>
+      <li>Cloud native challengers and in house builds at tier one banks</li>
+      <li>Floating rate exposure on the term loan; USD revenue against a CHF cost base and CHF equity cheque</li></ul></div>
+  </div>
+  <h3>Sources</h3><ul id="srcList" class="note"></ul>
+  <p class="note">Illustrative analysis based on public information only. It is not based on, and does not imply knowledge of, any actual transaction.</p>
+</main>
+<script src="js/pages/lbo.js"></script>
+</body>
+</html>

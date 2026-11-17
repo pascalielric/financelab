@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Givaudan DCF · Finance Lab</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="vendor/plotly.min.js"></script>
+<script src="js/config.js"></script><script src="js/ui.js"></script><script src="js/api.js"></script>
+<script src="js/engine/dcf.js"></script><script src="js/data/givaudan.js"></script>
+</head>
+<body>
+<main class="wrap">
+  <div class="page-head">
+    <div class="eyebrow">Investment Banking · Valuation</div>
+    <h1>Givaudan SA: discounted cash flow valuation</h1>
+    <p class="lead">Five year unlevered free cash flow (UFCF) model for the global leader in flavours and fragrances. Change any assumption and the valuation, sensitivities and football field update instantly. All figures in CHF millions unless stated.</p>
+    <div class="downloads" style="margin:14px 0 18px">
+      <a class="btn" href="downloads/Givaudan_Valuation_Deck.pdf">Valuation deck (PDF)</a>
+      <a class="btn ghost" href="downloads/Givaudan_Valuation_Deck.pptx">Deck (PowerPoint)</a>
+      <a class="btn ghost" href="downloads/Givaudan_DCF_Model.xlsx">Excel model</a>
+    </div>
+  </div>
+
+  <div class="row" style="margin:18px 0 14px;justify-content:space-between">
+    <div class="row"><strong>Scenario</strong><div class="seg" id="scen"><button data-s="bear">Bear</button><button data-s="base" class="on">Base</button><button data-s="bull">Bull</button></div>
+    <strong style="margin-left:14px">Terminal value</strong><div class="seg" id="tvm"><button data-m="blended" class="on">Blended</button><button data-m="gordon">Gordon growth</button><button data-m="exit">Exit multiple</button></div></div>
+    <div class="row"><span class="note" id="pxNote"></span><button class="btn ghost" id="livePx">Use live price</button></div>
+  </div>
+
+  <div class="grid g5" id="kpis"></div>
+
+  <h2><span class="section-num">01</span>Assumptions</h2>
+  <div class="card"><div class="controls" id="controls"></div>
+    <p class="note" style="margin-top:12px">WACC = weighted average cost of capital. CAPM = capital asset pricing model: cost of equity = risk free rate + beta × equity risk premium. EBITDA = earnings before interest, taxes, depreciation and amortisation.</p></div>
+
+  <h2><span class="section-num">02</span>Free cash flow forecast</h2>
+  <div id="fcfTable"></div>
+  <p class="note">FY24A and FY25A as reported. FY26E is the author's estimate based on nine month 2026 sales of CHF 5'891m (+5.2% like for like). Lease payments are deducted from cash flow, so lease liabilities are excluded from net debt.</p>
+
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card"><h3>Revenue and EBITDA margin</h3><div id="chRev" class="chart"></div></div>
+    <div class="card"><h3>Enterprise value to equity value bridge</h3><div id="chBridge" class="chart"></div></div>
+  </div>
+
+  <h2><span class="section-num">03</span>Cost of capital and terminal value</h2>
+  <div class="grid g2">
+    <div><div id="waccTable"></div></div>
+    <div><div id="tvTable"></div></div>
+  </div>
+
+  <h2><span class="section-num">04</span>Sensitivity analysis</h2>
+  <div class="grid g2">
+    <div><h3>Value per share (CHF): WACC vs. terminal growth</h3><div id="sens1"></div></div>
+    <div><h3>Value per share (CHF): WACC vs. exit EV/EBITDA multiple</h3><div id="sens2"></div></div>
+  </div>
+  <p class="note">Green cells are above the reference share price, red cells below. The outlined cell is the current case.</p>
+
+  <h2><span class="section-num">05</span>Football field</h2>
+  <div class="card"><div id="chFF" class="chart" style="min-height:360px"></div></div>
+
+  <h2><span class="section-num">06</span>Methodology and judgement calls</h2>
+  <div class="card method" id="method"></div>
+  <h3>Sources</h3><ul id="sources" class="note"></ul>
+</main>
+<script src="js/pages/dcf.js"></script>
+</body>
+</html>
