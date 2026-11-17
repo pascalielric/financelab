@@ -52,7 +52,11 @@
   }
 
   function render(d) {
+    // Keep only reports from the last four years: older rows say nothing about the company today
+    const cutoff = new Date(Date.now() - 4 * 365 * 864e5).toISOString().slice(0, 10);
+    d = Object.assign({}, d, { reactions: (d.reactions || []).filter(function (r) { return r.date >= cutoff; }) });
     const A = EARN.analyse(d), cur = d.currency || "", q = (d.eps && d.eps.quarter) || {};
+    const thin = A.consensus == null || A.n < 4;   // typical for Swiss companies that report half yearly
     $("out").classList.remove("hidden");
     $("srcNote").innerHTML = d.sample ? '<div class="callout warn" style="margin-top:16px"><strong>Illustrative sample.</strong> This company and all its figures are invented to show how the page works. Real companies appear in the list once the daily data refresh has run, or type a US ticker after adding a free Finnhub key via the Data button.</div>' :
       '<p class="note" style="margin-top:14px">Data: ' + UI.esc(d.source || "") + (d.asOf ? ", refreshed " + d.asOf.slice(0, 10) : "") + ". Estimates can change until the report date.</p>";
@@ -66,25 +70,31 @@
       '<div class="kpi dark"><div class="label">Next earnings report</div><div class="value" style="font-size:1.45rem">' + (ne && ne.date ? new Date(ne.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "Not scheduled") + '</div><div class="sub">' + (ne ? [(days != null ? (days >= 0 ? "in " + days + " days" : Math.abs(days) + " days ago") : ""), ne.timing, ne.confirmed === false ? "estimated window" : ""].filter(Boolean).join(", ") : "") + "</div></div>" +
       '<div class="kpi"><div class="label">Share price</div><div class="value">' + cur + " " + num(d.price) + '</div><div class="sub">1 week ' + UI.signPct(d.perf1w) + ", 1 month " + UI.signPct(d.perf1m) + "</div></div>" +
       '<div class="kpi"><div class="label">Consensus EPS</div><div class="value">' + num(A.consensus) + '</div><div class="sub">' + (q.numberOfAnalysts ? q.numberOfAnalysts + " analysts, " : "") + (q.growth != null ? UI.signPct(q.growth) + " year on year" : "") + "</div></div>" +
-      '<div class="kpi"><div class="label">Probability of a beat</div><div class="value">' + UI.pct(A.pBeat, 0) + '</div><div class="sub">' + (A.n ? A.beats + " beats in last " + A.n + " reports" : "no history") + "</div></div>" +
-      '<div class="kpi"><div class="label">Typical move on results</div><div class="value">±' + UI.pct(A.absMove) + '</div><div class="sub">' + cur + " " + num(A.impliedRange[0]) + " to " + num(A.impliedRange[1]) + "</div></div>";
+      '<div class="kpi"><div class="label">Probability of a beat</div><div class="value">' + (thin ? "n.a." : UI.pct(A.pBeat, 0)) + '</div><div class="sub">' + (A.n ? A.beats + " beats in last " + A.n + " reports" : "no history") + "</div></div>" +
+      '<div class="kpi"><div class="label">Typical move on results</div><div class="value">' + (thin ? "n.a." : "±" + UI.pct(A.absMove)) + '</div><div class="sub">' + (thin ? "" : cur + " " + num(A.impliedRange[0]) + " to " + num(A.impliedRange[1])) + "</div></div>";
 
     const col = { bull: "#1B7F5B", base: "#13294B", bear: "#B42318" };
-    $("scen").innerHTML = A.scenarios.map(function (s) {
-      return '<div class="card" style="border-top:4px solid ' + col[s.key] + '"><div class="row" style="justify-content:space-between"><h3 style="margin:0;font-family:var(--serif);font-size:1.3rem">' + s.label + ' case</h3><span class="badge" style="background:' + col[s.key] + ';color:#fff">' + UI.pct(s.prob, 0) + " probability</span></div>" +
-        '<p style="min-height:42px">' + s.story + '</p><div class="grid g2" style="gap:10px"><div class="kpi"><div class="label">EPS</div><div class="value" style="font-size:1.4rem">' + num(s.eps) + '</div><div class="sub">' + UI.signPct(s.surprise) + ' vs. consensus</div></div>' +
-        '<div class="kpi"><div class="label">Next day price</div><div class="value ' + UI.cls(s.move) + '" style="font-size:1.4rem">' + num(s.price) + '</div><div class="sub">' + UI.signPct(s.move) + "</div></div></div></div>";
-    }).join("");
-    $("pred").innerHTML = "<strong>Prediction.</strong> The model expects EPS of about " + num(A.predictedEps) + " against consensus of " + num(A.consensus) + " (" + UI.signPct(A.expSurprise) + "), a " + UI.pct(A.pBeat, 0) + " probability of a beat, and a probability weighted next day move of " + UI.signPct(A.expMove) +
-      " to about " + cur + " " + num(A.expPrice) + ". " + (A.reaction.fitted ? "Past reports show that a 1 point EPS surprise moved the share price by about " + (A.reaction.b).toFixed(2) + " points (R² " + num(A.reaction.r2) + ", " + A.reaction.n + " reports)." : "There are too few past reactions for a regression, so the average absolute move is scaled by the surprise.") +
-      (A.spread != null && A.spread > 0.2 ? " The analyst range is wider than 20% of consensus, which signals unusual uncertainty." : "");
+    if (thin) {
+      $("scen").innerHTML = "";
+      $("pred").innerHTML = "<strong>No scenario for the next report.</strong> The data source has no quarterly EPS consensus or fewer than four recent reports for this company, which is typical for Swiss companies that report half yearly. A beat probability or price reaction estimate would be guesswork, so none is shown. The twelve month view, analyst targets and ratings below are still available.";
+      $("chScen").innerHTML = '<p class="note">Not enough data for report scenarios.</p>';
+      $("lean").innerHTML = "";
+    } else {
+      $("scen").innerHTML = A.scenarios.map(function (s) {
+        return '<div class="card" style="border-top:4px solid ' + col[s.key] + '"><div class="row" style="justify-content:space-between"><h3 style="margin:0;font-family:var(--serif);font-size:1.3rem">' + s.label + ' case</h3><span class="badge" style="background:' + col[s.key] + ';color:#fff">' + UI.pct(s.prob, 0) + " probability</span></div>" +
+          '<p style="min-height:42px">' + s.story + '</p><div class="grid g2" style="gap:10px"><div class="kpi"><div class="label">EPS</div><div class="value" style="font-size:1.4rem">' + num(s.eps) + '</div><div class="sub">' + UI.signPct(s.surprise) + ' vs. consensus</div></div>' +
+          '<div class="kpi"><div class="label">Next day price</div><div class="value ' + UI.cls(s.move) + '" style="font-size:1.4rem">' + num(s.price) + '</div><div class="sub">' + UI.signPct(s.move) + "</div></div></div></div>";
+      }).join("");
+      $("pred").innerHTML = "<strong>Prediction.</strong> The model expects EPS of about " + num(A.predictedEps) + " against consensus of " + num(A.consensus) + " (" + UI.signPct(A.expSurprise) + "), a " + UI.pct(A.pBeat, 0) + " probability of a beat, and a probability weighted next day move of " + UI.signPct(A.expMove) +
+        " to about " + cur + " " + num(A.expPrice) + ". " + (A.reaction.fitted ? "Past reports show that a 1 point EPS surprise moved the share price by about " + (A.reaction.b).toFixed(2) + " points (R² " + num(A.reaction.r2) + ", " + A.reaction.n + " reports)." : (A.reaction.n >= 4 ? "Past reports show no reliable positive link between the size of the surprise and the share price move" : "There are too few past reactions for a regression") + ", so the average absolute move is scaled by the surprise.") +
+        (A.spread != null && A.spread > 0.2 ? " The analyst range is wider than 20% of consensus, which signals unusual uncertainty." : "");
 
-    UI.plot("chScen", [
-      { type: "bar", x: A.scenarios.map(function (s) { return s.label; }), y: A.scenarios.map(function (s) { return s.prob; }), marker: { color: A.scenarios.map(function (s) { return col[s.key]; }) }, text: A.scenarios.map(function (s) { return UI.pct(s.prob, 0); }), textposition: "outside", name: "Probability" },
-      { type: "scatter", mode: "markers+text", x: A.scenarios.map(function (s) { return s.label; }), y: A.scenarios.map(function (s) { return s.price; }), yaxis: "y2", marker: { size: 13, color: "#B8892B", symbol: "diamond" }, text: A.scenarios.map(function (s) { return num(s.price); }), textposition: "middle right", name: "Next day price" }
-    ], { yaxis: { tickformat: ".0%", range: [0, Math.max.apply(null, A.scenarios.map(function (s) { return s.prob; })) * 1.3] }, yaxis2: { overlaying: "y", side: "right", showgrid: false }, margin: { l: 50, r: 60, t: 20, b: 44 },
-      shapes: [{ type: "line", xref: "paper", x0: 0, x1: 1, yref: "y2", y0: d.price, y1: d.price, line: { color: "#6B7A8C", dash: "dot", width: 1 } }] });
-
+      UI.plot("chScen", [
+        { type: "bar", x: A.scenarios.map(function (s) { return s.label; }), y: A.scenarios.map(function (s) { return s.prob; }), marker: { color: A.scenarios.map(function (s) { return col[s.key]; }) }, text: A.scenarios.map(function (s) { return UI.pct(s.prob, 0); }), textposition: "outside", name: "Probability" },
+        { type: "scatter", mode: "markers+text", x: A.scenarios.map(function (s) { return s.label; }), y: A.scenarios.map(function (s) { return s.price; }), yaxis: "y2", marker: { size: 13, color: "#B8892B", symbol: "diamond" }, text: A.scenarios.map(function (s) { return num(s.price); }), textposition: "middle right", name: "Next day price" }
+      ], { yaxis: { tickformat: ".0%", range: [0, Math.max.apply(null, A.scenarios.map(function (s) { return s.prob; })) * 1.3] }, yaxis2: { overlaying: "y", side: "right", showgrid: false }, margin: { l: 50, r: 60, t: 20, b: 44 },
+        shapes: [{ type: "line", xref: "paper", x0: 0, x1: 1, yref: "y2", y0: d.price, y1: d.price, line: { color: "#6B7A8C", dash: "dot", width: 1 } }] });
+    }
     if (A.twelve) {
       const tg = d.targets;
       const xs = A.twelve.map(function (t) { return t.label; });

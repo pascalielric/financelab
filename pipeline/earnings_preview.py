@@ -45,6 +45,8 @@ def reactions(earn_dates, hist):
         if actual is None or pd.isna(actual):
             continue                                   # upcoming report, no reaction yet
         d = ts.date()
+        if (pd.Timestamp.now().date() - d).days > 4 * 365:
+            continue                                   # too old to say anything about the company today
         after_close = ts.hour >= 16
         idx = next((i for i, x in enumerate(days) if x >= d), None)
         if idx is None:

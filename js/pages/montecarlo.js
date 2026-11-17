@@ -5,7 +5,7 @@
   const ERP = 0.055, STEPS = 52;
   const PORTS = {
     saved: null,
-    swiss: { name: "Swiss blue chips", syms: ["NESN.SW", "ROG.SW", "NOVN.SW", "UBSG.SW", "ZURN.SW", "GIVN.SW", "PGHN.SW"], w: [0.238, 0.19, 0.19, 0.114, 0.114, 0.077, 0.077], bench: "^SSMI" },
+    swiss: { name: "Swiss blue chips", syms: ["NESN.SW", "ABBN.SW", "NOVN.SW", "UBSG.SW", "ZURN.SW", "GIVN.SW", "PGHN.SW"], w: [0.238, 0.19, 0.19, 0.114, 0.114, 0.077, 0.077], bench: "^SSMI" },
     global: { name: "Global quality and tech", syms: ["MSFT", "AAPL", "NVDA", "GOOGL", "JPM", "JNJ", "NESN.SW", "BRK-B"], w: [0.2, 0.15, 0.12, 0.12, 0.1, 0.1, 0.11, 0.1], bench: "SPY" },
     balanced: { name: "Balanced multi asset", syms: ["VT", "CHSPI.SW", "TLT", "GLD", "QQQ"], w: [0.45, 0.15, 0.2, 0.1, 0.1], bench: "VT" }
   };

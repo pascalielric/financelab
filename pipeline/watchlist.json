@@ -2,10 +2,10 @@
   "_comment": "Edit these lists, commit, and the daily GitHub Action refreshes the data. Yahoo Finance tickers: Swiss shares end in .SW, German in .DE, indices start with ^.",
   "benchmarks": ["SPY", "^SSMI", "URTH"],
   "prices": [
-    "NESN.SW", "ROG.SW", "NOVN.SW", "UBSG.SW", "ZURN.SW", "ABBN.SW", "CFR.SW", "GIVN.SW", "SIKA.SW", "LONN.SW",
+    "NESN.SW", "NOVN.SW", "UBSG.SW", "ZURN.SW", "ABBN.SW", "CFR.SW", "GIVN.SW", "SIKA.SW", "LONN.SW",
     "HOLN.SW", "PGHN.SW", "TEMN.SW", "VACN.SW", "LOGN.SW", "SREN.SW", "LISN.SW", "SCMN.SW",
     "AAPL", "MSFT", "NVDA", "GOOGL", "AMZN", "META", "JPM", "GS", "MS", "BLK", "KKR", "BX", "V", "JNJ", "PG", "KO", "XOM", "BRK-B",
     "QQQ", "VT", "TLT", "GLD", "CHSPI.SW"
   ],
-  "earnings": ["AAPL", "MSFT", "NVDA", "GOOGL", "AMZN", "META", "JPM", "GS", "MS", "BLK", "KKR", "BX", "NESN.SW", "ROG.SW", "NOVN.SW", "UBSG.SW", "GIVN.SW", "TEMN.SW", "PGHN.SW", "LOGN.SW"]
+  "earnings": ["AAPL", "MSFT", "NVDA", "GOOGL", "AMZN", "META", "JPM", "GS", "MS", "BLK", "KKR", "BX", "NESN.SW", "NOVN.SW", "UBSG.SW", "GIVN.SW", "TEMN.SW", "PGHN.SW", "LOGN.SW"]
 }

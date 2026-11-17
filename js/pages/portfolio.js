@@ -2,7 +2,7 @@
 (function () {
   "use strict";
   const PRESETS = {
-    swiss: [["NESN.SW", 25000], ["ROG.SW", 20000], ["NOVN.SW", 20000], ["UBSG.SW", 12000], ["ZURN.SW", 12000], ["GIVN.SW", 8000], ["PGHN.SW", 8000]],
+    swiss: [["NESN.SW", 25000], ["ABBN.SW", 20000], ["NOVN.SW", 20000], ["UBSG.SW", 12000], ["ZURN.SW", 12000], ["GIVN.SW", 8000], ["PGHN.SW", 8000]],
     global: [["MSFT", 20000], ["AAPL", 15000], ["NVDA", 12000], ["GOOGL", 12000], ["JPM", 10000], ["JNJ", 10000], ["NESN.SW", 11000], ["BRK-B", 10000]],
     balanced: [["VT", 45000], ["CHSPI.SW", 15000], ["TLT", 20000], ["GLD", 10000], ["QQQ", 10000]]
   };
