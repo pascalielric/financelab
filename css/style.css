@@ -45,7 +45,7 @@ p { margin: .4rem 0 .9rem; color: var(--ink-2); }
 .data-pill.live .dot { background: var(--pos); }
 
 /* Hero and page head */
-.hero { padding: 88px 0 56px; border-bottom: 1px solid var(--ink); }
+.hero { padding: 88px 0 24px; }
 .hero h1 { font-size: 3.4rem; max-width: 900px; margin-bottom: 1.2rem; }
 .hero p { font-size: 1.2rem; max-width: 760px; color: var(--ink-2); }
 .eyebrow { text-transform: uppercase; letter-spacing: 0.22em; font-size: 0.7rem; color: var(--muted); margin-bottom: 1.1rem; }
