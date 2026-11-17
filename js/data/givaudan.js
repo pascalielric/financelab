@@ -8,14 +8,14 @@
     exchange: "SIX Swiss Exchange",
     adr: "GVDNY",
     currency: "CHF",
-    referencePrice: 3950,
-    referencePriceDate: "mid October 2026 (after Q3 sales release)",
+    referencePrice: 4078,
+    referencePriceDate: "SIX close, 17 Nov 2026",
     sharesOut: 9.22,              // million shares outstanding net of treasury shares
     netDebt: 3600,                // estimated net debt at 31 Dec 2026 (FY25A: 3,678)
     otherClaims: 151,             // pension liabilities (FY25A)
-    week52Low: 2670,
-    week52High: 4000,
-    analystTarget: 3700,
+    week52Low: 2606,
+    week52High: 4105,
+    analystTarget: 3800,
     historicals: [
       { year: "FY24A", revenue: 7412, ebitda: 1765, da: 359, ebit: 1394, netIncome: 1090, capex: 293, fcf: 1158, eps: 118.17, dps: 70 },
       { year: "FY25A", revenue: 7472, ebitda: 1751, da: 369, ebit: 1381, netIncome: 1071, capex: 305, fcf: 1053, eps: 116.08, dps: 72 },

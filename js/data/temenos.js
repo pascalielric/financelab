@@ -9,8 +9,8 @@
     exchange: "SIX Swiss Exchange",
     currency: "USD",
     priceCurrency: "CHF",
-    unaffectedPrice: 75.05,           // close on 28 Oct 2026
-    unaffectedDate: "28 Oct 2026",
+    unaffectedPrice: 78.85,           // SIX close on 17 Nov 2026
+    unaffectedDate: "17 Nov 2026",
     usdChf: 0.8334,                   // CHF per USD
     dilutedShares: 69.0,              // million, after 2025/26 buybacks (FY25 weighted diluted: 70.2m)
     netDebt2026E: 520,                // estimated 31 Dec 2026 (FY25A reported: 566)

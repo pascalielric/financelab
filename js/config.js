@@ -10,9 +10,9 @@
 window.SITE_CONFIG = {
   ownerName: "Elric",
   ownerTitle: "MSc Management, Technology and Economics, ETH Zurich",
-  email: "",                       // e.g. "you@example.com"
-  linkedin: "",                    // e.g. "https://www.linkedin.com/in/your-handle"
-  github: "",                      // e.g. "https://github.com/your-handle"
+  email: "pascalielric@gmail.com",
+  linkedin: "https://www.linkedin.com/in/elricpascali",
+  github: "https://github.com/pascalielric/financelab",
   finnhubKey: "",                  // paste your Finnhub API key here
   twelveDataKey: "",               // paste your Twelve Data API key here
   cacheMinutes: 30
