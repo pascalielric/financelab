@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Elric &amp; Company · Valuation, Buyout and Risk Models</title>
 <meta name="description" content="Interactive DCF, LBO, Monte Carlo, portfolio risk and earnings models with investment banking and private equity style pitch decks.">
-<link rel="stylesheet" href="css/style.css?v=202611181611">
-<script src="js/config.js?v=202611181611"></script><script src="js/ui.js?v=202611181611"></script><script src="js/api.js?v=202611181611"></script>
+<link rel="stylesheet" href="css/style.css?v=202611181614">
+<script src="js/config.js?v=202611181614"></script><script src="js/ui.js?v=202611181614"></script><script src="js/api.js?v=202611181614"></script>
 </head>
 <body>
 <section class="hero hero-center">
   <div class="wrap">
-    <h1>Valuation, Transactions and Portfolio Risk</h1>
-    <p>Five working projects covering the core toolkit of investment banking, private equity and asset management: a discounted cash flow (DCF) valuation, a leveraged buyout (LBO), Monte Carlo simulation, portfolio optimisation with value at risk, and earnings analysis. Every model is interactive, every assumption is visible, and both transaction cases come with a presentation ready pitch deck and a formula driven Excel model.</p>
+    <h1 id="heroTitle"><span>Valuation, Transactions and Portfolio Risk</span></h1>
+    <p>Five projects that cover the core work of investment banking, private equity and asset management. A discounted cash flow (DCF) valuation of Givaudan and a leveraged buyout (LBO) of Temenos, each with a management ready pitch deck and a fully linked Excel model. A Monte Carlo simulation, a portfolio optimiser with value at risk and an earnings preview, all running on daily market data. Every assumption is visible, sourced and can be changed on the page, so each result can be tested rather than taken on trust.</p>
   </div>
 </section>
 
@@ -103,6 +103,14 @@
   document.addEventListener("DOMContentLoaded", function () {
     var c = window.SITE_CONFIG || {};
     document.title = (c.siteName || "Elric & Company") + " · Valuation, Buyout and Risk Models";
+    // scale the headline so it runs exactly from one side of the column to the other
+    function fitTitle() {
+      var h = document.getElementById("heroTitle"); if (!h) return; var sp = h.firstElementChild;
+      h.style.fontSize = "100px"; var w = sp.getBoundingClientRect().width, target = h.clientWidth;
+      h.style.fontSize = Math.min(100, 100 * target / w) + "px";
+    }
+    fitTitle(); window.addEventListener("resize", fitTitle);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitTitle);
     // show the CV button only once the file is in the downloads folder
     fetch("downloads/Elric_Pascali_CV.pdf", { method: "HEAD" }).then(function (r) { if (r.ok) document.getElementById("cvLink").classList.remove("hidden"); }).catch(function () {});
   });
