@@ -11,9 +11,10 @@
     const cfg = window.SITE_CONFIG || {};
     const el = document.createElement("header");
     el.className = "topbar";
-    el.innerHTML = '<div class="wrap"><a class="brand" href="index.html">' + esc(cfg.ownerName || "Finance") + ' <span>&nbsp;&middot;&nbsp; Finance Lab</span></a><nav class="nav">' +
+    el.innerHTML = '<div class="topbar-in"><a class="brand" href="index.html">' + esc(cfg.ownerName || "Finance") + ' <span>&nbsp;&middot;&nbsp; ' + esc(cfg.siteName || "Finance Lab") + '</span></a><nav class="nav">' +
       PAGES.map(function (p) { return '<a href="' + p[0] + '"' + (p[0] === here ? ' class="active"' : "") + ">" + p[1] + "</a>"; }).join("") +
-      '</nav><div class="spacer"></div><button class="data-pill" id="dataPill"><span class="dot"></span><span id="dataPillTxt"></span></button></div>';
+      '</nav><button class="mkt" id="dataPill" title="Daily closing prices from Yahoo Finance, refreshed every weekday. Click to add live data keys.">' +
+      '<span class="mkt-k" id="mktK">Swiss Market Index</span><span class="mkt-v" id="mktV">&nbsp;</span></button></div>';
     document.body.prepend(el);
     refreshPill();
     document.getElementById("dataPill").onclick = keyModal;
@@ -21,10 +22,22 @@
   function refreshPill() {
     const pill = document.getElementById("dataPill");
     if (!pill || !window.API) return;
-    const set = function (on, txt) { pill.classList.toggle("live", on); document.getElementById("dataPillTxt").textContent = txt; };
-    set(API.hasLive(), API.hasLive() ? "Live data" : "Demo data");
-    API.localIndex().then(function (ix) {
-      if (ix && ix.updated) set(true, (API.hasLive() ? "Live + daily data · " : "Market data as of ") + ix.updated.slice(0, 10));
+    const K = document.getElementById("mktK"), V = document.getElementById("mktV");
+    const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const day = function (iso) { const d = iso.slice(0, 10).split("-"); return (+d[2]) + " " + MON[+d[1] - 1] + " " + d[0]; };
+    const live = API.hasLive();
+    K.textContent = live ? "Live data connected" : "Demo data";
+    API.localQuote("^SSMI").then(function (q) {
+      if (q) {
+        K.textContent = "SMI \u00b7 " + (live ? "live keys on \u00b7 " : "") + "close " + day(q.date);
+        const ch = q.pct * 100, sign = ch >= 0 ? "+" : "\u2212";
+        V.innerHTML = '<b>' + q.price.toLocaleString("de-CH", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/'/g, "\u2019") + '</b>' +
+          '<i class="' + (ch >= 0 ? "up" : "dn") + '">' + sign + Math.abs(ch).toFixed(2) + '%</i>';
+        return;
+      }
+      return API.localIndex().then(function (ix) {
+        if (ix && ix.updated) { K.textContent = "Market data"; V.innerHTML = "<b>Close " + day(ix.updated) + "</b>"; }
+      });
     });
   }
 
