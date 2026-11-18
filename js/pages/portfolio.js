@@ -211,7 +211,7 @@
         { x: [0, cmlX], y: [rf, cmlY], mode: "lines", line: { color: BRASS, width: 1.5, dash: "dot" }, hoverinfo: "skip" },
         { x: front.x, y: front.y, mode: "lines", line: { color: INK, width: 2.6, shape: "spline" }, hovertemplate: "Efficient frontier<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" },
         { x: [fr.minVar.vol], y: [fr.minVar.ret], mode: "markers", marker: { size: 11, color: PAPER, line: { color: INK, width: 1.6 } }, hovertemplate: "Minimum risk<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" },
-        { x: [fr.maxSharpe.vol], y: [fr.maxSharpe.ret], mode: "markers", marker: { size: 14, color: INK }, hovertemplate: "Ideal portfolio (highest Sharpe ratio)<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" }
+        { x: [fr.maxSharpe.vol], y: [fr.maxSharpe.ret], mode: "markers", marker: { size: 14, color: "#00011F" }, hovertemplate: "Ideal portfolio (highest Sharpe ratio)<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" }
       ];
       if (!onFrontier) t.push({ x: [A.vol, B.vol], y: [A.ret, B.ret], mode: "markers", marker: { size: zoom ? 13 : 9, color: PAPER, line: { color: NEG, width: 1.8 } }, text: ["Option A", "Option B"], hovertemplate: "%{text}<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" });
       t.push({ x: [cur.vol], y: [cur.ret], mode: "markers", marker: { size: zoom ? 18 : 14, color: NEG, symbol: "diamond" }, hovertemplate: "Your portfolio<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" });
