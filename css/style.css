@@ -192,7 +192,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--i
 .modal h3 { font-size: 1.4rem; text-transform: none; letter-spacing: 0; color: var(--ink); }
 
 /* Footer */
-footer { margin-top: 40px; border-top: 1px solid var(--ink); padding: 26px 0 40px; color: var(--muted); font-size: 0.88rem; line-height: 1.15; }
+footer { margin-top: 18px; border-top: 1px solid var(--ink); padding: 26px 0 40px; color: var(--muted); font-size: 0.88rem; line-height: 1.15; }
 footer p, footer .row { margin: 0 0 8px; line-height: 1.15; }
 footer a { color: var(--ink-2); }
 
