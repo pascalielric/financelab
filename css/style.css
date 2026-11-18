@@ -38,7 +38,7 @@ p { margin: .4rem 0 .9rem; color: var(--ink-2); }
 .brand .b2 { font-size: 0.6rem; letter-spacing: 0.2em; color: var(--muted); }
 .brand:hover { border: none; }
 .brand:hover .b1 { color: var(--muted); }
-.nav { display: flex; gap: 52px; flex-wrap: wrap; flex: 1; justify-content: center; }
+.nav { display: flex; gap: clamp(20px, calc((100vw - 900px) / 6), 96px); flex-wrap: nowrap; flex: 1; justify-content: center; white-space: nowrap; }
 .nav a { color: var(--muted); font-size: 0.74rem; text-transform: uppercase; letter-spacing: var(--track); border: none; padding: 6px 0; border-bottom: 1px solid transparent; }
 .nav a:hover { color: var(--ink); }
 .nav a.active { color: var(--ink); border-bottom: 1px solid var(--ink); }
@@ -52,8 +52,8 @@ p { margin: .4rem 0 .9rem; color: var(--ink-2); }
 .mkt:hover .mkt-k { color: var(--ink); }
 
 /* Hero and page head */
-.hero { padding: 88px 0 24px; }
-.hero h1 { font-size: 3.4rem; max-width: 900px; margin-bottom: 1.2rem; }
+.hero { padding: 88px 0 8px; }
+.hero h1 { font-size: 3.4rem; max-width: 1040px; margin-bottom: 1.2rem; }
 .hero p { font-size: 1.2rem; max-width: 760px; color: var(--ink-2); }
 .eyebrow { text-transform: uppercase; letter-spacing: 0.22em; font-size: 0.7rem; color: var(--muted); margin-bottom: 1.1rem; }
 .page-head { padding: 64px 0 30px; border-bottom: 1px solid var(--ink); }
@@ -199,7 +199,7 @@ footer a { color: var(--ink-2); }
 .method p { break-inside: avoid; margin-top: 0; }
 .method p strong { font-weight: 400; font-style: italic; color: var(--ink); }
 .skills { display: flex; flex-wrap: wrap; gap: 8px 26px; margin-top: 30px; }
-.hero + main > h2:first-child { margin-top: 1.6rem; }
+.hero + main > h2:first-child { margin-top: 1.2rem; }
 .skills span { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted); }
 ul.plain { padding-left: 18px; margin: 0; }
 ul.plain li { margin-bottom: 8px; color: var(--ink-2); }
