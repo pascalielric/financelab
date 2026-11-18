@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="css/style.css">
 <script src="vendor/plotly.min.js"></script>
 <script src="js/config.js"></script><script src="js/ui.js"></script><script src="js/api.js"></script>
-<script src="js/engine/lbo.js"></script><script src="js/data/temenos.js"></script>
+<script src="js/engine/lbo.js"></script><script src="js/data/temenos.js"></script><script src="js/data/peers.js"></script>
 </head>
 <body>
 <main class="wrap">
@@ -44,27 +44,47 @@
   <h2><span class="section-num">02</span>Sources and uses</h2>
   <div class="grid g2"><div id="sources"></div><div id="uses"></div></div>
 
-  <h2><span class="section-num">03</span>Operating model and debt schedule</h2>
+  <h2><span class="section-num">03</span>Revenue build and ARR</h2>
+  <div class="grid g2">
+    <div class="card"><h3>Revenue by line (USD m), selected case</h3><div id="chLines" class="chart"></div></div>
+    <div><div id="arrTable"></div><p class="note">ARR (annual recurring revenue) grows with subscription and maintenance revenue. Churn of 4% of opening ARR is an author assumption; the gross new ARR column is what sales has to sign to deliver the case.</p></div>
+  </div>
+  <div id="revLines" style="margin-top:18px"></div>
+  <p class="note">Line growth before the growth slider; the slider shifts total growth on top. Subscription growth in FY26 is held back by about 5 points by the termination of one BNPL client.</p>
+
+  <h2><span class="section-num">04</span>Operating model and debt schedule</h2>
   <div id="opTable"></div>
   <div class="grid g2" style="margin-top:18px">
     <div class="card"><h3>Deleveraging profile</h3><div id="chDebt" class="chart"></div></div>
     <div class="card"><h3>Value creation bridge: sponsor equity at entry to exit</h3><div id="chBridge" class="chart"></div></div>
   </div>
 
-  <h2><span class="section-num">04</span>Returns</h2>
+  <h2><span class="section-num">05</span>Financial statements and credit</h2>
+  <h3>Summary financials after the buyout (USD m)</h3><div id="stmtTable"></div>
+  <h3 style="margin-top:22px">Credit statistics and covenant tests</h3><div id="credTable"></div>
+  <p class="note" id="stmtNote"></p>
+
+  <h2><span class="section-num">06</span>Returns</h2>
   <div class="grid g2">
     <div><div id="retTable"></div></div>
     <div><div id="walkTable"></div></div>
   </div>
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card"><h3>IRR and MOIC by exit year</h3><div id="chExit" class="chart"></div></div>
+    <div><div id="recapTable"></div><div id="mgmtTable" style="margin-top:14px"></div></div>
+  </div>
+  <h3 style="margin-top:22px">Exit multiple cross check</h3>
+  <div id="tcompsTable"></div>
+  <p class="note">Peer snapshot from Yahoo Finance (EBITDA as defined by Yahoo, last twelve months). The base case exit at 17x sits at the peer median and below the entry multiple, so the return does not rely on multiple expansion.</p>
 
-  <h2><span class="section-num">05</span>Sensitivity analysis</h2>
+  <h2><span class="section-num">07</span>Sensitivity analysis</h2>
   <div class="grid g2">
     <div><h3>IRR: offer premium vs. exit multiple</h3><div id="sens1"></div></div>
     <div><h3>IRR: total leverage vs. exit multiple</h3><div id="sens2"></div></div>
   </div>
   <p class="note">Green cells clear a 20% IRR hurdle, red cells fall below 15%. The outlined cell is the current case.</p>
 
-  <h2><span class="section-num">06</span>Investment thesis and key risks</h2>
+  <h2><span class="section-num">08</span>Investment thesis and key risks</h2>
   <div class="grid g2">
     <div class="card"><h3>Why the asset suits a buyout</h3><ul>
       <li>Mission critical core banking software with annual recurring revenue (ARR) of USD 904m at Q3 2026, growing 12% in constant currency</li>
@@ -82,6 +102,6 @@
   <h3>Sources</h3><ul id="srcList" class="note"></ul>
   <p class="note">Illustrative analysis based on public information only. It is not based on, and does not imply knowledge of, any actual transaction.</p>
 </main>
-<script src="js/pages/lbo.js"></script>
+<script src="js/pages/lbo-extra.js"></script><script src="js/pages/lbo.js"></script>
 </body>
 </html>

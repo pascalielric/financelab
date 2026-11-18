@@ -37,9 +37,38 @@
       ]
     },
     cases: {
-      downside: { label: "Downside", growth: [0.06, 0.06, 0.055, 0.05, 0.05], ebitdaMargin: [0.415, 0.415, 0.415, 0.415, 0.415], exitMultiple: 15 },
-      base: { label: "Base", growth: [0.090, 0.090, 0.080, 0.070, 0.065], ebitdaMargin: [0.420, 0.425, 0.430, 0.435, 0.440], exitMultiple: 17 },
-      upside: { label: "Upside", growth: [0.11, 0.11, 0.10, 0.09, 0.08], ebitdaMargin: [0.435, 0.450, 0.465, 0.475, 0.480], exitMultiple: 19 }
+      downside: { label: "Downside", ebitdaMargin: [0.415, 0.415, 0.415, 0.415, 0.415], exitMultiple: 15 },
+      base: { label: "Base", ebitdaMargin: [0.420, 0.425, 0.430, 0.435, 0.440], exitMultiple: 17 },
+      upside: { label: "Upside", ebitdaMargin: [0.435, 0.450, 0.465, 0.475, 0.480], exitMultiple: 19 }
+    },
+    // Revenue build by line (non IFRS, USD m). Total growth for each case is derived from these (bottom of this file).
+    lines: {
+      names: { subs: "Subscription and SaaS", maint: "Maintenance", serv: "Services" },
+      fy24pf: { subs: 411.4, maint: 430.1, serv: 123.7 },   // derived from FY25 values and reported growth of 10% and 14%
+      fy25pf: { subs: 452.5, maint: 490.3, serv: 128.3 },   // Temenos 2025 Annual Report, proforma excluding Multifonds
+      fy26e: { subs: 495, maint: 550, serv: 135 },          // author estimate: FY26 guidance subscription and SaaS c.9% (after a 5 point BNPL headwind)
+      cases: {
+        downside: { subs: [0.093, 0.091, 0.078, 0.066, 0.065], maint: [0.045, 0.045, 0.045, 0.045, 0.045], serv: [0, 0, 0, 0, 0] },
+        base: { subs: [0.134, 0.131, 0.106, 0.083, 0.072], maint: [0.065, 0.065, 0.065, 0.065, 0.065], serv: [0.03, 0.03, 0.03, 0.03, 0.03] },
+        upside: { subs: [0.162, 0.158, 0.132, 0.109, 0.088], maint: [0.08, 0.08, 0.08, 0.08, 0.08], serv: [0.04, 0.04, 0.04, 0.04, 0.04] }
+      }
+    },
+    arr: { fy24: 749.5, fy25: 859.9, q3_26: 903.6, fy26e: 963, churn: 0.04 },
+    // Reported IFRS history (USD m) from the Yahoo Finance statements; non IFRS proforma figures from the company above
+    history: {
+      years: ["FY22A", "FY23A", "FY24A", "FY25A"],
+      revenue: [949.6, 1000.2, 1044.1, 1090.8], ebitda: [309.5, 330.4, 362.3, 480.9], ebit: [167.8, 198.2, 229.8, 350.7],
+      netIncome: [114.4, 134.7, 177.2, 280.6], ocf: [297.9, 331.0, 363.4, 353.8], capex: [105.0, 88.6, 78.5, 73.1],
+      cash: [89.9, 106.9, 114.2, 203.5], debt: [840.8, 764.7, 726.7, 808.9], equity: [578.4, 682.0, 639.0, 478.0],
+      buybacks: [0, 0, 226.8, 320.4], dividends: [74.4, 88.3, 96.9, 110.5]
+    },
+    structure: {
+      revolver: { commitment: 150, rate: 0.0700, fee: 0.0035 },          // undrawn at close
+      openingNwc: 50, openingFixedAssets: 300,                            // author estimates from the FY25 balance sheet
+      ppa: { intangiblePctEv: 0.25, life: 10 }, feeLife: 7,
+      covenants: { netLeverage: [7.0, 6.5, 6.0, 5.5, 5.0], interestCover: [2.0, 2.0, 2.25, 2.5, 2.5] },
+      recap: { year: 3, targetLeverage: 5.0, rate: 0.080 },
+      rollover: 25
     },
     precedents: [
       { deal: "Finastra (Vista sale process, reported)", year: 2025, multiple: "about 18x EBITDA (reported ask)" },
@@ -54,6 +83,19 @@
       ["Finastra valuation (Reuters via Euronext)", "https://live.euronext.com/en/financial-news/exclusive-vista-equity-exploring-strategic-options-financial-software-provider"]
     ]
   };
+  // Total revenue growth per case from the line build
+  Object.keys(TEMENOS.cases).forEach(function (k) {
+    const c = TEMENOS.lines.cases[k], v = Object.assign({}, TEMENOS.lines.fy26e), g = [];
+    for (let i = 0; i < 5; i++) {
+      const prev = v.subs + v.maint + v.serv;
+      v.subs *= 1 + c.subs[i]; v.maint *= 1 + c.maint[i]; v.serv *= 1 + c.serv[i];
+      g.push((v.subs + v.maint + v.serv) / prev - 1);
+    }
+    TEMENOS.cases[k].growth = g;
+  });
+  TEMENOS.model.growth = TEMENOS.cases.base.growth.slice();
+  TEMENOS.model.revolver = TEMENOS.structure.revolver;
+  TEMENOS.model.revenue0 = TEMENOS.lines.fy26e.subs + TEMENOS.lines.fy26e.maint + TEMENOS.lines.fy26e.serv;
   if (typeof module !== "undefined" && module.exports) module.exports = TEMENOS;
   else root.TEMENOS = TEMENOS;
 })(typeof window !== "undefined" ? window : this);

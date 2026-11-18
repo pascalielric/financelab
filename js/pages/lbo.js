@@ -105,7 +105,7 @@
     ], { rowClass: function (x) { return x[0] === "IRR" ? "total" : ""; } });
 
     const walk = [0.15, 0.175, 0.20, 0.225, 0.25].map(function (t) { const m = LBO.maxPremium(a, t); return { t: t, m: m }; });
-    UI.table("walkTable", [{ h: "Target IRR", f: function (x) { return UI.pct(x.t, 1); } }, { h: "Maximum offer price (CHF)", n: 1, f: function (x) { return x.m.priceLocal.toFixed(2); } }, { h: "Implied premium", n: 1, f: function (x) { return UI.pct(x.m.premium, 0); } }, { h: "Implied entry EV/EBITDA", n: 1, f: function (x) { const b = LBO.clone(a); b.premium = x.m.premium; return UI.mult(LBO.run(b).entryMultiple); } }], walk);
+    UI.table("walkTable", [{ h: "Target IRR", f: function (x) { return UI.pct(x.t, 1); } }, { h: "Max. price (CHF)", n: 1, f: function (x) { return x.m.priceLocal.toFixed(2); } }, { h: "Premium", n: 1, f: function (x) { return UI.pct(x.m.premium, 0); } }, { h: "EV / EBITDA", n: 1, f: function (x) { const b = LBO.clone(a); b.premium = x.m.premium; return UI.mult(LBO.run(b).entryMultiple); } }], walk);
 
     const prem = [-2, -1, 0, 1, 2].map(function (i) { return a.premium + i * 0.05; });
     const exits = [-2, -1, 0, 1, 2].map(function (i) { return a.exitMultiple + i; });
@@ -114,6 +114,7 @@
     const color = function (v) { return UI.heat(v, 0.10, 0.175, 0.25); };
     UI.sens("sens1", "Premium", "exit multiple", prem, exits, LBO.sensitivity(a, "premium", prem, "exitMultiple", exits), function (v) { return UI.pct(v, 0); }, UI.mult, UI.pct, 2, 2, color);
     UI.sens("sens2", "Leverage", "exit multiple", levs, exits, LBO.sensitivity(a, "leverage", levs, "exitMultiple", exits), UI.mult, UI.mult, UI.pct, 2, 2, color);
+    if (window.LBOX) LBOX.render(a, r, state.c);
   }
 
   document.addEventListener("DOMContentLoaded", function () {

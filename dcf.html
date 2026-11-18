@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="css/style.css">
 <script src="vendor/plotly.min.js"></script>
 <script src="js/config.js"></script><script src="js/ui.js"></script><script src="js/api.js"></script>
-<script src="js/engine/dcf.js"></script><script src="js/data/givaudan.js"></script>
+<script src="js/engine/dcf.js"></script><script src="js/data/givaudan.js"></script><script src="js/data/peers.js"></script>
 </head>
 <body>
 <main class="wrap">
@@ -44,7 +44,15 @@
     <div class="controls" id="controls"></div>
   </div>
 
-  <h2><span class="section-num">02</span>Free cash flow forecast</h2>
+  <h2><span class="section-num">02</span>Revenue build and history</h2>
+  <div class="grid g2">
+    <div class="card"><h3>Sales by division (CHF m), selected scenario</h3><div id="chDiv" class="chart"></div></div>
+    <div><h3>Reported track record</h3><div id="histTable"></div></div>
+  </div>
+  <div id="revBuild" style="margin-top:18px"></div>
+  <p class="note" id="revNote"></p>
+
+  <h2><span class="section-num">03</span>Free cash flow forecast</h2>
   <div id="fcfTable"></div>
   <p class="note">FY24A and FY25A as reported. FY26E is the author's estimate based on nine month 2026 sales of CHF 5'891m (+5.2% like for like). Lease payments are deducted from cash flow, so lease liabilities are excluded from net debt.</p>
 
@@ -53,26 +61,36 @@
     <div class="card"><h3>Enterprise value to equity value bridge</h3><div id="chBridge" class="chart"></div></div>
   </div>
 
-  <h2><span class="section-num">03</span>Cost of capital and terminal value</h2>
+  <h2><span class="section-num">04</span>Cost of capital and terminal value</h2>
   <div class="grid g2">
     <div><div id="waccTable"></div></div>
     <div><div id="tvTable"></div></div>
   </div>
+  <div id="betaTable" style="margin-top:18px"></div>
+  <p class="note">The rate and the equity risk premium are Swiss, so the beta is measured against the Swiss market. The full regression, with every weekly price, is on the Beta tab of the Excel model.</p>
 
-  <h2><span class="section-num">04</span>Sensitivity analysis</h2>
+  <h2><span class="section-num">05</span>Sensitivity analysis</h2>
   <div class="grid g2">
     <div><h3>Value per share (CHF): WACC vs. terminal growth</h3><div id="sens1"></div></div>
     <div><h3>Value per share (CHF): WACC vs. exit EV/EBITDA multiple</h3><div id="sens2"></div></div>
   </div>
   <p class="note">Green cells are above the reference share price, red cells below. The outlined cell is the current case.</p>
 
-  <h2><span class="section-num">05</span>Football field</h2>
+  <h2><span class="section-num">06</span>Market cross checks</h2>
+  <h3>Trading comparables: listed flavour, fragrance and ingredient companies</h3>
+  <div id="compsTable"></div>
+  <p class="note" id="compsNote"></p>
+  <h3 style="margin-top:22px">Precedent transactions</h3>
+  <div id="precTable"></div>
+  <p class="note">Control transactions include a takeover premium, so these multiples are a ceiling for the value of a minority share, not a target.</p>
+
+  <h2><span class="section-num">07</span>Football field</h2>
   <div class="card"><div id="chFF" class="chart" style="min-height:360px"></div></div>
 
-  <h2><span class="section-num">06</span>Methodology and judgement calls</h2>
+  <h2><span class="section-num">08</span>Methodology and judgement calls</h2>
   <div class="card method" id="method"></div>
   <h3>Sources</h3><ul id="sources" class="note"></ul>
 </main>
-<script src="js/pages/dcf.js"></script>
+<script src="js/pages/dcf-extra.js"></script><script src="js/pages/dcf.js"></script>
 </body>
 </html>

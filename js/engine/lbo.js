@@ -50,6 +50,8 @@
 
     // Operating model and debt schedule
     const bal = tranches.map(function (t) { return t.amount; });
+    const rv = a.revolver || { commitment: 0, rate: 0, fee: 0 };
+    let rcf = 0;
     let cash = a.minCash;
     let rev = a.revenue0;
     const rows = [];
@@ -60,7 +62,8 @@
       const da = rev * a.daPct;
       const ebit = ebitda - da;
       const interestByTranche = tranches.map(function (t, k) { return bal[k] * t.rate; });
-      const interest = interestByTranche.reduce(function (s, v) { return s + v; }, 0);
+      const rcfInterest = rcf * rv.rate + (rv.commitment - rcf) * rv.fee;   // drawn interest plus commitment fee on the undrawn part
+      const interest = interestByTranche.reduce(function (s, v) { return s + v; }, 0) + rcfInterest;
       const ebt = ebit - interest;
       const tax = Math.max(0, ebt) * a.taxRate;
       const capex = rev * a.capexPct;
@@ -72,6 +75,10 @@
       const mandTotal = mand.reduce(function (s, v) { return s + v; }, 0);
       tranches.forEach(function (t, k) { bal[k] -= mand[k]; });
       available -= mandTotal;
+      // Revolver: draw to restore minimum cash, repay first when cash is available
+      let rcfDraw = 0, rcfRepay = 0;
+      if (available < 0) { rcfDraw = Math.min(-available, rv.commitment - rcf); rcf += rcfDraw; available += rcfDraw; }
+      else { rcfRepay = Math.min(rcf, available); rcf -= rcfRepay; available -= rcfRepay; }
       // Optional cash sweep, in tranche order, only on prepayable tranches
       let sweepPool = Math.max(0, available) * a.sweepPct;
       const sweep = tranches.map(function () { return 0; });
@@ -82,8 +89,8 @@
       });
       const sweepTotal = sweep.reduce(function (s, v) { return s + v; }, 0);
       cash = a.minCash + available - sweepTotal;
-      const totalDebt = bal.reduce(function (s, v) { return s + v; }, 0);
-      rows.push({
+      const totalDebt = bal.reduce(function (s, v) { return s + v; }, 0) + rcf;
+      rows.push({ rcf, rcfDraw, rcfRepay, rcfInterest,
         year: a.years[i], revenue: rev, growth: a.growth[i], ebitda, margin: a.ebitdaMargin[i], da, ebit,
         interest, interestByTranche, tax, capex, dNwc, fcf, mandatory: mand, sweep, repaid: mandTotal + sweepTotal,
         balances: bal.slice(), totalDebt, cash, netDebt: totalDebt - cash,
@@ -112,7 +119,14 @@
       { item: "Management incentive", value: -mip }
     ];
 
+    // Returns if the sponsor exits at the end of each year (same exit multiple)
+    const byYear = rows.map(function (rw, k) {
+      const ev = rw.ebitda * a.exitMultiple, gross = ev - rw.netDebt;
+      const m = Math.max(0, gross - sponsorEquity) * (a.mipPct || 0), eq = gross - m;
+      return { year: rw.year, n: k + 1, ev, equity: eq, moic: eq / sponsorEquity, irr: Math.pow(eq / sponsorEquity, 1 / (k + 1)) - 1 };
+    });
     return {
+      byYear,
       offerLocal, offerModel, equityPurchase, ev0, entryMultiple, debt0, sponsorEquity,
       equityPct: sponsorEquity / totalUses, totalUses, sources, uses, tranches, rows,
       exitEV, exitEquity, exitEquityGross, mip, moic, irr: irrV, bridge, gain: exitEquity - sponsorEquity
@@ -150,7 +164,36 @@
     return { premium: lo, priceLocal: a.priceLocal * (1 + lo) };
   }
 
-  const api = { run, irr, sensitivity, maxPremium, clone };
+  /* Dividend recapitalisation: at the end of year y the company raises new debt (bullet, fixed rate) to bring net debt back to
+     targetLeverage x EBITDA and pays it out to the sponsor. Later years carry the after tax interest, which reduces cash
+     and so increases net debt at exit; the recap debt itself is repaid from exit proceeds. */
+  function recap(a, o, y, targetLeverage, rate) {
+    const rw = o.rows[y - 1];
+    const div = Math.max(0, targetLeverage * rw.ebitda - rw.netDebt);
+    const N = o.rows.length, last = o.rows[N - 1];
+    let carry = 0;
+    for (let k = y; k < N; k++) carry += div * rate * (1 - a.taxRate);
+    const exitEV = last.ebitda * a.exitMultiple;
+    const gross = exitEV - last.netDebt - div - carry;
+    const m = Math.max(0, gross + div - o.sponsorEquity) * (a.mipPct || 0);
+    const exitEq = gross - m;
+    const cfs = [-o.sponsorEquity]; for (let k = 1; k <= N; k++) cfs.push(k === y ? div : 0); cfs[N] += exitEq;
+    return { dividend: div, exitEquity: exitEq, irr: irr(cfs), moic: (div + exitEq) / o.sponsorEquity, cash: cfs };
+  }
+
+  /* Ability to pay in closed form. Exit equity before the incentive plan (G) does not depend on the price paid, because debt is
+     sized on EBITDA. Sponsor equity E must satisfy (G - m (G - E)) / E = (1 + r)^N, so E = G (1 - m) / ((1 + r)^N - m).
+     Price follows from E = EV (1 + advisory fee) + financing fees + minimum cash - debt. */
+  function abilityToPay(a, o, target) {
+    const N = o.rows.length, G = o.exitEquityGross, m = a.mipPct || 0;
+    const E = G * (1 - m) / (Math.pow(1 + target, N) - m);
+    const fin = o.debt0 * a.financingFeePct;
+    const ev = (E - fin - a.minCash + o.debt0) / (1 + a.advisoryFeePct);
+    const priceLocal = (ev - a.existingNetDebt) / a.dilutedShares / a.fxToModel;
+    return { equity: E, ev, priceLocal, premium: priceLocal / a.priceLocal - 1, evEbitda: ev / a.ebitda0 };
+  }
+
+  const api = { run, irr, sensitivity, maxPremium, clone, recap, abilityToPay };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.LBO = api;
 })(typeof window !== "undefined" ? window : this);

@@ -112,7 +112,7 @@
     // WACC and TV tables
     UI.table("waccTable", [{ h: "Cost of capital", f: function (x) { return x[0]; } }, { h: "Value", n: 1, f: function (x) { return x[1]; } }, { h: "Basis", f: function (x) { return '<span class="note">' + x[2] + "</span>"; } }], [
       ["Risk free rate", UI.pct(a.rf, 2), "Swiss 10 year Confederation yield"],
-      ["Equity beta", a.beta.toFixed(2), "5 year beta vs. global equities"],
+      ["Equity beta", a.beta.toFixed(2), "Weekly beta against the Swiss market"],
       ["Equity risk premium", UI.pct(a.erp, 2), "Blended, global revenue exposure"],
       ["Cost of equity", UI.pct(r.wacc.ke, 2), "Capital asset pricing model (CAPM)"],
       ["Pre tax cost of debt", UI.pct(a.kd, 2), "Bond yields plus spread"],
@@ -141,6 +141,7 @@
     UI.sens("sens2", "WACC", "exit multiple", waccs, mults, DCF.sensitivity(a, waccs, mults, "exit"), function (v) { return UI.pct(v, 2); }, function (v) { return UI.mult(v); }, function (v) { return UI.fmt(v); }, 2, 2, color);
 
     footballField(a, r);
+    if (window.DCFX) DCFX.render(state.scen);
   }
 
   function footballField(a, r) {
@@ -151,14 +152,15 @@
     const bear = scen("bear"), bull = scen("bull");
     const g1 = DCF.sensitivity(a, [r.r + 0.005, r.r - 0.005], [a.tgr - 0.005, a.tgr + 0.005], "gordon");
     const x1 = DCF.sensitivity(a, [r.r + 0.005, r.r - 0.005], [a.exitMultiple - 2, a.exitMultiple + 2], "exit");
-    const ebitdaNtm = r.rows[0].ebitda;
-    const comps = G.compsRange.map(function (m) { return (m * ebitdaNtm - G.netDebt - G.otherClaims) / G.sharesOut; });
+    const perShare = function (m) { return (m * G.ebitdaFY26E - G.netDebt - G.otherClaims) / G.sharesOut; };
+    const comps = G.compsRange.map(perShare), prec = G.precedentRange.map(perShare);
     const w52 = state.w52 || [G.week52Low, G.week52High];
     const bars = [
       ["DCF scenarios, blended", "Bear to bull case", bear.blended.perShare, bull.blended.perShare, "#111111"],
       ["DCF, Gordon growth", "WACC \u00b10.5 pt, growth \u00b10.5 pt", g1[0][0], g1[1][1], "#3A3A3A"],
       ["DCF, exit multiple", "WACC \u00b10.5 pt, multiple \u00b12x", x1[0][0], x1[1][1], "#6E6A61"],
-      ["Trading comparables", G.compsRange[0] + "x to " + G.compsRange[1] + "x FY27E EBITDA", comps[0], comps[1], "#9C978C"],
+      ["Precedent transactions", G.precedentRange[0].toFixed(1) + "x to " + G.precedentRange[1].toFixed(1) + "x FY26E EBITDA", prec[0], prec[1], "#8C6D3F"],
+      ["Trading comparables", G.compsRange[0] + "x to " + G.compsRange[1] + "x FY26E EBITDA", comps[0], comps[1], "#9C978C"],
       ["52 week trading range", state.w52 ? "SIX closing prices" : "Reported range", w52[0], w52[1], "#CFC9BC"]
     ];
     const keys = bars.map(function (b, i) { return "r" + i; });
@@ -187,7 +189,7 @@
   function staticContent() {
     const R = G.rationale;
     document.getElementById("method").innerHTML =
-      "<p><strong>Forecast.</strong> Revenue grows 5.0% in FY27E easing to 4.2% by FY31E, inside the 4 to 6% like for like range of the 2030 strategy. EBITDA margin expands from 23.6% to 24.8% as one off costs of CHF 103m booked in H1 2026 fall away and Fragrance and Beauty, the higher margin division, grows faster than Taste and Wellbeing.</p>" +
+      "<p><strong>Forecast.</strong> Revenue is built by division: Fragrance &amp; Beauty grows about 6% and Taste &amp; Wellbeing 3.5% in the base case, so group revenue grows 5.0% in FY27E easing to 4.2% by FY31E, inside the 4 to 6% like for like range of the 2030 strategy. EBITDA margin expands from 23.6% to 24.8% as one off costs of CHF 103m booked in H1 2026 fall away and Fragrance and Beauty, the higher margin division, grows faster than Taste and Wellbeing.</p>" +
       "<p><strong>Risk free rate.</strong> " + R.rf + ".</p>" +
       "<p><strong>Beta and equity risk premium.</strong> " + R.beta + ". " + R.erp + ".</p>" +
       "<p><strong>Capital structure.</strong> " + R.debtWeight + ".</p>" +
@@ -210,6 +212,7 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     defaults(); buildControls(); syncControls(); staticContent();
+    if (window.DCFX) DCFX.init();
     seg("scen", "s", "scen"); seg("tvm", "m", "tvMode");
     // Use the latest SIX close from the daily data refresh when available
     API.localPrices("GIVN.SW").then(function (lp) {
