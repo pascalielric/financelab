@@ -166,55 +166,104 @@
   }
 
   // Alternate label positions where two holdings sit close together, so ticker labels never overlap
-  function labelPos(xs, ys, xSpan, ySpan) {
-    const pos = [], order = xs.map(function (_, i) { return i; }).sort(function (a, b) { return ys[b] - ys[a]; });
-    const opts = ["top center", "bottom center", "middle right", "middle left"];
-    const placed = [];
-    order.forEach(function (i) {
-      let k = 0;
-      while (k < opts.length - 1 && placed.some(function (p) { return p.k === k && Math.abs(xs[p.i] - xs[i]) < xSpan * 0.06 && Math.abs(ys[p.i] - ys[i]) < ySpan * 0.08; })) k++;
-      placed.push({ i: i, k: k }); pos[i] = opts[k];
+  /* Label placement in pixel space: each ticker label tries eight positions around its dot and takes the first one that
+     touches no other label, no marker and no line. Returns Plotly annotations. */
+  function placeLabels(items, obstacles, ax, plotW, plotH) {
+    const X = function (v) { return (v - ax.x0) / (ax.x1 - ax.x0) * plotW; };
+    const Y = function (v) { return (ax.y1 - v) / (ax.y1 - ax.y0) * plotH; };
+    const boxes = obstacles.map(function (o) { const x = X(o.x), y = Y(o.y), r = o.r || 3; return [x - r, y - r, x + r, y + r]; });
+    const hit = function (b) { return boxes.some(function (o) { return b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1]; }); };
+    const cand = [[0, -1], [0, 1], [1, 0], [-1, 0], [1, -1], [1, 1], [-1, -1], [-1, 1]];
+    const out = [];
+    items.slice().sort(function (a, b) { return b.y - a.y; }).forEach(function (it) {
+      const w = it.text.length * 6.6 + 4, h = 13, px = X(it.x), py = Y(it.y);
+      let best = null, bestScore = 1e9;
+      cand.forEach(function (c, k) {
+        const cx = px + c[0] * (w / 2 + 8), cy = py + c[1] * 13;
+        const b = [cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2];
+        const outside = b[0] < 0 || b[2] > plotW || b[1] < 0 || b[3] > plotH;
+        const score = (hit(b) ? 100 : 0) + (outside ? 50 : 0) + k;
+        if (score < bestScore) { bestScore = score; best = { b: b, dx: cx - px, dy: cy - py }; }
+      });
+      boxes.push(best.b);
+      out.push({ x: it.x, y: it.y, text: it.text, showarrow: false, xshift: best.dx, yshift: -best.dy, font: { size: 11, color: "#6E6A61" } });
     });
-    return pos;
+    return out;
+  }
+
+  function sampleLine(x0, y0, x1, y1, n) {
+    const o = []; for (let i = 0; i <= n; i++) o.push({ x: x0 + (x1 - x0) * i / n, y: y0 + (y1 - y0) * i / n, r: 2 }); return o;
   }
 
   function drawFrontier(L, mu, Ca, fr, cur, A, B, rf, onFrontier) {
-    const INK = UI.INK, NEG = UI.NEG, BRASS = UI.BRASS, GREY = "#9C978C";
+    const INK = UI.INK, NEG = UI.NEG, BRASS = UI.BRASS, GREY = "#9C978C", PAPER = "#FCFBF8";
     const vols = Ca.map(function (r, i) { return Math.sqrt(r[i]); });
-    const xMax = Math.max(Math.max.apply(null, vols), cur.vol, fr.maxSharpe.vol * 1.4) * 1.08;
+    const xMax = Math.max(Math.max.apply(null, vols), cur.vol, fr.maxSharpe.vol * 1.4) * 1.1;
     const yAll = mu.concat([rf, cur.ret, fr.maxSharpe.ret]);
     const yMin = Math.min.apply(null, yAll), yMax = Math.max.apply(null, yAll), pad = (yMax - yMin) * 0.12;
-    const cmlEnd = xMax, cmlY = rf + fr.maxSharpe.sharpe * cmlEnd;
+    const ax = { x0: 0, x1: xMax, y0: yMin - pad, y1: yMax + pad };
+    const S = fr.maxSharpe.sharpe;
+    const cmlX = Math.min(xMax, (ax.y1 - rf) / S), cmlY = rf + S * cmlX;
     const pts = fr.points.slice().sort(function (a, b) { return a.vol - b.vol; });
-    const traces = [
-      { x: [0, cmlEnd], y: [rf, cmlY], mode: "lines", line: { color: BRASS, width: 1.5, dash: "dot" }, hoverinfo: "skip" },
-      { x: pts.map(function (p) { return p.vol; }), y: pts.map(function (p) { return p.ret; }), mode: "lines", line: { color: INK, width: 2.6, shape: "spline" }, hovertemplate: "Frontier<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" },
-      { x: vols, y: mu, mode: "markers+text", text: L.syms, textposition: labelPos(vols, mu, xMax, (yMax - yMin) || 0.01), textfont: { size: 11, color: "#6E6A61" }, marker: { size: 7, color: GREY }, hovertemplate: "%{text}<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" },
-      { x: [0], y: [rf], mode: "markers", marker: { size: 8, color: BRASS }, hoverinfo: "skip" },
-      { x: [fr.minVar.vol], y: [fr.minVar.ret], mode: "markers", marker: { size: 11, color: "#FCFBF8", line: { color: INK, width: 1.6 } }, hovertemplate: "Minimum risk<extra></extra>" },
-      { x: [fr.maxSharpe.vol], y: [fr.maxSharpe.ret], mode: "markers", marker: { size: 14, color: INK }, hovertemplate: "Ideal portfolio (max Sharpe)<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" },
-      { x: [cur.vol], y: [cur.ret], mode: "markers", marker: { size: 15, color: NEG, symbol: "diamond" }, hovertemplate: "Your portfolio<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" }
-    ];
-    const ann = [
-      { x: 0, y: rf, xanchor: "left", yanchor: "top", xshift: 8, yshift: -6, text: "Risk free rate", showarrow: false, font: { size: 13, color: BRASS } },
-      { x: cmlEnd, y: cmlY, xanchor: "right", yanchor: "bottom", yshift: 4, text: "Capital market line", showarrow: false, font: { size: 13, color: BRASS } },
-      { x: pts[pts.length - 1].vol, y: pts[pts.length - 1].ret, xanchor: "left", xshift: 10, text: "Efficient frontier", showarrow: false, font: { size: 13, color: INK } },
-      { x: fr.maxSharpe.vol, y: fr.maxSharpe.ret, ax: -70, ay: -46, text: "<b>Ideal portfolio</b><br>highest Sharpe ratio", showarrow: true, arrowhead: 0, arrowwidth: 1, arrowcolor: INK, font: { size: 13, color: INK }, align: "right", bgcolor: "#FCFBF8" },
-      { x: fr.minVar.vol, y: fr.minVar.ret, ax: 0, ay: 52, text: "Minimum risk", showarrow: true, arrowhead: 0, arrowwidth: 1, arrowcolor: INK, font: { size: 13, color: INK }, bgcolor: "#FCFBF8" },
-      { x: cur.vol, y: cur.ret, ax: 80, ay: 58, text: "<b>Your portfolio</b>", showarrow: true, arrowhead: 0, arrowwidth: 1, arrowcolor: NEG, font: { size: 13, color: NEG } }
-    ];
+    const front = { x: pts.map(function (p) { return p.vol; }), y: pts.map(function (p) { return p.ret; }) };
+    const special = function (zoom) {
+      const t = [
+        { x: [0, cmlX], y: [rf, cmlY], mode: "lines", line: { color: BRASS, width: 1.5, dash: "dot" }, hoverinfo: "skip" },
+        { x: front.x, y: front.y, mode: "lines", line: { color: INK, width: 2.6, shape: "spline" }, hovertemplate: "Efficient frontier<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" },
+        { x: [fr.minVar.vol], y: [fr.minVar.ret], mode: "markers", marker: { size: 11, color: PAPER, line: { color: INK, width: 1.6 } }, hovertemplate: "Minimum risk<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" },
+        { x: [fr.maxSharpe.vol], y: [fr.maxSharpe.ret], mode: "markers", marker: { size: 14, color: INK }, hovertemplate: "Ideal portfolio (highest Sharpe ratio)<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" }
+      ];
+      if (!onFrontier) t.push({ x: [A.vol, B.vol], y: [A.ret, B.ret], mode: "markers", marker: { size: zoom ? 13 : 9, color: PAPER, line: { color: NEG, width: 1.8 } }, text: ["Option A", "Option B"], hovertemplate: "%{text}<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" });
+      t.push({ x: [cur.vol], y: [cur.ret], mode: "markers", marker: { size: zoom ? 18 : 14, color: NEG, symbol: "diamond" }, hovertemplate: "Your portfolio<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" });
+      return t;
+    };
+
+    // ---------- Overview: every holding, labels placed so nothing overlaps ----------
+    const el = $("chEF"), plotW = Math.max(300, (el.clientWidth || 700) - 70 - 24), plotH = 500 - 20 - 60;
+    const obstacles = [];
+    front.x.forEach(function (x, i) { obstacles.push({ x: x, y: front.y[i], r: 3 }); });
+    sampleLine(0, rf, cmlX, cmlY, 60).forEach(function (o) { obstacles.push(o); });
+    vols.forEach(function (v, i) { obstacles.push({ x: v, y: mu[i], r: 5 }); });
+    [[cur, 10], [fr.maxSharpe, 9], [fr.minVar, 8], [{ vol: 0, ret: rf }, 6]].concat(onFrontier ? [] : [[A, 7], [B, 7]])
+      .forEach(function (q) { obstacles.push({ x: q[0].vol, y: q[0].ret, r: q[1] }); });
+    const labels = placeLabels(vols.map(function (v, i) { return { x: v, y: mu[i], text: L.syms[i] }; }).concat([{ x: 0.0001, y: rf, text: "Risk free rate" }]), obstacles, ax, plotW, plotH);
+    labels.forEach(function (a) { if (a.text === "Risk free rate") a.font.color = BRASS; });
+    const tr = [{ x: vols, y: mu, mode: "markers", marker: { size: 7, color: GREY }, text: L.syms, hovertemplate: "%{text}<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" },
+      { x: [0], y: [rf], mode: "markers", marker: { size: 8, color: BRASS }, hovertemplate: "Risk free rate %{y:.2%}<extra></extra>" }].concat(special(false));
+    // a light box marks the close up area
+    const zx = [cur.vol].concat(onFrontier ? [] : [A.vol, B.vol]), zy = [cur.ret].concat(onFrontier ? [] : [A.ret, B.ret]);
+    const cx = (Math.min.apply(null, zx) + Math.max.apply(null, zx)) / 2, cy = (Math.min.apply(null, zy) + Math.max.apply(null, zy)) / 2;
+    const hx = Math.max((Math.max.apply(null, zx) - Math.min.apply(null, zx)) * 1.8, 0.012), hy = Math.max((Math.max.apply(null, zy) - Math.min.apply(null, zy)) * 1.8, 0.005);
+    const zx0 = cx - hx, zx1 = cx + hx * 1.6, zy0 = cy - hy, zy1 = cy + hy;
+    UI.plot("chEF", tr, {
+      showlegend: false, height: 500, margin: { l: 70, r: 24, t: 20, b: 60 },
+      xaxis: { title: "Risk: volatility per year", tickformat: ".0%", range: [ax.x0, ax.x1], zeroline: false },
+      yaxis: { title: "Expected return per year", tickformat: ".0%", range: [ax.y0, ax.y1], zeroline: false },
+      shapes: [{ type: "rect", x0: zx0, x1: zx1, y0: zy0, y1: zy1, line: { color: NEG, width: 1, dash: "dot" }, fillcolor: "rgba(122,30,30,0.03)" }],
+      annotations: labels
+    });
+
+    // ---------- Close up: the portfolio, options A and B, and the nearby frontier ----------
+    const za = [];
     if (!onFrontier) {
-      traces.push({ x: [A.vol, B.vol], y: [A.ret, B.ret], mode: "markers", marker: { size: 10, color: "#FCFBF8", line: { color: NEG, width: 1.6 } }, text: ["Option A", "Option B"], hovertemplate: "%{text}<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" });
       [[A, "A"], [B, "B"]].forEach(function (t) {
-        ann.push({ x: t[0].vol, y: t[0].ret, ax: cur.vol, ay: cur.ret, axref: "x", ayref: "y", showarrow: true, arrowhead: 2, arrowsize: 1, arrowwidth: 1.4, arrowcolor: NEG, standoff: 7, startstandoff: 9, text: "" });
-        ann.push({ x: t[0].vol, y: t[0].ret, xanchor: t[1] === "A" ? "center" : "right", yanchor: t[1] === "A" ? "bottom" : "middle", xshift: t[1] === "A" ? 0 : -12, yshift: t[1] === "A" ? 10 : 0, text: t[1], showarrow: false, font: { size: 15, color: NEG } });
+        za.push({ x: t[0].vol, y: t[0].ret, ax: cur.vol, ay: cur.ret, axref: "x", ayref: "y", showarrow: true, arrowhead: 2, arrowsize: 1.1, arrowwidth: 1.6, arrowcolor: NEG, standoff: 9, startstandoff: 11, text: "" });
       });
+      za.push({ x: A.vol, y: A.ret, ax: 52, ay: -6, showarrow: true, arrowhead: 0, arrowwidth: 0.8, arrowcolor: "#B8B2A5", xanchor: "left", align: "left", bgcolor: PAPER,
+        text: "<b>A</b> &nbsp;same risk<br>+" + ((A.ret - cur.ret) * 100).toFixed(1) + " pts return", font: { size: 12, color: NEG } });
+      za.push({ x: B.vol, y: B.ret, ax: 8, ay: 72, showarrow: true, arrowhead: 0, arrowwidth: 0.8, arrowcolor: "#B8B2A5", xanchor: "left", align: "left", bgcolor: PAPER,
+        text: "<b>B</b> &nbsp;same return<br>" + ((cur.vol - B.vol) * 100).toFixed(1) + " pts less risk", font: { size: 12, color: NEG } });
     }
-    UI.plot("chEF", traces, {
-      showlegend: false, height: 540, margin: { l: 70, r: 40, t: 20, b: 60 },
-      xaxis: { title: "Risk: volatility per year", tickformat: ".0%", range: [0, xMax], zeroline: false },
-      yaxis: { title: "Expected return per year", tickformat: ".1%", range: [yMin - pad, yMax + pad], zeroline: false },
-      annotations: ann
+    za.push({ x: cur.vol, y: cur.ret, ax: 52, ay: 14, showarrow: true, arrowhead: 0, arrowwidth: 0.8, arrowcolor: "#B8B2A5", xanchor: "left", align: "left", bgcolor: PAPER,
+      text: "<b>Your portfolio</b><br>risk " + UI.pct(cur.vol) + "<br>return " + UI.pct(cur.ret), font: { size: 12, color: NEG } });
+    const inZ = function (p) { return p.vol >= zx0 && p.vol <= zx1 && p.ret >= zy0 && p.ret <= zy1; };
+    if (inZ(fr.maxSharpe)) za.push({ x: fr.maxSharpe.vol, y: fr.maxSharpe.ret, ax: 0, ay: -40, showarrow: true, arrowhead: 0, arrowwidth: 0.8, arrowcolor: "#B8B2A5", bgcolor: PAPER, text: "Ideal portfolio", font: { size: 12, color: INK } });
+    if (inZ(fr.minVar)) za.push({ x: fr.minVar.vol, y: fr.minVar.ret, ax: 0, ay: 40, showarrow: true, arrowhead: 0, arrowwidth: 0.8, arrowcolor: "#B8B2A5", bgcolor: PAPER, text: "Minimum risk", font: { size: 12, color: INK } });
+    UI.plot("chEFzoom", special(true), {
+      showlegend: false, height: 500, margin: { l: 64, r: 20, t: 20, b: 60 },
+      xaxis: { title: "Risk: volatility per year", tickformat: ".1%", range: [zx0, zx1], zeroline: false },
+      yaxis: { title: "Expected return per year", tickformat: ".1%", range: [zy0, zy1], zeroline: false },
+      annotations: za
     });
   }
 

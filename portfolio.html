@@ -73,8 +73,20 @@
     <div class="card">
       <p class="chart-title" id="efHead"></p>
       <p class="chart-sub" id="efSub"></p>
-      <div id="chEF" class="chart" style="min-height:540px"></div>
-      <p class="note" style="margin-top:6px">Each grey dot is one holding on its own. The efficient frontier is the best expected return available for each level of risk by mixing those holdings. The capital market line runs from the risk free rate through the ideal portfolio: combining that portfolio with cash gives the best possible trade off. Arrows show the two shortest ways from your portfolio to the frontier.</p>
+      <div class="ef-grid">
+        <div><h3>The full map</h3><div id="chEF" class="chart" style="min-height:500px"></div></div>
+        <div><h3>Close up: your portfolio and the frontier</h3><div id="chEFzoom" class="chart" style="min-height:500px"></div></div>
+      </div>
+      <div class="ef-key">
+        <span><i class="k-port"></i>Your portfolio</span>
+        <span><i class="k-opt"></i>A: more return, same risk &nbsp;&middot;&nbsp; B: less risk, same return</span>
+        <span><i class="k-ideal"></i>Ideal portfolio (highest Sharpe ratio)</span>
+        <span><i class="k-min"></i>Minimum risk portfolio</span>
+        <span><i class="k-front"></i>Efficient frontier</span>
+        <span><i class="k-cml"></i>Capital market line</span>
+        <span><i class="k-asset"></i>Single holding</span>
+      </div>
+      <p class="note" style="margin-top:6px">The efficient frontier is the best expected return available for each level of risk by mixing your holdings. The capital market line runs from the risk free rate through the ideal portfolio: combining that portfolio with cash gives the best possible trade off. The close up shows the two shortest ways from your portfolio to the frontier.</p>
     </div>
     <h3 style="margin-top:30px">How to reach the frontier</h3>
     <div class="grid g3" id="suggest"></div>

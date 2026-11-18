@@ -37,7 +37,8 @@ p { margin: .4rem 0 .9rem; color: var(--ink-2); }
 .brand .b1 { font-size: 0.8rem; letter-spacing: 0.24em; color: var(--ink); }
 .brand .b2 { font-size: 0.6rem; letter-spacing: 0.2em; color: var(--muted); }
 .brand:hover { border: none; }
-.nav { display: flex; gap: 26px; flex-wrap: wrap; flex: 1; justify-content: center; }
+.brand:hover .b1 { color: var(--muted); }
+.nav { display: flex; gap: 52px; flex-wrap: wrap; flex: 1; justify-content: center; }
 .nav a { color: var(--muted); font-size: 0.74rem; text-transform: uppercase; letter-spacing: var(--track); border: none; padding: 6px 0; border-bottom: 1px solid transparent; }
 .nav a:hover { color: var(--ink); }
 .nav a.active { color: var(--ink); border-bottom: 1px solid var(--ink); }
@@ -216,3 +217,18 @@ ul.plain li { margin-bottom: 8px; color: var(--ink-2); }
   .topbar-in { padding: 0 18px; justify-content: space-between; }
 }
 @media print { .topbar, footer, .controls, .downloads { display: none; } }
+
+/* Efficient frontier: overview plus close up, with a key instead of labels on the chart */
+.ef-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 28px; align-items: start; }
+.ef-grid h3 { margin: 0 0 4px; }
+.ef-key { display: flex; flex-wrap: wrap; gap: 10px 26px; margin: 14px 0 4px; padding-top: 12px; border-top: 1px solid var(--rule); font-size: 0.86rem; color: var(--muted); }
+.ef-key span { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.ef-key i { display: inline-block; width: 11px; height: 11px; }
+.ef-key .k-port { background: var(--neg); transform: rotate(45deg); width: 9px; height: 9px; }
+.ef-key .k-ideal { background: var(--ink); border-radius: 50%; }
+.ef-key .k-min { border: 1.5px solid var(--ink); border-radius: 50%; }
+.ef-key .k-opt { border: 1.5px solid var(--neg); border-radius: 50%; }
+.ef-key .k-asset { background: #9C978C; border-radius: 50%; width: 8px; height: 8px; }
+.ef-key .k-front { width: 22px; height: 0; border-top: 2.5px solid var(--ink); }
+.ef-key .k-cml { width: 22px; height: 0; border-top: 2px dotted var(--brass); }
+@media (max-width: 1000px) { .ef-grid { grid-template-columns: 1fr; } }

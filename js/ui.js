@@ -2,7 +2,7 @@
 (function () {
   "use strict";
   const PAGES = [
-    ["index.html", "Home"], ["dcf.html", "DCF"], ["lbo.html", "LBO"], ["monte-carlo.html", "Monte Carlo"],
+    ["dcf.html", "DCF"], ["lbo.html", "LBO"], ["monte-carlo.html", "Monte Carlo"],
     ["portfolio.html", "Portfolio Risk"], ["earnings.html", "Earnings"]
   ];
 
