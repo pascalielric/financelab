@@ -48,7 +48,7 @@
     if (cfg.linkedin) links.push('<a href="' + esc(cfg.linkedin) + '">LinkedIn</a>');
     if (cfg.github) links.push('<a href="' + esc(cfg.github) + '">GitHub</a>');
     const f = document.createElement("footer");
-    f.innerHTML = '<div class="wrap"><div class="row" style="justify-content:space-between"><div><strong>' + esc(cfg.ownerName || "") + "</strong> · " + esc(cfg.ownerTitle || "") +
+    f.innerHTML = '<div class="wrap"><div class="row" style="justify-content:space-between"><div><strong>' + esc(cfg.ownerFullName || cfg.ownerName || "") + "</strong> · " + esc(cfg.ownerTitle || "") +
       (links.length ? " · " + links.join(" · ") : "") + '</div><div>Built with plain HTML, JavaScript and Plotly. Market data: Yahoo Finance (daily refresh), Finnhub and Twelve Data (live, optional).</div></div>' +
       '<p class="note" style="margin-top:10px">Educational portfolio project. Nothing on this site is investment advice or a recommendation to buy or sell any security. Company figures are taken from public filings; projections are the author&#39;s own assumptions.</p></div>';
     document.body.appendChild(f);

@@ -5,34 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Elric &amp; Company · Valuation, Buyout and Risk Models</title>
 <meta name="description" content="Interactive DCF, LBO, Monte Carlo, portfolio risk and earnings models with investment banking and private equity style pitch decks.">
-<link rel="stylesheet" href="css/style.css">
-<script src="js/config.js"></script><script src="js/ui.js"></script><script src="js/api.js"></script>
+<link rel="stylesheet" href="css/style.css?v=202611181247">
+<script src="js/config.js?v=202611181247"></script><script src="js/ui.js?v=202611181247"></script><script src="js/api.js?v=202611181247"></script>
 </head>
 <body>
-<section class="intro">
-  <div class="wrap">
-    <div>
-      <div class="kicker">About the author</div>
-      <h1>Elric Pascali</h1>
-      <p class="role">MSc candidate in Management, Technology and Economics, ETH Zurich</p>
-      <div class="bio">
-        <p>I am completing a Master's in Management, Technology and Economics at ETH Zurich, after a Bachelor's in Food Science at ETH. I moved from the laboratory to the business side because I wanted to understand how value is created and measured: what a company is worth, how a deal is financed and how much risk a portfolio really carries.</p>
-        <p>I am currently in a six month internship in the Operational Excellence team at Nestl&eacute;'s Maggi factory in Singen, which continues into my Master's thesis. I plan production and costs, model scenarios and turn plant data into savings cases for senior management. Before that I was a research intern at Empa, where I built a neural network to characterise biopolymers.</p>
-        <p>Outside work I follow financial markets and the companies behind them closely. I invest my own savings and build small models to test ideas under different assumptions, and I am an active member of the ETH Graduate Consulting Club. I am looking for internships and graduate programmes in investment banking, private equity and strategy consulting in Zurich.</p>
-      </div>
-    </div>
-    <aside class="facts-col">
-      <div><div class="label">Education</div><div class="value">MSc Management, Technology and Economics, ETH Zurich, expected autumn 2027<br>BSc Food Science, ETH Zurich</div></div>
-      <div><div class="label">Experience</div><div class="value">Intern, Operational Excellence, Nestl&eacute; Singen<br>Research intern, Empa, Zurich</div></div>
-      <div><div class="label">Focus</div><div class="value">Investment banking, private equity, strategy consulting</div></div>
-      <div><div class="label">Languages</div><div class="value">German and English (native), Italian, French</div></div>
-      <div><div class="label">Tools</div><div class="value">Excel, Python, SQL, R, Power BI</div></div>
-      <div><div class="label">Based in</div><div class="value">Zurich, Switzerland</div></div>
-      <div class="links"><a href="mailto:pascalielric@gmail.com">Email</a><a href="https://www.linkedin.com/in/elricpascali">LinkedIn</a><a id="cvLink" href="downloads/Elric_Pascali_CV.pdf" class="hidden">CV</a></div>
-    </aside>
-  </div>
-</section>
-
 <section class="hero hero-center">
   <div class="wrap">
     <h1>Valuation, Transactions and Portfolio Risk</h1>
@@ -99,6 +75,27 @@
     <div><h3>Why these cases</h3><p>Food science and economics let me read a business from both sides: the science that creates the product and the economics that create the value. That is why the valuation covers Givaudan, whose flavours business sits exactly at that intersection, and why the buyout looks at Temenos, a Swiss software company with the recurring revenue a sponsor needs.</p><p>Assumptions are sourced, judgement calls are explained, and each model can be stress tested live.</p></div>
     <div><h3>How it is built</h3><p>Static HTML and JavaScript hosted on GitHub Pages, charts with Plotly. The valuation engines are plain JavaScript functions shared by the website, the Excel models and the decks, so every number ties out across formats.</p><p>Prices and earnings data are refreshed every weekday by an automated pipeline (Python, Yahoo Finance, GitHub Actions). The note at the top right shows the date of the last refresh.</p></div>
   </div>
+  <h2><span class="section-num">05</span>About the author</h2>
+  <div class="about-author">
+    <div>
+      <h1>Elric Pascali</h1>
+      <p class="role">MSc candidate in Management, Technology and Economics, ETH Zurich</p>
+      <div class="bio">
+        <p>I am completing a Master's in Management, Technology and Economics at ETH Zurich, after a Bachelor's in Food Science at ETH. I moved from the laboratory to the business side because I wanted to understand how value is created and measured: what a company is worth, how a deal is financed and how much risk a portfolio really carries.</p>
+        <p>I am currently in a six month internship in the Operational Excellence team at Nestl&eacute;'s Maggi factory in Singen, which continues into my Master's thesis. I plan production and costs, model scenarios and turn plant data into savings cases for senior management. Before that I was a research intern at Empa, where I built a neural network to characterise biopolymers.</p>
+        <p>Outside work I follow financial markets and the companies behind them closely. I invest my own savings and build small models to test ideas under different assumptions, and I am an active member of the ETH Graduate Consulting Club. I am looking for internships and graduate programmes in investment banking, private equity and strategy consulting in Zurich.</p>
+      </div>
+    </div>
+    <aside class="facts-col">
+      <div><div class="label">Education</div><div class="value">MSc Management, Technology and Economics, ETH Zurich, expected autumn 2027<br>BSc Food Science, ETH Zurich</div></div>
+      <div><div class="label">Experience</div><div class="value">Intern, Operational Excellence, Nestl&eacute; Singen<br>Research intern, Empa, Zurich</div></div>
+      <div><div class="label">Focus</div><div class="value">Investment banking, private equity, strategy consulting</div></div>
+      <div><div class="label">Languages</div><div class="value">German and English (native), Italian, French</div></div>
+      <div><div class="label">Tools</div><div class="value">Excel, Python, SQL, R, Power BI</div></div>
+      <div><div class="label">Based in</div><div class="value">Zurich, Switzerland</div></div>
+      <div class="links"><a href="mailto:pascalielric@gmail.com">Email</a><a href="https://www.linkedin.com/in/elricpascali">LinkedIn</a><a id="cvLink" href="downloads/Elric_Pascali_CV.pdf" class="hidden">CV</a></div>
+    </aside>
+    </div>
   <p class="note" style="margin-top:28px">Abbreviations: DCF discounted cash flow; LBO leveraged buyout; EBITDA earnings before interest, taxes, depreciation and amortisation.</p>
   <p class="note">Company figures: Givaudan 2025 Integrated Report and Full Year Results (29 Jan 2026); Temenos 2025 Annual Report and FY25 results (24 Feb 2026).</p>
 </main>
