@@ -265,3 +265,4 @@ footer .note { line-height: 1.15; margin: 8px 0 0 !important; }
 footer .row { gap: 6px 24px; }
 
 .justify p { text-align: justify; hyphens: none; }
+.page-notes { line-height: 1.15; margin: 0 0 6px; }
