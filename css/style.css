@@ -263,3 +263,5 @@ ul.plain li { margin-bottom: 8px; color: var(--ink-2); }
 .sources-head { margin-top: 36px; }
 footer .note { line-height: 1.15; margin: 8px 0 0 !important; }
 footer .row { gap: 6px 24px; }
+
+.justify p { text-align: justify; hyphens: none; }
