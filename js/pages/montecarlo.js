@@ -98,11 +98,11 @@
       traces.push({ x: xs, y: bands[0], mode: "lines", line: { width: 0 }, fill: "tonexty", fillcolor: "rgba(140,135,124,.22)", name: "5th to 95th percentile" });
       traces.push({ x: xs, y: bands[3], mode: "lines", line: { width: 0 }, showlegend: false, hoverinfo: "skip" });
       traces.push({ x: xs, y: bands[1], mode: "lines", line: { width: 0 }, fill: "tonexty", fillcolor: "rgba(140,135,124,.38)", name: "25th to 75th percentile" });
-      traces.push({ x: xs, y: bands[2], mode: "lines", line: { color: "#00011F", width: 2.5 }, name: "Median" });
+      traces.push({ x: xs, y: bands[2], mode: "lines", line: { color: "#111111", width: 2.5 }, name: "Median" });
       UI.plot("chFan", traces, { xaxis: { title: "Years" }, yaxis: { tickformat: ",.0f" }, shapes: [{ type: "line", x0: 0, x1: years, y0: v0, y1: v0, line: { color: "#7A1E1E", dash: "dot", width: 1.5 } }] });
       UI.plot("chTerm", [{ type: "histogram", x: fin.filter(function (v) { return v <= q(0.995); }), nbinsx: 70, marker: { color: "#8C877C" } }], {
         showlegend: false, bargap: 0.03, margin: { l: 60, r: 24, t: 34, b: 52 }, xaxis: { tickformat: ",.0f", title: "Portfolio value at the horizon" }, yaxis: { title: "Number of paths" },
-        shapes: [{ type: "line", x0: v0, x1: v0, yref: "paper", y0: 0, y1: 1, line: { color: "#7A1E1E", dash: "dash", width: 2 } }, { type: "line", x0: q(0.5), x1: q(0.5), yref: "paper", y0: 0, y1: 1, line: { color: "#00011F", width: 2 } }],
+        shapes: [{ type: "line", x0: v0, x1: v0, yref: "paper", y0: 0, y1: 1, line: { color: "#7A1E1E", dash: "dash", width: 2 } }, { type: "line", x0: q(0.5), x1: q(0.5), yref: "paper", y0: 0, y1: 1, line: { color: "#111111", width: 2 } }],
         annotations: [{ x: v0, yref: "paper", y: 1, yanchor: "bottom", xanchor: v0 < q(0.5) ? "right" : "left", xshift: v0 < q(0.5) ? -6 : 6, text: "Start", showarrow: false, font: { size: 13, color: "#7A1E1E" } }, { x: q(0.5), yref: "paper", y: 1, yanchor: "bottom", xanchor: v0 < q(0.5) ? "left" : "right", xshift: v0 < q(0.5) ? 6 : -6, text: "Median", showarrow: false, font: { size: 13, color: "#111111" } }]
       });
       UI.table("pTable", [{ h: "Final value after " + years + " years", f: function (x) { return x[0]; } }, { h: "Value", n: 1, f: function (x) { return UI.fmt(x[1]); } }, { h: "Return p.a.", n: 1, f: function (x) { return UI.signPct(cagr(x[1])); } }],
@@ -149,7 +149,7 @@
       '<div class="kpi"><div class="label">Coefficient of variation</div><div class="value">' + UI.pct(UI.std(out) / UI.mean(out), 0) + '</div><div class="sub">Std. dev. / mean</div></div>';
     UI.plot("chDcf", [{ type: "histogram", x: out.filter(function (v) { return v < q(0.995); }), nbinsx: 80, marker: { color: "#8C877C" } }], {
       showlegend: false, bargap: 0.03, margin: { l: 60, r: 24, t: 34, b: 52 }, xaxis: { tickformat: ",.0f", title: "Value per share, CHF" }, yaxis: { title: "Number of runs" },
-      shapes: [{ type: "line", x0: price, x1: price, yref: "paper", y0: 0, y1: 1, line: { color: "#7A1E1E", dash: "dash", width: 2 } }, { type: "line", x0: q(0.5), x1: q(0.5), yref: "paper", y0: 0, y1: 1, line: { color: "#00011F", width: 2 } }],
+      shapes: [{ type: "line", x0: price, x1: price, yref: "paper", y0: 0, y1: 1, line: { color: "#7A1E1E", dash: "dash", width: 2 } }, { type: "line", x0: q(0.5), x1: q(0.5), yref: "paper", y0: 0, y1: 1, line: { color: "#111111", width: 2 } }],
       annotations: [{ x: price, yref: "paper", y: 1, yanchor: "bottom", xanchor: price < q(0.5) ? "right" : "left", xshift: price < q(0.5) ? -6 : 6, text: "Share price", showarrow: false, font: { size: 13, color: "#7A1E1E" } }, { x: q(0.5), yref: "paper", y: 1, yanchor: "bottom", xanchor: price < q(0.5) ? "left" : "right", xshift: price < q(0.5) ? 6 : -6, text: "Median", showarrow: false, font: { size: 13, color: "#111111" } }]
     });
     const one = function (dg, dm, dw, dt, dx) { return DCF.run(shifted(a, dg, dm, w0 + dw, a.tgr + dt, a.exitMultiple + dx)).blended.perShare; };

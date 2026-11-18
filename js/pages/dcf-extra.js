@@ -32,7 +32,7 @@
     document.getElementById("revNote").textContent = G.scenarios[k].label + " case: Fragrance & Beauty grows " + UI.pct(c.fb[0]) + " in FY27E easing to " + UI.pct(c.fb[4]) +
       "; Taste & Wellbeing grows " + UI.pct(c.tw[0]) + " a year. Reported years show reported Swiss franc figures; like for like growth was higher because of the strong franc.";
     UI.plot("chDiv", [
-      { type: "bar", name: "Fragrance & Beauty", x: heads.map(function (h) { return h.slice(2); }), y: fb, marker: { color: "#00011F" } },
+      { type: "bar", name: "Fragrance & Beauty", x: heads.map(function (h) { return h.slice(2); }), y: fb, marker: { color: "#111111" } },
       { type: "bar", name: "Taste & Wellbeing", x: heads.map(function (h) { return h.slice(2); }), y: tw, marker: { color: "#B8B2A5" } }
     ], { barmode: "stack", margin: { l: 56, r: 20, t: 16, b: 40 }, yaxis: { title: { text: "CHF m" } }, xaxis: { tickangle: 0, tickfont: { size: 10 } }, legend: { orientation: "h", y: 1.12, x: 0 } });
   }

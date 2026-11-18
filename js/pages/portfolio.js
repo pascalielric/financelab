@@ -61,7 +61,7 @@
     // Performance charts
     const d = L.dates;
     const cumB = SB.values.map(function (v) { return v * 100; }), cumP = S.values.map(function (v) { return v * 100; });
-    UI.plot("chCum", [{ x: d, y: cumP, name: "Portfolio", line: { color: "#00011F", width: 2.2 } }, { x: d, y: cumB, name: L.bench, line: { color: "#8C6D3F", width: 1.6 } }], { yaxis: { title: "Start = 100" } });
+    UI.plot("chCum", [{ x: d, y: cumP, name: "Portfolio", line: { color: "#111111", width: 2.2 } }, { x: d, y: cumB, name: L.bench, line: { color: "#8C6D3F", width: 1.6 } }], { yaxis: { title: "Start = 100" } });
     UI.plot("chDD", [{ x: d, y: S.drawdown.series, name: "Portfolio", fill: "tozeroy", line: { color: "#7A1E1E", width: 1.5 }, fillcolor: "rgba(122,30,30,.15)" }, { x: d, y: SB.drawdown.series, name: L.bench, line: { color: "#8C6D3F", width: 1.2 } }], { yaxis: { tickformat: ".0%" } });
 
     const kv = [{ h: "Metric", f: function (x) { return x[0]; } }, { h: "Portfolio", n: 1, f: function (x) { return x[1]; } }, { h: L.bench, n: 1, f: function (x) { return x[2]; } }];
@@ -117,7 +117,7 @@
     ], pos);
     UI.plot("chRC", [{ type: "bar", x: L.syms, y: L.w, name: "Capital weight", marker: { color: "#8C877C" } }, { type: "bar", x: L.syms, y: rc, name: "Share of risk", marker: { color: "#7A1E1E" } }], { barmode: "group", yaxis: { tickformat: ".0%" } });
     const corr = RISK.corrMatrix(C);
-    UI.plot("chCorr", [{ type: "heatmap", z: corr, x: L.syms, y: L.syms, zmin: -1, zmax: 1, colorscale: [[0, "#7A1E1E"], [0.5, "#FCFBF8"], [1, "#00011F"]], text: corr.map(function (r) { return r.map(function (v) { return v.toFixed(2).replace(/^-/, "\u2212"); }); }), texttemplate: "%{text}", textfont: { size: 13 }, hovertemplate: "%{y} and %{x}: %{z:.2f}<extra></extra>", xgap: 1, ygap: 1, showscale: false }], { xaxis: { side: "top", showgrid: false, tickangle: -35, ticks: "" }, yaxis: { autorange: "reversed", showgrid: false, ticks: "" }, margin: { l: 80, r: 20, t: 70, b: 20 } });
+    UI.plot("chCorr", [{ type: "heatmap", z: corr, x: L.syms, y: L.syms, zmin: -1, zmax: 1, colorscale: [[0, "#7A1E1E"], [0.5, "#FCFBF8"], [1, "#111111"]], text: corr.map(function (r) { return r.map(function (v) { return v.toFixed(2).replace(/^-/, "\u2212"); }); }), texttemplate: "%{text}", textfont: { size: 13 }, hovertemplate: "%{y} and %{x}: %{z:.2f}<extra></extra>", xgap: 1, ygap: 1, showscale: false }], { xaxis: { side: "top", showgrid: false, tickangle: -35, ticks: "" }, yaxis: { autorange: "reversed", showgrid: false, ticks: "" }, margin: { l: 80, r: 20, t: 70, b: 20 } });
 
     // Stress
     const st = RISK.stress(betas, L.w, V);
@@ -209,9 +209,9 @@
     const special = function (zoom) {
       const t = [
         { x: [0, cmlX], y: [rf, cmlY], mode: "lines", line: { color: BRASS, width: 1.5, dash: "dot" }, hoverinfo: "skip" },
-        { x: front.x, y: front.y, mode: "lines", line: { color: "#00011F", width: 2.6, shape: "spline" }, hovertemplate: "Efficient frontier<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" },
-        { x: [fr.minVar.vol], y: [fr.minVar.ret], mode: "markers", marker: { size: 11, color: PAPER, line: { color: "#00011F", width: 1.6 } }, hovertemplate: "Minimum risk<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" },
-        { x: [fr.maxSharpe.vol], y: [fr.maxSharpe.ret], mode: "markers", marker: { size: 14, color: "#00011F" }, hovertemplate: "Ideal portfolio (highest Sharpe ratio)<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" }
+        { x: front.x, y: front.y, mode: "lines", line: { color: "#111111", width: 2.6, shape: "spline" }, hovertemplate: "Efficient frontier<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" },
+        { x: [fr.minVar.vol], y: [fr.minVar.ret], mode: "markers", marker: { size: 11, color: PAPER, line: { color: "#111111", width: 1.6 } }, hovertemplate: "Minimum risk<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" },
+        { x: [fr.maxSharpe.vol], y: [fr.maxSharpe.ret], mode: "markers", marker: { size: 14, color: "#111111" }, hovertemplate: "Ideal portfolio (highest Sharpe ratio)<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" }
       ];
       if (!onFrontier) t.push({ x: [A.vol, B.vol], y: [A.ret, B.ret], mode: "markers", marker: { size: zoom ? 13 : 9, color: PAPER, line: { color: NEG, width: 1.8 } }, text: ["Option A", "Option B"], hovertemplate: "%{text}<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" });
       t.push({ x: [cur.vol], y: [cur.ret], mode: "markers", marker: { size: zoom ? 18 : 14, color: NEG, symbol: "diamond" }, hovertemplate: "Your portfolio<br>risk %{x:.1%}, return %{y:.1%}<extra></extra>" });

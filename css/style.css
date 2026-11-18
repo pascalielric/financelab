@@ -5,7 +5,7 @@
   --paper: #F6F3EC;
   --card: #FCFBF8;
   --ink: #111111;
-  --fill: #00011F;          /* filled highlights: key figure boxes, active buttons, primary buttons */
+  --fill: #111111;          /* filled highlights: key figure boxes, active buttons, primary buttons, chart highlights */
   --ink-2: #2E2E2E;
   --muted: #6E6A61;
   --faint: #9C978C;
@@ -140,7 +140,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--i
 .legend-line b { font-weight: 400; color: var(--ink); letter-spacing: 0.06em; }
 .legend-line .sep { margin: 0 10px; color: var(--faint); }
 .btn { font-family: var(--serif); font-size: 0.72rem; text-transform: uppercase; letter-spacing: var(--track); padding: 11px 20px; border: 1px solid var(--fill); border-radius: 0; background: var(--fill); color: var(--paper); cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
-.btn:hover { background: #1B1D3D; border-color: #1B1D3D; }
+.btn:hover { background: #2B2B2B; border-color: #2B2B2B; }
 .btn.ghost { background: transparent; color: var(--ink); border-color: var(--ink); }
 .btn.ghost:hover { background: var(--fill); border-color: var(--fill); color: var(--paper); }
 .btn.small { padding: 7px 12px; font-size: 0.66rem; }

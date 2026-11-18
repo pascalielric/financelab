@@ -73,7 +73,7 @@
       '<div class="kpi"><div class="label">Probability of a beat</div><div class="value">' + (thin ? "n.a." : UI.pct(A.pBeat, 0)) + '</div><div class="sub">' + (A.n ? A.beats + " beats in last " + A.n + " reports" : "no history") + "</div></div>" +
       '<div class="kpi"><div class="label">Typical move on results</div><div class="value">' + (thin ? "n.a." : "±" + UI.pct(A.absMove)) + '</div><div class="sub">' + (thin ? "" : cur + " " + num(A.impliedRange[0]) + " to " + num(A.impliedRange[1])) + "</div></div>";
 
-    const col = { bull: "#2F4A36", base: "#00011F", bear: "#7A1E1E" };
+    const col = { bull: "#2F4A36", base: "#111111", bear: "#7A1E1E" };
     if (thin) {
       $("scen").innerHTML = "";
       $("pred").innerHTML = "<strong>No scenario for the next report.</strong> The data source has no quarterly EPS consensus or fewer than four recent reports for this company, which is typical for Swiss companies that report half yearly. A beat probability or price reaction estimate would be guesswork, so none is shown. The twelve month view, analyst targets and ratings below are still available.";
@@ -135,7 +135,7 @@
   }
 
   // ---------- Charts. Shared rules: one message per chart, labels on the data, no second axis that competes. ----------
-  const C = { bull: "#2F4A36", base: "#00011F", bear: "#7A1E1E", grey: "#9C978C", light: "#CFC9BC", paper: "#FCFBF8" };
+  const C = { bull: "#2F4A36", base: "#111111", bear: "#7A1E1E", grey: "#9C978C", light: "#CFC9BC", paper: "#FCFBF8" };
   const mon = function (dt) { const x = new Date(dt); return isNaN(x) ? String(dt) : x.toLocaleDateString("en-GB", { month: "short", year: "2-digit" }); };
 
   function drawScenarios(A, d, cur) {
@@ -165,7 +165,7 @@
     UI.plot("chPath", [
       { type: "bar", orientation: "h", y: keys, base: sc.map(function () { return p0; }), x: sc.map(function (x) { return x.price - p0; }), width: 0.5,
         marker: { color: keys.map(function (k) { return C[k]; }) }, hoverinfo: "skip" },
-      { type: "scatter", mode: "markers", y: ["exp"], x: [A.expPrice], marker: { size: 13, color: "#00011F", symbol: "diamond" }, hoverinfo: "skip" }
+      { type: "scatter", mode: "markers", y: ["exp"], x: [A.expPrice], marker: { size: 13, color: "#111111", symbol: "diamond" }, hoverinfo: "skip" }
     ], {
       height: 300, margin: { l: 150, r: 30, t: 30, b: 30 }, showlegend: false,
       xaxis: { range: [lo - span * 0.5, hi + span * 1.4], showgrid: false, zeroline: false, showticklabels: false },
@@ -180,7 +180,7 @@
     if (!t && !(tg && tg.low)) { $("chTwelve").innerHTML = '<p class="note">Forward earnings estimates and analyst targets are not available for this ticker.</p>'; $("twelveNote").textContent = ""; return; }
     const rows = [];
     if (t) { const bull = t.find(function (x) { return x.key === "bull"; }), base = t.find(function (x) { return x.key === "base"; }), bear = t.find(function (x) { return x.key === "bear"; });
-      rows.push({ k: "m", label: "Model scenarios", sub: "Bear to bull; marker at base case", lo: bear.value, hi: bull.value, mid: base.value, col: "#00011F" }); }
+      rows.push({ k: "m", label: "Model scenarios", sub: "Bear to bull; marker at base case", lo: bear.value, hi: bull.value, mid: base.value, col: "#111111" }); }
     if (tg && tg.low && tg.high) rows.push({ k: "a", label: "Analyst price targets", sub: "Low to high; marker at mean", lo: tg.low, hi: tg.high, mid: tg.mean, col: "#8C877C" });
     if (w52) rows.push({ k: "w", label: "52 week trading range", sub: "Daily closing prices", lo: w52[0], hi: w52[1], mid: null, col: "#CFC9BC" });
     const all = rows.reduce(function (a, r) { return a.concat([r.lo, r.hi]); }, [p0]);
@@ -225,7 +225,7 @@
     const xs = r.map(function (x) { return x.date || x.label; }), every = r.length > 10 ? 2 : 1;
     const ymax = Math.max.apply(null, r.map(function (x) { return x.s; }).concat([0])), ymin = Math.min.apply(null, r.map(function (x) { return x.s; }).concat([0]));
     const pad = (ymax - ymin) * 0.2 || 0.02;
-    UI.plot("chEps", [{ type: "bar", x: xs, y: r.map(function (x) { return x.s; }), marker: { color: r.map(function (x) { return x.s >= 0 ? "#00011F" : "#7A1E1E"; }) }, width: 0.6,
+    UI.plot("chEps", [{ type: "bar", x: xs, y: r.map(function (x) { return x.s; }), marker: { color: r.map(function (x) { return x.s >= 0 ? "#111111" : "#7A1E1E"; }) }, width: 0.6,
       text: r.length <= 12 ? r.map(function (x) { return UI.signPct(x.s, 1); }) : null, textposition: "outside", cliponaxis: false, textfont: { size: 12 },
       customdata: r.map(function (x) { return mon(x.date) + ": EPS " + num(x.actual) + " vs. " + num(x.estimate); }), hovertemplate: "%{customdata}<br>surprise %{y:.1%}<extra></extra>" }], {
       height: 340, margin: { l: 56, r: 20, t: 20, b: 50 }, showlegend: false,
@@ -247,7 +247,7 @@
     const xs = r.map(function (x) { return x.s; }), ys = r.map(function (x) { return x.move; });
     const xr = Math.max(0.02, Math.max.apply(null, xs.map(Math.abs))) * 1.25, yr = Math.max(0.02, Math.max.apply(null, ys.map(Math.abs))) * 1.25;
     const corner = function (x, y, xa, ya, t) { return { xref: "paper", yref: "paper", x: x, y: y, xanchor: xa, yanchor: ya, text: t, showarrow: false, font: { size: 12, color: "#6E6A61" } }; };
-    const tr = [{ type: "scatter", mode: "markers", x: xs, y: ys, marker: { size: 11, color: "#00011F", opacity: 0.85 }, customdata: r.map(function (x) { return mon(x.date); }),
+    const tr = [{ type: "scatter", mode: "markers", x: xs, y: ys, marker: { size: 11, color: "#111111", opacity: 0.85 }, customdata: r.map(function (x) { return mon(x.date); }),
       hovertemplate: "%{customdata}<br>surprise %{x:.1%}<br>next day %{y:.1%}<extra></extra>" },
       { type: "scatter", mode: "markers", x: [latest.s], y: [latest.move], marker: { size: 15, color: "#7A1E1E", symbol: "diamond" }, hoverinfo: "skip" }];
     if (A.reaction.fitted) tr.push({ type: "scatter", mode: "lines", x: [-xr, xr], y: [A.reaction.a - A.reaction.b * xr, A.reaction.a + A.reaction.b * xr], line: { color: "#8C6D3F", width: 1, dash: "dot" }, hoverinfo: "skip" });
@@ -269,7 +269,7 @@
     const rmax = Math.max.apply(null, rev), mmin = Math.min.apply(null, mv), mmax = Math.max.apply(null, mv), ms = Math.max(mmax - mmin, 0.02);
     UI.plot("chQ", [
       { type: "bar", x: xs, y: rev, marker: { color: "#CFC9BC" }, width: 0.55, text: rev.map(function (v) { return big(v); }), textposition: "inside", insidetextanchor: "end", textfont: { size: 12, color: "#111111" }, hovertemplate: "Revenue %{y:,.0f}<extra></extra>" },
-      { type: "scatter", mode: "lines+markers+text", x: xs, y: m, yaxis: "y2", line: { color: "#00011F", width: 2 }, marker: { size: 7, color: "#00011F" },
+      { type: "scatter", mode: "lines+markers+text", x: xs, y: m, yaxis: "y2", line: { color: "#111111", width: 2 }, marker: { size: 7, color: "#111111" },
         text: m.map(function (v) { return v == null ? "" : UI.pct(v); }), textposition: "top center", textfont: { size: 12 }, hovertemplate: "Operating margin %{y:.1%}<extra></extra>" }
     ], {
       height: 300, margin: { l: 20, r: 20, t: 20, b: 40 }, showlegend: false,

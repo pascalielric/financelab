@@ -38,7 +38,7 @@
       { h: "Churn", n: 1, f: function (x) { return UI.fmt(-x.churn); } }, { h: "Gross new and expansion", n: 1, f: function (x) { return UI.fmt(x.gross); } },
       { h: "Closing", n: 1, f: function (x) { return "<strong>" + UI.fmt(x.close) + "</strong>"; } }, { h: "Growth", n: 1, f: function (x) { return UI.pct(x.g); } }], rows);
     UI.plot("chLines", [
-      { type: "bar", name: "Subscription and SaaS", x: heads.map(function (h) { return h.slice(2); }), y: subs, marker: { color: "#00011F" } },
+      { type: "bar", name: "Subscription and SaaS", x: heads.map(function (h) { return h.slice(2); }), y: subs, marker: { color: "#111111" } },
       { type: "bar", name: "Maintenance", x: heads.map(function (h) { return h.slice(2); }), y: maint, marker: { color: "#8C877C" } },
       { type: "bar", name: "Services", x: heads.map(function (h) { return h.slice(2); }), y: serv, marker: { color: "#CFC9BC" } }
     ], { barmode: "stack", margin: { l: 56, r: 20, t: 16, b: 40 }, yaxis: { title: { text: "USD m" } }, xaxis: { tickangle: 0, tickfont: { size: 10 } }, legend: { orientation: "h", y: 1.12, x: 0 } });
@@ -82,7 +82,7 @@
   function returns(a, r) {
     const by = r.byYear;
     UI.plot("chExit", [
-      { type: "bar", name: "IRR", x: by.map(function (b) { return "FY" + String(b.year).slice(2) + "E"; }), y: by.map(function (b) { return b.irr; }), marker: { color: by.map(function (b, i) { return i === by.length - 1 ? "#00011F" : "#8C877C"; }) },
+      { type: "bar", name: "IRR", x: by.map(function (b) { return "FY" + String(b.year).slice(2) + "E"; }), y: by.map(function (b) { return b.irr; }), marker: { color: by.map(function (b, i) { return i === by.length - 1 ? "#111111" : "#8C877C"; }) },
         text: by.map(function (b) { return UI.pct(b.irr) + "<br>" + UI.mult(b.moic, 2); }), textposition: "outside", cliponaxis: false }
     ], { showlegend: false, margin: { l: 56, r: 20, t: 30, b: 40 }, yaxis: { tickformat: ".0%", range: [0, Math.max.apply(null, by.map(function (b) { return b.irr; })) * 1.35] } });
     const rc = LBO.recap(a, r, S.recap.year, S.recap.targetLeverage, S.recap.rate);
