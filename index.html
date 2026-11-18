@@ -9,9 +9,27 @@
 <script src="js/config.js"></script><script src="js/ui.js"></script><script src="js/api.js"></script>
 </head>
 <body>
+<section class="intro">
+  <div class="wrap">
+    <div class="portrait"><span class="mono">EP</span></div>
+    <div>
+      <div class="kicker">About the author</div>
+      <h1>Elric Pascali</h1>
+      <p class="role">MSc candidate in Management, Technology and Economics, ETH Zurich</p>
+      <p class="bio">I studied Food Science at ETH Zurich and moved to the business side because I wanted to understand how value is created and measured: what a company is worth, how a deal is financed and how much risk a portfolio really carries. This site is where I practise that, with models built from first principles rather than templates. I am looking for internships and graduate programmes in investment banking, private equity and strategy consulting in Zurich.</p>
+      <div class="kv">
+        <div><div class="label">Education</div><div class="value">MSc MTEC, ETH Zurich<br>BSc Food Science, ETH Zurich</div></div>
+        <div><div class="label">Focus</div><div class="value">Investment banking, private equity, strategy</div></div>
+        <div><div class="label">Languages</div><div class="value">German, English (native)<br>Italian, French</div></div>
+        <div><div class="label">Based in</div><div class="value">Zurich, Switzerland</div></div>
+      </div>
+      <div class="links"><a href="mailto:pascalielric@gmail.com">Email</a><a href="https://www.linkedin.com/in/elricpascali">LinkedIn</a></div>
+    </div>
+  </div>
+</section>
+
 <section class="hero hero-center">
   <div class="wrap">
-    <div class="eyebrow">Elric Pascali &nbsp;&middot;&nbsp; Zurich</div>
     <h1>Valuation, Transactions and Portfolio Risk</h1>
     <p>Five working projects covering the core toolkit of investment banking, private equity and asset management: a discounted cash flow (DCF) valuation, a leveraged buyout (LBO), Monte Carlo simulation, portfolio optimisation with value at risk, and earnings analysis. Every model is interactive, every assumption is visible, and both transaction cases come with a presentation ready pitch deck and a formula driven Excel model.</p>
   </div>
@@ -32,6 +50,7 @@
           <div><b>167</b>Sites, 77 of them production</div>
         </div>
       </div>
+      <p class="finding"><span>Key finding</span>Fairly valued: CHF 4,061 per share against a share price of about CHF 4,080</p>
       <p>Five year free cash flow model built by division, with a regression based cost of capital, two terminal value methods, trading comparables, precedent transactions, sensitivities and a football field.</p>
       <span class="more">Open model and valuation deck</span>
     </a>
@@ -47,6 +66,7 @@
           <div><b>150+</b>Countries with clients</div>
         </div>
       </div>
+      <p class="finding"><span>Key finding</span>12.8% IRR at a 25% premium: below a 20% hurdle, walk away above CHF 92 per share</p>
       <p>Sponsor buyout with a revenue and ARR build, revolver and two tranche debt schedule, linked financial statements, covenant tests, returns by exit year, a dividend recap and a walk away price.</p>
       <span class="more">Open model and investment committee deck</span>
     </a>
@@ -69,9 +89,9 @@
       <tr><td><a href="downloads/Temenos_LBO_Model.xlsx">Temenos LBO model</a></td><td><a href="downloads/Temenos_LBO_Model.xlsx">Excel</a></td><td>Nine tabs: LBO, revenue and ARR, history, linked statements, returns, credit and covenants, peer comps, sensitivity engine</td></tr>
     </tbody></table></div>
 
-  <h2><span class="section-num">04</span>About</h2>
+  <h2><span class="section-num">04</span>Approach</h2>
   <div class="grid g2">
-    <div><h3>Background</h3><p>I am a Master's student in Management, Technology and Economics at ETH Zurich with a BSc in Food Science, also from ETH. The combination lets me read a business from both sides: the science that creates the product and the economics that create the value. That is why the valuation covers Givaudan, whose flavours business sits exactly at that intersection.</p><p>I built this site to show how I think about valuation and risk, not only that I can fill in a template: assumptions are sourced, judgement calls are explained, and each model can be stress tested live.</p></div>
+    <div><h3>Why these cases</h3><p>Food science and economics let me read a business from both sides: the science that creates the product and the economics that create the value. That is why the valuation covers Givaudan, whose flavours business sits exactly at that intersection, and why the buyout looks at Temenos, a Swiss software company with the recurring revenue a sponsor needs.</p><p>Assumptions are sourced, judgement calls are explained, and each model can be stress tested live.</p></div>
     <div><h3>How it is built</h3><p>Static HTML and JavaScript hosted on GitHub Pages, charts with Plotly. The valuation engines are plain JavaScript functions shared by the website, the Excel models and the decks, so every number ties out across formats.</p><p>Prices and earnings data are refreshed every weekday by an automated pipeline (Python, Yahoo Finance, GitHub Actions). The note at the top right shows the date of the last refresh.</p></div>
   </div>
   <p class="note" style="margin-top:28px">Abbreviations: DCF discounted cash flow; LBO leveraged buyout; EBITDA earnings before interest, taxes, depreciation and amortisation.</p>
