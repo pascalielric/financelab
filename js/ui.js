@@ -11,7 +11,7 @@
     const cfg = window.SITE_CONFIG || {};
     const el = document.createElement("header");
     el.className = "topbar";
-    el.innerHTML = '<div class="topbar-in"><a class="brand" href="index.html">' + esc(cfg.ownerName || "Finance") + ' <span>&nbsp;&middot;&nbsp; ' + esc(cfg.siteName || "Finance Lab") + '</span></a><nav class="nav">' +
+    el.innerHTML = '<div class="topbar-in"><a class="brand" href="index.html"><span class="b1">' + esc(cfg.siteName || "Research") + '</span><span class="b2">' + esc(cfg.ownerFullName || cfg.ownerName || "") + ' &nbsp;&middot;&nbsp; Zurich</span></a><nav class="nav">' +
       PAGES.map(function (p) { return '<a href="' + p[0] + '"' + (p[0] === here ? ' class="active"' : "") + ">" + p[1] + "</a>"; }).join("") +
       '</nav><button class="mkt" id="dataPill" title="Daily closing prices from Yahoo Finance, refreshed every weekday. Click to add live data keys.">' +
       '<span class="mkt-k" id="mktK">Swiss Market Index</span><span class="mkt-v" id="mktV">&nbsp;</span></button></div>';

@@ -1,4 +1,4 @@
-/* Finance Lab design system.
+/* Lakeside Capital Research design system.
    One typeface (Times New Roman), bone paper, black ink, hairline rules, square corners, no shadows.
    Colour is reserved for meaning: oxblood for losses and the share price line, dark green for gains. */
 :root {
@@ -33,7 +33,9 @@ p { margin: .4rem 0 .9rem; color: var(--ink-2); }
 .topbar { position: sticky; top: 0; z-index: 50; background: var(--paper); border-bottom: 1px solid var(--ink); }
 .topbar-in { display: flex; align-items: center; height: 64px; padding: 0 28px; gap: 40px; }
 .brand { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.24em; color: var(--ink); white-space: nowrap; border: none; flex: 0 0 auto; }
-.brand span { color: var(--muted); }
+.brand { display: flex; flex-direction: column; gap: 4px; }
+.brand .b1 { font-size: 0.8rem; letter-spacing: 0.24em; color: var(--ink); }
+.brand .b2 { font-size: 0.6rem; letter-spacing: 0.2em; color: var(--muted); }
 .brand:hover { border: none; }
 .nav { display: flex; gap: 26px; flex-wrap: wrap; flex: 1; justify-content: center; }
 .nav a { color: var(--muted); font-size: 0.74rem; text-transform: uppercase; letter-spacing: var(--track); border: none; padding: 6px 0; border-bottom: 1px solid transparent; }
@@ -196,6 +198,7 @@ footer a { color: var(--ink-2); }
 .method p { break-inside: avoid; margin-top: 0; }
 .method p strong { font-weight: 400; font-style: italic; color: var(--ink); }
 .skills { display: flex; flex-wrap: wrap; gap: 8px 26px; margin-top: 30px; }
+.hero + main > h2:first-child { margin-top: 1.6rem; }
 .skills span { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted); }
 ul.plain { padding-left: 18px; margin: 0; }
 ul.plain li { margin-bottom: 8px; color: var(--ink-2); }

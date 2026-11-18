@@ -1,4 +1,4 @@
-# Finance Lab
+# Lakeside Capital Research
 
 A static website with five finance projects:
 

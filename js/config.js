@@ -9,7 +9,8 @@
    via the "Data" button in the header (stored only in their browser). */
 window.SITE_CONFIG = {
   ownerName: "Elric",
-  siteName: "Finance Lab",
+  siteName: "Lakeside Capital Research",
+  ownerFullName: "Elric Pascali",
   ownerTitle: "MSc Management, Technology and Economics, ETH Zurich",
   email: "pascalielric@gmail.com",
   linkedin: "https://www.linkedin.com/in/elricpascali",
