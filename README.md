@@ -1,4 +1,4 @@
-# Lakeside Capital Research
+# Elric & Company
 
 A static website with five finance projects:
 

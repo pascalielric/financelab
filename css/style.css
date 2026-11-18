@@ -1,4 +1,4 @@
-/* Lakeside Capital Research design system.
+/* Elric & Company design system.
    One typeface (Times New Roman), bone paper, black ink, hairline rules, square corners, no shadows.
    Colour is reserved for meaning: oxblood for losses and the share price line, dark green for gains. */
 :root {
@@ -232,3 +232,10 @@ ul.plain li { margin-bottom: 8px; color: var(--ink-2); }
 .ef-key .k-front { width: 22px; height: 0; border-top: 2.5px solid var(--ink); }
 .ef-key .k-cml { width: 22px; height: 0; border-top: 2px dotted var(--brass); }
 @media (max-width: 1000px) { .ef-grid { grid-template-columns: 1fr; } }
+
+/* Centred home hero with a justified text block */
+.hero-center { text-align: center; padding: 88px 0 34px; }
+.hero-center .eyebrow { justify-content: center; }
+.hero-center h1 { max-width: 980px; margin: 0 auto 1.4rem; }
+.hero-center p { max-width: 760px; margin: 0 auto; text-align: justify; text-align-last: center; hyphens: none; }
+.hero-center + main > h2:first-child { margin-top: 0.4rem; }
