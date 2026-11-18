@@ -28,6 +28,9 @@ jobs:
       - run: pip install -r pipeline/requirements.txt
       - name: Fetch prices
         run: python pipeline/fetch_prices.py
+      - name: Fetch fundamentals and betas
+        run: python pipeline/fetch_fundamentals.py
+        continue-on-error: true
       - name: Build earnings briefings
         run: python pipeline/earnings_preview.py
         continue-on-error: true
