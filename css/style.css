@@ -258,3 +258,5 @@ ul.plain li { margin-bottom: 8px; color: var(--ink-2); }
 @media (max-width: 1000px) { .about-author { grid-template-columns: 1fr; gap: 24px; padding: 28px 24px; } }
 
 .project-card > p:not(.finding) { text-align: justify; hyphens: none; }
+
+.sources-head { margin-top: 36px; }
