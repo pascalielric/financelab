@@ -78,7 +78,7 @@
     ], 0);
 
     UI.plot("chDebt", [
-      { type: "bar", x: heads, y: p(function (x) { return x.balances[0]; }, r.tranches[0].amount), name: "Term Loan B", marker: { color: "#111111" } },
+      { type: "bar", x: heads, y: p(function (x) { return x.balances[0]; }, r.tranches[0].amount), name: "Term Loan B", marker: { color: "#00011F" } },
       { type: "bar", x: heads, y: p(function (x) { return x.balances[1]; }, r.tranches[1].amount), name: "Senior secured notes", marker: { color: "#8C877C" } },
       { type: "scatter", mode: "lines+markers+text", x: heads, y: p(function (x) { return x.leverage; }, (r.debt0 - a.minCash) / a.ebitda0), name: "Net debt / EBITDA", yaxis: "y2", line: { color: "#7A1E1E", width: 2.5 },
         text: p(function (x) { return x.leverage.toFixed(1) + "x"; }, ((r.debt0 - a.minCash) / a.ebitda0).toFixed(1) + "x"), textposition: "top center", textfont: { color: "#7A1E1E" } }
@@ -89,7 +89,7 @@
       x: ["Equity<br>at entry"].concat(r.bridge.map(function (b) { return b.item.replace(" and ", "<br>and ").replace("Multiple ", "Multiple<br>").replace("Management ", "Management<br>").replace("EBITDA ", "EBITDA<br>"); })).concat(["Equity<br>at exit"]),
       y: [r.sponsorEquity].concat(r.bridge.map(function (b) { return b.value; })).concat([0]),
       text: [r.sponsorEquity].concat(r.bridge.map(function (b) { return b.value; })).concat([r.exitEquity]).map(function (v) { return UI.fmt(v); }), textposition: "outside",
-      connector: { line: { color: "#CFC9BC" } }, increasing: { marker: { color: "#2F4A36" } }, decreasing: { marker: { color: "#7A1E1E" } }, totals: { marker: { color: "#111111" } }
+      connector: { line: { color: "#CFC9BC" } }, increasing: { marker: { color: "#2F4A36" } }, decreasing: { marker: { color: "#7A1E1E" } }, totals: { marker: { color: "#00011F" } }
     }], { showlegend: false, yaxis: { title: "USD m", range: [0, Math.max(r.exitEquity, r.sponsorEquity + r.bridge[0].value + Math.max(0, r.bridge[1].value) + r.bridge[2].value) * 1.15] }, xaxis: { tickangle: 0, tickfont: { size: 11 } }, margin: { l: 60, r: 20, t: 30, b: 70 } });
 
     UI.table("retTable", [{ h: "Exit and returns", f: function (x) { return x[0]; } }, { h: "USD m", n: 1, f: function (x) { return x[1]; } }], [

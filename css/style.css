@@ -229,7 +229,7 @@ ul.plain li { margin-bottom: 8px; color: var(--ink-2); }
 .ef-key .k-min { border: 1.5px solid var(--ink); border-radius: 50%; }
 .ef-key .k-opt { border: 1.5px solid var(--neg); border-radius: 50%; }
 .ef-key .k-asset { background: #9C978C; border-radius: 50%; width: 8px; height: 8px; }
-.ef-key .k-front { width: 22px; height: 0; border-top: 2.5px solid var(--ink); }
+.ef-key .k-front { width: 22px; height: 0; border-top: 2.5px solid var(--fill); }
 .ef-key .k-cml { width: 22px; height: 0; border-top: 2px dotted var(--brass); }
 @media (max-width: 1000px) { .ef-grid { grid-template-columns: 1fr; } }
 

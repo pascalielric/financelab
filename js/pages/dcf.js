@@ -94,7 +94,7 @@
     // Charts
     const xs = heads;
     UI.plot("chRev", [
-      { type: "bar", x: xs, y: hv(function (h) { return h.revenue; }).concat(pv(function (x) { return x.revenue; })), name: "Revenue (CHF m)", marker: { color: xs.map(function (_, i) { return i < 2 ? "#111111" : "#8C877C"; }) } },
+      { type: "bar", x: xs, y: hv(function (h) { return h.revenue; }).concat(pv(function (x) { return x.revenue; })), name: "Revenue (CHF m)", marker: { color: xs.map(function (_, i) { return i < 2 ? "#00011F" : "#8C877C"; }) } },
       { type: "scatter", mode: "lines+markers", x: xs, y: hv(function (h) { return h.ebitda / h.revenue; }).concat(pv(function (x) { return x.margin; })), name: "EBITDA margin", yaxis: "y2", line: { color: "#7A1E1E", width: 2.5 } }
     ], { yaxis2: { overlaying: "y", side: "right", tickformat: ".1%", showgrid: false, range: [0.2, 0.28] }, margin: { l: 56, r: 56, t: 20, b: 44 } });
 
@@ -106,7 +106,7 @@
       x: ["PV of UFCF<br>FY27 to FY31", "PV of terminal<br>value", "Enterprise<br>value", "Net debt", "Pensions", "Equity<br>value"],
       y: [r.pvSum, pvTv, 0, -G.netDebt, -G.otherClaims, 0],
       text: [r.pvSum, pvTv, ev, -G.netDebt, -G.otherClaims, eq].map(function (v) { return UI.fmt(v); }), textposition: "outside",
-      connector: { line: { color: "#CFC9BC" } }, increasing: { marker: { color: "#8C877C" } }, decreasing: { marker: { color: "#7A1E1E" } }, totals: { marker: { color: "#111111" } }
+      connector: { line: { color: "#CFC9BC" } }, increasing: { marker: { color: "#8C877C" } }, decreasing: { marker: { color: "#7A1E1E" } }, totals: { marker: { color: "#00011F" } }
     }], { showlegend: false, margin: { l: 56, r: 20, t: 30, b: 70 }, yaxis: { range: [0, ev * 1.15] }, xaxis: { tickangle: 0, tickfont: { size: 11 } } });
 
     // WACC and TV tables
@@ -156,7 +156,7 @@
     const comps = G.compsRange.map(perShare), prec = G.precedentRange.map(perShare);
     const w52 = state.w52 || [G.week52Low, G.week52High];
     const bars = [
-      ["DCF scenarios, blended", "Bear to bull case", bear.blended.perShare, bull.blended.perShare, "#111111"],
+      ["DCF scenarios, blended", "Bear to bull case", bear.blended.perShare, bull.blended.perShare, "#00011F"],
       ["DCF, Gordon growth", "WACC \u00b10.5 pt, growth \u00b10.5 pt", g1[0][0], g1[1][1], "#3A3A3A"],
       ["DCF, exit multiple", "WACC \u00b10.5 pt, multiple \u00b12x", x1[0][0], x1[1][1], "#6E6A61"],
       ["Precedent transactions", G.precedentRange[0].toFixed(1) + "x to " + G.precedentRange[1].toFixed(1) + "x FY26E EBITDA", prec[0], prec[1], "#8C6D3F"],
