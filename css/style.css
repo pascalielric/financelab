@@ -33,9 +33,10 @@ p { margin: .4rem 0 .9rem; color: var(--ink-2); }
 .topbar { position: sticky; top: 0; z-index: 50; background: var(--paper); border-bottom: 1px solid var(--ink); }
 .topbar-in { display: flex; align-items: center; height: 64px; padding: 0 28px; gap: 40px; }
 .brand { display: flex; flex-direction: column; flex: 0 0 auto; border: none; color: var(--ink); line-height: 1; white-space: nowrap; font-family: var(--serif); }
-.brand .w1 { font-size: 1.45rem; letter-spacing: 0.01em; }
-.brand .w2 { font-size: 1.45rem; letter-spacing: 0.01em; padding-left: 1.05em; margin-top: 1px; }
-.brand:hover { border: none; color: var(--muted); }
+.brand { opacity: 0.86; }
+.brand .w1 { font-size: 1.12rem; letter-spacing: 0.02em; }
+.brand .w2 { font-size: 1.12rem; letter-spacing: 0.02em; padding-left: 1.05em; margin-top: 2px; }
+.brand:hover { border: none; opacity: 1; color: var(--muted); }
 .nav { display: flex; gap: clamp(20px, calc((100vw - 900px) / 6), 96px); flex-wrap: nowrap; flex: 1; justify-content: center; white-space: nowrap; }
 .nav a { color: var(--muted); font-size: 0.74rem; text-transform: uppercase; letter-spacing: var(--track); border: none; padding: 6px 0; border-bottom: 1px solid transparent; }
 .nav a:hover { color: var(--ink); }
