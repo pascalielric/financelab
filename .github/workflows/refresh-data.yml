@@ -31,6 +31,9 @@ jobs:
       - name: Fetch fundamentals and betas
         run: python pipeline/fetch_fundamentals.py
         continue-on-error: true
+      - name: Fetch option chains
+        run: python pipeline/fetch_options.py
+        continue-on-error: true
       - name: Build earnings briefings
         run: python pipeline/earnings_preview.py
         continue-on-error: true

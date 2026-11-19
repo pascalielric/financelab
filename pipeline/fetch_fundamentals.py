@@ -20,7 +20,10 @@ MARKET = "URTH"
 INFO_KEYS = ["shortName", "longName", "currency", "financialCurrency", "marketCap", "enterpriseValue", "ebitda",
              "totalRevenue", "totalDebt", "totalCash", "sharesOutstanding", "trailingPE", "forwardPE",
              "enterpriseToEbitda", "enterpriseToRevenue", "ebitdaMargins", "operatingMargins", "revenueGrowth",
-             "beta", "currentPrice", "previousClose", "dividendYield", "country", "sector", "industry"]
+             "beta", "currentPrice", "previousClose", "dividendYield", "country", "sector", "industry",
+             "forwardEps", "trailingEps", "bookValue", "priceToBook", "fiftyTwoWeekLow", "fiftyTwoWeekHigh",
+             "targetMeanPrice", "numberOfAnalystOpinions", "lastFiscalYearEnd", "heldPercentInsiders",
+             "heldPercentInstitutions", "floatShares", "impliedSharesOutstanding"]
 FIN_ROWS = {
     "income": ["Total Revenue", "Gross Profit", "EBITDA", "Normalized EBITDA", "EBIT", "Operating Income",
                "Interest Expense", "Pretax Income", "Tax Provision", "Net Income", "Diluted EPS",
@@ -71,6 +74,17 @@ def statements(t):
             out[key] = rec
         except Exception as e:
             print("statement error", key, e)
+    try:  # last eight quarters of the income statement, used to calendarise fiscal years
+        q = t.quarterly_income_stmt
+        if q is not None and not q.empty:
+            cols = sorted(q.columns)[-8:]
+            rec = {"quarters": [c.strftime("%Y-%m-%d") for c in cols]}
+            for row in FIN_ROWS["income"]:
+                if row in q.index:
+                    rec[row] = [clean(q.loc[row, c]) for c in cols]
+            out["quarterly"] = rec
+    except Exception as e:
+        print("quarterly error", e)
     return out
 
 
