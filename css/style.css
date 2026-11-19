@@ -38,7 +38,7 @@ p { margin: .4rem 0 .9rem; color: var(--ink-2); }
 .brand .w1 { font-size: 1.12rem; letter-spacing: 0.02em; }
 .brand .w2 { font-size: 1.12rem; letter-spacing: 0.02em; padding-left: 1.05em; margin-top: 2px; }
 .brand:hover { border: none; opacity: 1; color: var(--muted); }
-.nav { display: flex; gap: clamp(20px, calc((100vw - 900px) / 6), 96px); flex-wrap: nowrap; flex: 1; justify-content: center; white-space: nowrap; }
+.nav { display: flex; gap: clamp(18px, calc((100vw - 900px) / 14), 52px); flex-wrap: nowrap; flex: 1; justify-content: center; white-space: nowrap; }
 .nav a { color: var(--muted); font-size: 0.74rem; text-transform: uppercase; letter-spacing: var(--track); border: none; padding: 6px 0; border-bottom: 1px solid transparent; }
 .nav a:hover { color: var(--ink); }
 .nav a.active { color: var(--ink); border-bottom: 1px solid var(--ink); }
