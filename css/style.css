@@ -271,6 +271,6 @@ footer .row { gap: 6px 24px; }
 .project-card .card-foot { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--rule-2); display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px 18px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: var(--track); }
 .project-card .card-foot .more { margin: 0; padding: 0; border: 0; color: var(--ink); text-decoration: none; }
 .project-card .card-foot .dl { color: var(--muted); }
-.project-card .card-foot .dl a { color: var(--ink); margin-left: 6px; text-decoration: none; border-bottom: 1px solid var(--rule); }
+.project-card .card-foot .dl a { color: var(--ink); margin-left: 0; margin-right: 12px; text-decoration: none; border-bottom: 1px solid var(--rule); }
 .project-card .card-foot .dl a:hover { border-bottom-color: var(--ink); }
 .project-card .card-foot .dl i { font-style: normal; margin: 0 8px 0 10px; }
