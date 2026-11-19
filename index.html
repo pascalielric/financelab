@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Elric &amp; Company · Valuation, Buyout and Risk Models</title>
 <meta name="description" content="Interactive DCF, LBO, Monte Carlo, portfolio risk and earnings models with investment banking and private equity style pitch decks.">
-<link rel="stylesheet" href="css/style.css?v=202611181641">
-<script src="js/config.js?v=202611181641"></script><script src="js/ui.js?v=202611181641"></script><script src="js/api.js?v=202611181641"></script>
+<link rel="stylesheet" href="css/style.css?v=202611190921">
+<script src="js/config.js?v=202611190921"></script><script src="js/ui.js?v=202611190921"></script><script src="js/api.js?v=202611190921"></script>
 </head>
 <body>
 <section class="hero hero-center">
@@ -19,7 +19,7 @@
 <main class="wrap">
   <h2><span class="section-num">01</span>Transaction cases</h2>
   <div class="grid g2">
-    <a class="project-card" href="dcf.html">
+    <div class="project-card case" data-href="dcf.html">
       <span class="tag">Investment banking &nbsp;&middot;&nbsp; Valuation</span>
       <h3 class="title">Givaudan: discounted cash flow valuation</h3>
       <div class="profile">
@@ -33,9 +33,9 @@
       </div>
       <p class="finding"><span>Key finding</span>Fairly valued: CHF 4,061 per share against a share price of about CHF 4,080</p>
       <p>Five year free cash flow model built by division, with a regression based cost of capital, two terminal value methods, trading comparables, precedent transactions, sensitivities and a football field.</p>
-      <span class="more">Open model and valuation deck</span>
-    </a>
-    <a class="project-card" href="lbo.html">
+      <div class="card-foot"><a class="more" href="dcf.html">Open model and valuation deck</a><span class="dl">Deck <a href="downloads/Givaudan_Valuation_Deck.pdf">PDF</a> <a href="downloads/Givaudan_Valuation_Deck.pptx">PowerPoint</a> <i>&middot;</i> Model <a href="downloads/Givaudan_DCF_Model.xlsx">Excel</a></span></div>
+    </div>
+    <div class="project-card case" data-href="lbo.html">
       <span class="tag">Private equity &nbsp;&middot;&nbsp; Buyout</span>
       <h3 class="title">Temenos: take private leveraged buyout</h3>
       <div class="profile">
@@ -49,8 +49,8 @@
       </div>
       <p class="finding"><span>Key finding</span>12.8% IRR at a 25% premium: below a 20% hurdle, walk away above CHF 92 per share</p>
       <p>Sponsor buyout with a revenue and ARR build, revolver and two tranche debt schedule, linked financial statements, covenant tests, returns by exit year, a dividend recap and a walk away price.</p>
-      <span class="more">Open model and investment committee deck</span>
-    </a>
+      <div class="card-foot"><a class="more" href="lbo.html">Open model and investment committee deck</a><span class="dl">Deck <a href="downloads/Temenos_LBO_IC_Deck.pdf">PDF</a> <a href="downloads/Temenos_LBO_IC_Deck.pptx">PowerPoint</a> <i>&middot;</i> Model <a href="downloads/Temenos_LBO_Model.xlsx">Excel</a></span></div>
+    </div>
   </div>
 
   <h2><span class="section-num">02</span>Analytics</h2>
@@ -60,22 +60,12 @@
     <a class="project-card" href="earnings.html"><span class="tag">Equity research</span><h3 class="title">Earnings preview</h3><p>Next report date, consensus, track record, share price reaction to past reports and three scenarios with probabilities.</p><span class="more">Analyse a stock</span></a>
   </div>
 
-  <h2><span class="section-num">03</span>Deliverables</h2>
-  <div class="table-wrap"><table>
-    <thead><tr><th>Document</th><th>Format</th><th>Content</th></tr></thead>
-    <tbody>
-      <tr><td><a href="downloads/Givaudan_Valuation_Deck.pdf">Givaudan valuation deck</a></td><td><a href="downloads/Givaudan_Valuation_Deck.pdf">PDF</a> &nbsp; <a href="downloads/Givaudan_Valuation_Deck.pptx">PowerPoint</a></td><td>Fourteen slides for management: thesis, revenue build, forecast, cost of capital, valuation, market cross checks, sensitivities</td></tr>
-      <tr><td><a href="downloads/Givaudan_DCF_Model.xlsx">Givaudan DCF model</a></td><td><a href="downloads/Givaudan_DCF_Model.xlsx">Excel</a></td><td>Nine tabs: division revenue build, history, WACC with beta regression and peer betas, comps, precedents, summary, three sensitivity tables</td></tr>
-      <tr><td><a href="downloads/Temenos_LBO_IC_Deck.pdf">Temenos investment committee deck</a></td><td><a href="downloads/Temenos_LBO_IC_Deck.pdf">PDF</a> &nbsp; <a href="downloads/Temenos_LBO_IC_Deck.pptx">PowerPoint</a></td><td>Seventeen slides: thesis, revenue build, structure, statements and credit, returns, exit timing, bid strategy, risks</td></tr>
-      <tr><td><a href="downloads/Temenos_LBO_Model.xlsx">Temenos LBO model</a></td><td><a href="downloads/Temenos_LBO_Model.xlsx">Excel</a></td><td>Nine tabs: LBO, revenue and ARR, history, linked statements, returns, credit and covenants, peer comps, sensitivity engine</td></tr>
-    </tbody></table></div>
-
-  <h2><span class="section-num">04</span>Approach</h2>
+  <h2><span class="section-num">03</span>Approach</h2>
   <div class="grid g2 justify">
     <div><h3>Why these cases</h3><p>Food science and economics let me read a business from both sides: the science that creates the product and the economics that create the value. That is why the valuation covers Givaudan, whose flavours business sits exactly at that intersection, and why the buyout looks at Temenos, a Swiss software company with the recurring revenue a sponsor needs.</p><p>Assumptions are sourced, judgement calls are explained, and each model can be stress tested live.</p></div>
     <div><h3>How it is built</h3><p>Static HTML and JavaScript hosted on GitHub Pages, charts with Plotly. The valuation engines are plain JavaScript functions shared by the website, the Excel models and the decks, so every number ties out across formats.</p><p>Prices and earnings data are refreshed every weekday by an automated pipeline (Python, Yahoo Finance, GitHub Actions). The note at the top right shows the date of the last refresh.</p></div>
   </div>
-  <h2><span class="section-num">05</span>About the author</h2>
+  <h2><span class="section-num">04</span>About the author</h2>
   <div class="about-author">
     <div>
       <h1>Elric Pascali</h1>
@@ -112,6 +102,7 @@
     fitTitle(); window.addEventListener("resize", fitTitle);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitTitle);
     // show the CV button only once the file is in the downloads folder
+    document.querySelectorAll(".project-card.case").forEach(function (c) { c.addEventListener("click", function (e) { if (!e.target.closest("a")) location.href = c.getAttribute("data-href"); }); });
     fetch("downloads/Elric_Pascali_CV.pdf", { method: "HEAD" }).then(function (r) { if (r.ok) document.getElementById("cvLink").classList.remove("hidden"); }).catch(function () {});
   });
 </script>

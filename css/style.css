@@ -267,3 +267,10 @@ footer .row { gap: 6px 24px; }
 .justify p { text-align: justify; hyphens: none; }
 .justify + h2 { margin-top: 1.7rem; }
 .page-notes { line-height: 1.15; margin: 0 0 6px; }
+.project-card.case { cursor: pointer; }
+.project-card .card-foot { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--rule-2); display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px 18px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: var(--track); }
+.project-card .card-foot .more { margin: 0; padding: 0; border: 0; color: var(--ink); text-decoration: none; }
+.project-card .card-foot .dl { color: var(--muted); }
+.project-card .card-foot .dl a { color: var(--ink); margin-left: 6px; text-decoration: none; border-bottom: 1px solid var(--rule); }
+.project-card .card-foot .dl a:hover { border-bottom-color: var(--ink); }
+.project-card .card-foot .dl i { font-style: normal; margin: 0 8px 0 10px; }
