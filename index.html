@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Elric &amp; Company · Valuation, Buyout and Risk Models</title>
 <meta name="description" content="Interactive DCF, LBO, Monte Carlo, portfolio risk and earnings models with investment banking and private equity style pitch decks.">
-<link rel="stylesheet" href="css/style.css?v=202611190955">
-<script src="js/config.js?v=202611190955"></script><script src="js/ui.js?v=202611190955"></script><script src="js/api.js?v=202611190955"></script>
+<link rel="stylesheet" href="css/style.css?v=202611191002">
+<script src="js/config.js?v=202611191002"></script><script src="js/ui.js?v=202611191002"></script><script src="js/api.js?v=202611191002"></script>
 </head>
 <body>
 <section class="hero hero-center">
@@ -70,7 +70,8 @@
   </div>
 
   <h2><span class="section-num">02</span>Analytics</h2>
-  <div class="grid g3">
+  <div class="grid g2">
+    <a class="project-card" href="options.html"><span class="tag">Derivatives</span><h3 class="title">Options pricing and volatility surface</h3><p>Black Scholes and binomial pricing with all Greeks, and an implied volatility surface rebuilt every weekday from listed option prices, with forwards from put call parity and an SVI fit of each smile.</p><span class="more">Price an option</span></a>
     <a class="project-card" href="monte-carlo.html"><span class="tag">Quantitative methods</span><h3 class="title">Monte Carlo simulation</h3><p>Thousands of simulated futures for a portfolio, and a valuation that turns uncertain assumptions into a distribution of value per share.</p><span class="more">Run simulation</span></a>
     <a class="project-card" href="portfolio.html"><span class="tag">Asset management</span><h3 class="title">Portfolio risk and optimisation</h3><p>Enter holdings and see volatility, value at risk, drawdowns, risk contributions, stress tests and the path to the efficient frontier.</p><span class="more">Analyse a portfolio</span></a>
     <a class="project-card" href="earnings.html"><span class="tag">Equity research</span><h3 class="title">Earnings preview</h3><p>Next report date, consensus, track record, share price reaction to past reports and three scenarios with probabilities.</p><span class="more">Analyse a stock</span></a>
@@ -78,7 +79,7 @@
 
   <h2><span class="section-num">03</span>Approach</h2>
   <div class="grid g2 justify">
-    <div><h3>Why these cases</h3><p>Food science and economics let me read a business from both sides: the science that creates the product and the economics that create the value. That is why the valuation covers Givaudan, whose flavours business sits exactly at that intersection, and why the buyout looks at Temenos, a Swiss software company with the recurring revenue a sponsor needs.</p><p>Assumptions are sourced, judgement calls are explained, and each model can be stress tested live.</p></div>
+    <div><h3>Why these cases</h3><p>Food science and economics let me read a business from both sides: the science that creates the product and the economics that create the value. That is why the valuation covers Givaudan, whose flavours business sits exactly at that intersection, why the buyout looks at Temenos, a Swiss software company with the recurring revenue a sponsor needs, and why the merger tests Nike buying On, the running brand founded in Zurich, from the buyer's side.</p><p>Assumptions are sourced, judgement calls are explained, and each model can be stress tested live.</p></div>
     <div><h3>How it is built</h3><p>Static HTML and JavaScript hosted on GitHub Pages, charts with Plotly. The valuation engines are plain JavaScript functions shared by the website, the Excel models and the decks, so every number ties out across formats.</p><p>Prices and earnings data are refreshed every weekday by an automated pipeline (Python, Yahoo Finance, GitHub Actions). The note at the top right shows the date of the last refresh.</p></div>
   </div>
   <h2><span class="section-num">04</span>About the author</h2>

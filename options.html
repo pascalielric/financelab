@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Options and volatility surface · Elric &amp; Company</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/style.css?v=202611191002">
+<script src="vendor/plotly.min.js?v=202611191002"></script>
+<script src="js/config.js?v=202611191002"></script><script src="js/ui.js?v=202611191002"></script><script src="js/api.js?v=202611191002"></script>
+<script src="js/engine/options.js?v=202611191002"></script>
+</head>
+<body>
+<main class="wrap">
+  <div class="page-head">
+    <div class="eyebrow">Quantitative methods &nbsp;&middot;&nbsp; Derivatives</div>
+    <h1>Options pricing and the volatility surface</h1>
+    <p class="lead">A pricer that values any European or American option three ways and shows its sensitivities, and an implied volatility surface rebuilt every weekday from listed option prices. The market's forward and the volatility of each option are backed out here, not taken from a data vendor.</p>
+    <div class="downloads">
+      <a class="btn" href="downloads/Options_Pricer.xlsx">Excel pricer</a>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="group"><span>Underlying</span><div class="seg" id="und"></div></div>
+    <div class="group"><span id="asOf" class="note"></span></div>
+  </div>
+  <div class="grid g5" id="kpis"></div>
+
+  <h2><span class="section-num">01</span>Option pricer</h2>
+  <div class="legend-line"><b>Delta</b> change in value for a 1 unit move in the share<span class="sep">&middot;</span><b>Gamma</b> change in delta<span class="sep">&middot;</span><b>Vega</b> per 1 point of volatility<span class="sep">&middot;</span><b>Theta</b> per calendar day<span class="sep">&middot;</span><b>Rho</b> per 1 point of rates</div>
+  <div class="card">
+    <div class="card-head"><h3>Drag to change the contract; spot, volatility and rates start from today's market</h3>
+      <div class="row" style="gap:14px"><div class="seg" id="otype"><button data-t="call" class="on">Call</button><button data-t="put">Put</button></div><button class="btn ghost small" id="reset">Reset</button></div></div>
+    <div class="controls c5" id="controls"></div>
+  </div>
+  <div class="grid g2" style="margin-top:18px">
+    <div><div id="priceTable"></div><p class="note" id="priceNote"></p></div>
+    <div><div id="greekTable"></div></div>
+  </div>
+  <div class="grid g3" style="margin-top:18px">
+    <div class="card"><h3>Value today against payoff at expiry</h3><div id="chValue" class="chart"></div></div>
+    <div class="card"><h3>Delta and gamma across share prices</h3><div id="chGreeks" class="chart"></div></div>
+    <div class="card"><h3>Binomial tree converging to Black Scholes</h3><div id="chConv" class="chart"></div></div>
+  </div>
+
+  <h2><span class="section-num">02</span>Implied volatility surface</h2>
+  <div class="card"><h3 id="surfTitle">Implied volatility by moneyness and maturity</h3><div id="chSurface" style="height:520px"></div><p class="note">Moneyness is strike divided by the forward. Drag to rotate. Each slice is a fitted SVI curve through the market points; maturities with too few clean quotes are left out.</p></div>
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card"><div class="card-head"><h3>Volatility smile</h3><select id="expSel" class="small"></select></div><div id="chSmile" class="chart"></div></div>
+    <div class="card"><h3>Term structure: at the money volatility</h3><div id="chTerm" class="chart"></div></div>
+  </div>
+  <div class="justify" id="readText" style="margin-top:18px"></div>
+
+  <h2><span class="section-num">03</span>Forwards, carry and fit quality</h2>
+  <div id="sliceTable"></div>
+  <p class="note">The forward comes from put call parity, C − P = DF × (F − K), using the median across strikes near the money; the discount factor DF comes from the 13 week Treasury bill rate. Carry is the annualised log ratio of forward to spot: the interest rate minus the dividend yield the options imply. Fit error is the root mean square gap between market and SVI volatilities.</p>
+
+  <h2><span class="section-num">04</span>Methodology</h2>
+  <div class="grid g2 justify">
+    <div><h3>Pricing</h3>
+      <p>Black Scholes Merton with a continuous dividend yield gives the closed form price and Greeks of a European option. The Cox Ross Rubinstein binomial tree builds the share price as a lattice of up and down moves; working back from expiry it gives the same European price as the number of steps grows, and allows early exercise at every node, which values American options. An American put is worth more than a European one because exercising early earns interest on the strike.</p>
+      <p>Implied volatility is the volatility that makes Black's formula on the forward match the market price. It is solved by Newton's method on vega with a bisection safeguard, so it always converges.</p></div>
+    <div><h3>The surface</h3>
+      <p>The data pipeline downloads option chains from Yahoo Finance every weekday. Only out of the money options are used (puts below the forward, calls above), because they are the most traded and carry no early exercise premium. Prices are the bid and ask midpoint; when the book is empty, as outside US trading hours, the last trade is used and the fit is noisier.</p>
+      <p>Each maturity is fitted with the raw SVI (stochastic volatility inspired) parameterisation of Gatheral: total variance w(k) = a + b(ρ(k − m) + √((k − m)² + σ²)), where k is log moneyness. It has five parameters, captures skew and curvature, and is constrained so variance never turns negative. Yahoo's own implied volatilities are shown on the smile only as a cross check.</p></div>
+  </div>
+  <h3 class="sources-head">Sources</h3>
+  <ul class="note">
+    <li>Option chains, spot prices and Treasury yields: Yahoo Finance via the site's data pipeline (pipeline/fetch_options.py), refreshed every weekday</li>
+    <li>J. C. Hull, Options, Futures, and Other Derivatives, 11th edition: Black Scholes Merton, Greeks and binomial trees</li>
+    <li>J. Gatheral, The Volatility Surface: A Practitioner's Guide (Wiley, 2006): the SVI parameterisation</li>
+    <li>G. West, Better approximations to cumulative normal functions (2005): the normal distribution function used here</li>
+  </ul>
+  <p class="note">Educational tool. Option prices outside US trading hours can be stale; nothing here is a trading recommendation.</p>
+</main>
+<script src="js/pages/options.js?v=202611191002"></script>
+</body>
+</html>

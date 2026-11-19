@@ -6,6 +6,8 @@ A static website with five finance projects:
 |---|---|
 | `dcf.html` | Givaudan discounted cash flow valuation: scenarios, WACC, two terminal value methods, sensitivities, football field |
 | `lbo.html` | Temenos take private leveraged buyout: sources and uses, debt schedule with cash sweep, returns, bid ceiling |
+| `merger.html` | Nike and On merger model: offer and financing, purchase price allocation, calendarisation, accretion and dilution, breakeven synergies, contribution, credit, value creation |
+| `options.html` | Black Scholes and binomial pricer with Greeks; implied volatility surface from daily option chains, forwards from put call parity, SVI fit |
 | `monte-carlo.html` | Correlated portfolio simulation (geometric Brownian motion and block bootstrap) and a stochastic DCF |
 | `portfolio.html` | Portfolio risk (VaR, CVaR, drawdown, beta, risk attribution, stress tests) and mean variance optimisation |
 | `earnings.html` | Earnings preview with next report date, consensus, track record and bull, base and bear scenarios |
