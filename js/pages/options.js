@@ -101,38 +101,42 @@
     const xs = []; for (let i = 0; i <= 120; i++) xs.push(c.K * (0.6 + 0.8 * i / 120));
     const val = xs.map(function (s) { return O.bs(s, c.K, T, c.r, c.q, c.vol, ty).price; });
     const pay = xs.map(function (s) { return Math.max(ty === "call" ? s - c.K : c.K - s, 0); });
-    const legendTop = { orientation: "h", x: 0, xanchor: "left", y: 1.03, yanchor: "bottom", font: { size: 11 }, itemwidth: 30, tracegroupgap: 0 };
     const strikeLine = function (yref) { return { type: "line", x0: c.K, x1: c.K, yref: yref || "paper", y0: 0, y1: 1, line: { color: "#BDB7AA", width: 1, dash: "dot" } }; };
-    const vmax = Math.max.apply(null, val.concat(pay)) * 1.08, call0 = ty === "call";
+    const call0 = ty === "call", prem = g.price;
+    const prof = pay.map(function (v) { return v - prem; });
+    const be = call0 ? c.K + prem : c.K - prem;
+    const vmax = Math.max.apply(null, val.concat(pay)) * 1.08;
+    const legendBelow = { orientation: "v", x: 0, xanchor: "left", y: -0.2, yanchor: "top", font: { size: 12 }, tracegroupgap: 2 };
     UI.plot("chValue", [
+      { x: xs, y: val, name: "Option price today", line: { color: "#111111", width: 2 }, hovertemplate: "Share %{x:.2f}<br>Option price %{y:.2f}<extra></extra>" },
       { x: xs, y: pay, name: "Payoff at expiry", line: { color: "#B9B3A6", width: 1.6 }, hovertemplate: "Share %{x:.2f}<br>Payoff %{y:.2f}<extra></extra>" },
-      { x: xs, y: val, name: "Value today", line: { color: "#111111", width: 2 }, hovertemplate: "Share %{x:.2f}<br>Value %{y:.2f}<extra></extra>" },
-      { x: [c.S], y: [g.price], mode: "markers", name: "Today", marker: { color: "#7A1E1E", size: 8 }, hovertemplate: "Share %{x:.2f}<br>Value %{y:.2f}<extra></extra>" }],
-      { height: 320, showlegend: false, margin: { l: 64, r: 16, t: 30, b: 52 },
-        xaxis: { title: "Share price (" + cur + ")", range: [xs[0], xs[xs.length - 1]] }, yaxis: { title: "Option value (" + cur + ")", range: [0, vmax], rangemode: "nonnegative", zeroline: false },
-        shapes: [strikeLine()],
-        annotations: [{ x: c.K, y: 1, yref: "paper", text: "Strike " + c.K.toFixed(0), showarrow: false, xanchor: "left", yanchor: "top", xshift: 4, font: { size: 11, color: "#6E6A61" } },
-                      { x: c.S, y: g.price, text: "Today " + g.price.toFixed(2), showarrow: false, xanchor: call0 ? "right" : "left", yanchor: "bottom", xshift: call0 ? -6 : 6, font: { size: 11, color: "#7A1E1E" } },
-                      { x: call0 ? xs[100] : xs[20], y: val[call0 ? 100 : 20], text: "Value today", showarrow: false, xanchor: call0 ? "right" : "left", yanchor: "bottom", xshift: call0 ? -6 : 6, yshift: 2, font: { size: 11, color: "#111111" } },
-                      { x: xs[call0 ? 76 : 44], y: pay[call0 ? 76 : 44], text: "Payoff at expiry", showarrow: false, xanchor: call0 ? "left" : "right", yanchor: "top", xshift: call0 ? 10 : -10, yshift: -2, font: { size: 11, color: "#8C877C" } }] });
+      { x: xs, y: prof, name: "Profit at expiry (payoff less price paid)", line: { color: "#2F4A36", width: 1.6, dash: "dash" }, hovertemplate: "Share %{x:.2f}<br>Profit %{y:.2f}<extra></extra>" },
+      { x: [c.S], y: [prem], mode: "markers", name: "Today, at the current share price", marker: { color: "#7A1E1E", size: 8 }, hovertemplate: "Share %{x:.2f}<br>Option price %{y:.2f}<extra></extra>" }],
+      { height: 430, showlegend: true, legend: legendBelow, margin: { l: 64, r: 16, t: 30, b: 150 },
+        xaxis: { title: "Share price at expiry (" + cur + ")", range: [xs[0], xs[xs.length - 1]] },
+        yaxis: { title: "Value per option (" + cur + ")", range: [-prem * 1.06, vmax], zeroline: true, zerolinecolor: "#6E6A61", zerolinewidth: 1 },
+        shapes: [strikeLine(), { type: "line", x0: be, x1: be, yref: "paper", y0: 0, y1: 1, line: { color: "#2F4A36", width: 1, dash: "dot" } }],
+        annotations: [{ x: c.K, y: 1, yref: "paper", text: "Strike " + c.K.toFixed(0), showarrow: false, xanchor: call0 ? "right" : "left", yanchor: "top", xshift: call0 ? -4 : 4, font: { size: 11, color: "#6E6A61" } },
+                      { x: be, y: 1, yref: "paper", text: "Breakeven " + be.toFixed(2), showarrow: false, xanchor: call0 ? "left" : "right", yanchor: "top", xshift: call0 ? 4 : -4, font: { size: 11, color: "#2F4A36" } },
+                      { x: call0 ? xs[2] : xs[118], y: -prem, text: "Maximum loss " + prem.toFixed(2), showarrow: false, xanchor: call0 ? "left" : "right", yanchor: "bottom", yshift: 2, font: { size: 11, color: "#2F4A36" } }] });
+    document.getElementById("valueNote").innerHTML = "The option costs " + prem.toFixed(2) + " today (intrinsic value " + Math.max(call0 ? c.S - c.K : c.K - c.S, 0).toFixed(2) + " plus time value " + (prem - Math.max(call0 ? c.S - c.K : c.K - c.S, 0)).toFixed(2) + "). At expiry it pays the grey line; after subtracting the price paid, the buyer profits only " + (call0 ? "above " : "below ") + be.toFixed(2) + " and can lose at most " + prem.toFixed(2) + ".";
     const de = xs.map(function (s) { return O.bs(s, c.K, T, c.r, c.q, c.vol, ty).delta; }), ga = xs.map(function (s) { return O.bs(s, c.K, T, c.r, c.q, c.vol, ty).gamma; });
     const call = ty === "call";
     UI.plot("chGreeks", [
-      { x: xs, y: de, name: "Delta (left)", line: { color: "#111111", width: 2 }, hovertemplate: "Share %{x:.2f}<br>Delta %{y:.3f}<extra></extra>" },
-      { x: xs, y: ga, name: "Gamma (right)", yaxis: "y2", line: { color: "#7A1E1E", width: 1.6 }, hovertemplate: "Share %{x:.2f}<br>Gamma %{y:.5f}<extra></extra>" }],
-      { height: 320, showlegend: false, margin: { l: 64, r: 64, t: 30, b: 52 },
+      { x: xs, y: de, name: "Delta (left axis)", line: { color: "#111111", width: 2 }, hovertemplate: "Share %{x:.2f}<br>Delta %{y:.3f}<extra></extra>" },
+      { x: xs, y: ga, name: "Gamma (right axis)", yaxis: "y2", line: { color: "#7A1E1E", width: 1.6 }, hovertemplate: "Share %{x:.2f}<br>Gamma %{y:.5f}<extra></extra>" }],
+      { height: 430, showlegend: true, legend: legendBelow, margin: { l: 64, r: 64, t: 30, b: 150 },
         xaxis: { title: "Share price (" + cur + ")", range: [xs[0], xs[xs.length - 1]] },
-        yaxis: { title: "Delta (left axis)", range: call ? [0, 1] : [-1, 0], zeroline: false, tickformat: ".1f" },
-        yaxis2: { title: "Gamma (right axis)", overlaying: "y", side: "right", showgrid: false, range: [0, Math.max.apply(null, ga) * 1.1], zeroline: false, tickformat: ".3f", nticks: 5 },
+        yaxis: { title: "Delta", range: call ? [0, 1] : [-1, 0], zeroline: false, tickformat: ".1f" },
+        yaxis2: { title: "Gamma", overlaying: "y", side: "right", showgrid: false, range: [0, Math.max.apply(null, ga) * 1.1], zeroline: false, tickformat: ".3f", nticks: 5 },
         shapes: [{ type: "line", x0: c.S, x1: c.S, yref: "paper", y0: 0, y1: 1, line: { color: "#7A1E1E", width: 1, dash: "dot" } }],
         annotations: [{ x: c.S, y: 0, yref: "paper", text: "Today", showarrow: false, xanchor: "left", yanchor: "bottom", xshift: 4, font: { size: 11, color: "#7A1E1E" } },
-                      { x: xs[100], y: de[100], text: "Delta", showarrow: false, xanchor: "right", yanchor: call ? "bottom" : "top", xshift: -4, font: { size: 11, color: "#111111" } },
-                      { x: xs[38], y: ga[38], yref: "y2", text: "Gamma", showarrow: false, xanchor: "right", yanchor: "bottom", xshift: -4, font: { size: 11, color: "#7A1E1E" } }] });
+] });
     // Absolute pricing error of the tree against Black Scholes: converges to zero as the tree gets finer
     const ns = [], err = [];
     for (let n = 10; n <= 400; n += (n < 100 ? 2 : 10)) { ns.push(n); err.push(Math.abs(O.crr(c.S, c.K, T, c.r, c.q, c.vol, n, ty, false).price - g.price)); }
-    UI.plot("chConv", [{ x: ns, y: err, name: "Tree minus Black Scholes, absolute", line: { color: "#111111", width: 1.4 }, hovertemplate: "%{x} steps<br>Error %{y:.4f}<extra></extra>" }],
-      { height: 320, showlegend: false, margin: { l: 64, r: 16, t: 30, b: 52 },
+    UI.plot("chConv", [{ x: ns, y: err, name: "Gap between tree and Black Scholes price", line: { color: "#111111", width: 1.4 }, hovertemplate: "%{x} steps<br>Error %{y:.4f}<extra></extra>" }],
+      { height: 430, showlegend: true, legend: legendBelow, margin: { l: 64, r: 16, t: 30, b: 150 },
         xaxis: { title: "Number of tree steps", range: [0, 400] }, yaxis: { title: "Pricing error (" + cur + ")", range: [0, Math.max.apply(null, err) * 1.1], zeroline: false } });
   }
 
