@@ -5,7 +5,6 @@
    results, dark green for clearly positive ones. Spacing follows one scale: 8, 16, 24, 40, 64 pixels. */
 @font-face { font-family: "Newsreader"; src: url("../fonts/newsreader-latin-opsz-normal.woff2") format("woff2"); font-weight: 200 800; font-style: normal; font-display: swap; }
 @font-face { font-family: "Newsreader"; src: url("../fonts/newsreader-latin-opsz-italic.woff2") format("woff2"); font-weight: 200 800; font-style: italic; font-display: swap; }
-@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-wght-normal.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
 @font-face { font-family: "Cormorant SC"; src: url("../fonts/cormorant-sc-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
 
 :root {
@@ -22,7 +21,7 @@
   --pos: #2F4A36;
   --brass: #8C6D3F;
   --serif: "Newsreader", Georgia, "Times New Roman", serif;
-  --sans: "Times New Roman", Times, "Liberation Serif", Tinos, serif;
+  --sans: "Newsreader", Georgia, "Times New Roman", serif;
   --card-face: "Cormorant SC", "Copperplate", "Times New Roman", serif;
   --s1: 8px; --s2: 16px; --s3: 24px; --s4: 40px; --s5: 64px;
   --label: 13px;
@@ -30,7 +29,7 @@
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-body { margin: 0; font-family: var(--serif); color: var(--ink); background: var(--paper); font-size: 18px; line-height: 1.6; -webkit-font-smoothing: antialiased; font-optical-sizing: auto; overflow-x: hidden; }
+body { margin: 0; font-family: var(--serif); color: var(--ink); background: var(--paper); font-size: 18px; line-height: 1.6; font-variant-numeric: lining-nums; -webkit-font-smoothing: antialiased; font-optical-sizing: auto; overflow-x: hidden; }
 a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
 a:hover { border-bottom-color: var(--ink); }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
@@ -41,7 +40,7 @@ h3 { font-family: var(--sans); font-size: 14px; font-weight: 600; letter-spacing
 p { margin: var(--s1) 0 var(--s2); color: var(--ink-2); }
 main p, main li { max-width: 72ch; }
 .wrap { max-width: 1180px; margin: 0 auto; padding: 0 var(--s4); }
-.num, td.n, th.n, .kpi .value, .facts b { font-variant-numeric: lining-nums tabular-nums; }
+.num, td.n, th.n, .kpi .value, .facts b, .tile .v, .profile-strip .value, .project-card .result b { font-variant-numeric: lining-nums tabular-nums; }
 
 /* Header */
 .topbar { position: sticky; top: 0; z-index: 50; background: var(--paper); border-bottom: 1px solid var(--ink); }
@@ -81,6 +80,7 @@ main p, main li { max-width: 72ch; }
 .toc { position: sticky; top: 64px; z-index: 40; background: var(--paper); border-bottom: 1px solid var(--rule); }
 .toc-in { display: flex; gap: var(--s3); overflow-x: auto; scrollbar-width: none; padding: 0 var(--s4); max-width: 1180px; margin: 0 auto; }
 .toc-in::-webkit-scrollbar { display: none; }
+.toc-in { -webkit-mask-image: linear-gradient(to right, #000 88%, transparent); mask-image: linear-gradient(to right, #000 88%, transparent); padding-right: 64px; }
 .toc a { font-family: var(--sans); font-size: var(--label); color: var(--muted); border: none; padding: 12px 0; white-space: nowrap; border-bottom: 2px solid transparent; }
 .toc a:hover, .toc a.on { color: var(--ink); border-bottom-color: var(--ink); }
 h2[id] { scroll-margin-top: 120px; }
@@ -98,7 +98,7 @@ h2[id] { scroll-margin-top: 120px; }
 
 /* Business card hero (home) */
 .hero-card { padding: var(--s5) 0 var(--s4); text-align: center; }
-.bcard { position: relative; max-width: 620px; aspect-ratio: 1.75 / 1; margin: 0 auto; background: var(--card); border: 1px solid var(--ink); display: grid; grid-template-rows: auto 1fr auto; padding: var(--s3) 28px; text-align: left; }
+.bcard { position: relative; max-width: 620px; aspect-ratio: 1.75 / 1; margin: 0 auto; background: var(--card); border: 1px solid #C4BCAD; display: grid; grid-template-rows: auto 1fr auto; padding: var(--s3) 28px; text-align: left; }
 .bcard .corner { display: flex; justify-content: space-between; font-family: var(--serif); font-size: 15px; color: var(--ink-2); letter-spacing: 0.02em; gap: var(--s2); }
 .bcard .mid { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
 .bcard h1 { font-family: var(--card-face); font-weight: 500; font-size: clamp(2.1rem, 6vw, 3.1rem); letter-spacing: 0.17em; margin: 0 0 var(--s1); line-height: 1.1; padding-left: 0.17em; }
@@ -140,6 +140,7 @@ h2[id] { scroll-margin-top: 120px; }
 .files a i.ppt { background: var(--neg); }
 
 /* Company profile strip (model pages) */
+.profile-strip.two-text { grid-template-columns: 1.6fr 1.6fr repeat(3, 1fr); }
 .profile-strip { display: grid; grid-template-columns: 2.4fr repeat(4, 1fr); gap: 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--rule); margin-top: var(--s4); }
 .profile-strip > div { padding: var(--s2) var(--s2) var(--s2) 0; }
 .profile-strip > div + div { padding-left: var(--s2); border-left: 1px solid var(--rule); }
@@ -318,6 +319,7 @@ ul.plain li { margin-bottom: var(--s1); color: var(--ink-2); }
   .mkt { order: 2; margin-left: auto; }
   .nav { order: 3; flex: 1 0 100%; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; gap: var(--s3); border-top: 1px solid var(--rule); margin: 0 calc(-1 * var(--s2)); padding: 0 var(--s2); }
   .nav::-webkit-scrollbar { display: none; }
+  .nav { -webkit-mask-image: linear-gradient(to right, #000 82%, transparent); mask-image: linear-gradient(to right, #000 82%, transparent); padding-right: 48px; }
   .nav a { padding: 12px 0; font-size: 14px; }
   .toc { top: 104px; }
   h2[id] { scroll-margin-top: 160px; }
@@ -343,14 +345,14 @@ ul.plain li { margin-bottom: var(--s1); color: var(--ink-2); }
   .hero-card .intro { font-size: 1.15rem; }
   .hero-actions .btn { flex: 1 1 100%; }
   .mkt { padding-left: var(--s2); }
-  .mkt-k { display: none; }
+  .mkt-k { font-size: 11px; }
   .card { padding: var(--s2); }
   .project-card { padding: var(--s2); }
   .tree .branches > div { grid-template-columns: 1fr; gap: 6px; }
   .chart { min-height: 300px; }
 }
 @media print { .topbar, .toc, footer, .controls, .downloads { display: none; } }
-.project-card .card-foot { flex-direction: column; align-items: flex-start; }
+.project-card .card-foot { flex-direction: column; align-items: flex-start; justify-content: flex-start; min-height: 112px; }
 .project-card .card-foot .files a { padding: 0 9px; }
 .project-card .card-foot .files { gap: 6px; }
 /* Grid items may shrink below their content width; wide tables scroll inside their own wrapper instead */

@@ -34,7 +34,7 @@
   // Monte Carlo: the same 10,000 run Givaudan valuation (same seed) as the Monte Carlo page
   async function monteLine() {
     const G = window.GIVAUDAN, sc = G.scenarios.base;
-    const q0 = await API.localQuote("GIVN.SW"); const price = q0 ? q0.price : G.referencePrice;
+    const price = G.referencePrice;
     const a = Object.assign({}, G.common, { base: G.base, years: G.years, growth: sc.growth, ebitdaMargin: sc.ebitdaMargin, tgr: sc.tgr, exitMultiple: sc.exitMultiple, netDebt: G.netDebt, otherClaims: G.otherClaims, sharesOut: G.sharesOut, price: G.referencePrice });
     const ds = { sg: 0.01, sm: 0.01, sw: 0.004, st: 0.0035, sx: 2 };
     const shifted = function (dg, dm, w, t, x) { return Object.assign({}, a, { growth: a.growth.map(function (v) { return v + dg; }), ebitdaMargin: a.ebitdaMargin.map(function (v) { return v + dm; }), waccOverride: w, tgr: t, exitMultiple: x }); };
@@ -44,7 +44,7 @@
       const wv = Math.max(t + 0.01, w0 + ds.sw * UI.gauss(rnd));
       if (DCF.run(shifted(ds.sg * UI.gauss(rnd), ds.sm * UI.gauss(rnd), wv, t, Math.max(8, a.exitMultiple + ds.sx * UI.gauss(rnd)))).blended.perShare > price) above++;
     }
-    $("rMonte").innerHTML = "Givaudan valuation, 10,000 runs: <b>" + UI.pct(above / N, 0) + "</b> of outcomes above the share price of CHF " + UI.fmt(price);
+    $("rMonte").innerHTML = "Givaudan valuation, 10,000 runs: <b>" + UI.pct(above / N, 0) + "</b> of outcomes above the share price of CHF " + UI.fmt(price) + " (" + G.referencePriceDate + ")";
   }
 
   // Earnings: the next report among the companies analysed on this site
