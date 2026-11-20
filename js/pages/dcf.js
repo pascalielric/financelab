@@ -61,7 +61,7 @@
     document.getElementById("pxNote").textContent = state.priceLabel;
     document.getElementById("kpis").innerHTML =
       '<div class="kpi dark"><div class="label">Value per share</div><div class="value">CHF ' + UI.fmt(ps) + '</div><div class="sub">' + state.tvMode + " terminal value</div></div>" +
-      '<div class="kpi"><div class="label">vs. share price</div><div class="value ' + UI.cls(up) + '">' + UI.signPct(up) + '</div><div class="sub"><span class="badge ' + rating[0] + '">' + rating[1] + "</span></div></div>" +
+      '<div class="kpi"><div class="label">vs. share price</div><div class="value ' + UI.clsBand(up) + '">' + UI.signPct(up) + '</div><div class="sub"><span class="badge ' + rating[0] + '">' + rating[1] + "</span></div></div>" +
       '<div class="kpi"><div class="label">Enterprise value</div><div class="value">' + UI.fmt(evSel / 1000, 1) + ' bn</div><div class="sub">' + UI.mult(evSel / r.rows[0].ebitda) + " FY27E EBITDA</div></div>" +
       '<div class="kpi"><div class="label">WACC</div><div class="value">' + UI.pct(r.r, 2) + '</div><div class="sub">Cost of equity ' + UI.pct(r.wacc.ke, 2) + "</div></div>" +
       '<div class="kpi"><div class="label">Terminal value share</div><div class="value">' + UI.pct(state.tvMode === "exit" ? r.exit.tvShare : r.gordon.tvShare, 0) + '</div><div class="sub">of enterprise value</div></div>';

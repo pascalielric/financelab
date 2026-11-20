@@ -159,7 +159,7 @@
       { type: "bar", orientation: "h", y: tor.map(function (t) { return t[0]; }), x: tor.map(function (t) { return t[1] - base; }), base: base, marker: { color: "#7A1E1E" }, name: "Unfavourable", text: tor.map(function (t) { return UI.fmt(t[1]); }), textposition: "outside" },
       { type: "bar", orientation: "h", y: tor.map(function (t) { return t[0]; }), x: tor.map(function (t) { return t[2] - base; }), base: base, marker: { color: "#2F4A36" }, name: "Favourable", text: tor.map(function (t) { return UI.fmt(t[2]); }), textposition: "outside" }
     ], { barmode: "overlay", margin: { l: 120, r: 50, t: 20, b: 60 }, xaxis: { title: "CHF per share", tickformat: ",.0f", range: [Math.min.apply(null, tor.map(function (t) { return t[1]; })) - 150, Math.max.apply(null, tor.map(function (t) { return t[2]; })) + 150] }, legend: { orientation: "h", y: -0.28 } });
-    UI.table("dTable", [{ h: "Percentile", f: function (x) { return x[0]; } }, { h: "Value per share (CHF)", n: 1, f: function (x) { return UI.fmt(x[1]); } }, { h: "vs. share price", n: 1, f: function (x) { return '<span class="' + UI.cls(x[1] / price - 1) + '">' + UI.signPct(x[1] / price - 1) + "</span>"; } }],
+    UI.table("dTable", [{ h: "Percentile", f: function (x) { return x[0]; } }, { h: "Value per share (CHF)", n: 1, f: function (x) { return UI.fmt(x[1]); } }, { h: "vs. share price", n: 1, f: function (x) { return '<span class="' + UI.clsBand(x[1] / price - 1) + '">' + UI.signPct(x[1] / price - 1) + "</span>"; } }],
       [["5th", q(0.05)], ["25th", q(0.25)], ["50th (median)", q(0.5)], ["75th", q(0.75)], ["95th", q(0.95)]]);
   }
 

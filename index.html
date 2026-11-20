@@ -3,125 +3,162 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Elric &amp; Company · Valuation, Buyout and Risk Models</title>
-<meta name="description" content="Interactive DCF, LBO, Monte Carlo, portfolio risk and earnings models with investment banking and private equity style pitch decks.">
-<link rel="stylesheet" href="css/style.css?v=202611191129">
-<script src="js/config.js?v=202611191129"></script><script src="js/ui.js?v=202611191129"></script><script src="js/api.js?v=202611191129"></script>
+<title>Elric Pascali · Valuation, transaction and risk models</title>
+<meta name="description" content="Elric Pascali, MSc student at ETH Zurich: working valuation, buyout, merger, options and portfolio risk models with decks and Excel files, built for investment banking, private equity and strategy consulting applications.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Elric Pascali · Valuation, transaction and risk models">
+<meta property="og:description" content="Seven working models with decks and Excel files: Givaudan DCF, Temenos LBO, Nike and On merger, options, Monte Carlo, portfolio risk and earnings.">
+<meta property="og:image" content="https://pascalielric.github.io/financelab/img/og.png">
+<meta property="og:url" content="https://pascalielric.github.io/financelab/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css?v=202611201453">
+<script src="js/config.js?v=202611201453"></script><script src="js/ui.js?v=202611201453"></script><script src="js/api.js?v=202611201453"></script>
+<script src="js/engine/risk.js?v=202611201453"></script><script src="js/portfolio-kit.js?v=202611201453"></script><script src="js/engine/options.js?v=202611201453"></script>
+<script src="js/engine/dcf.js?v=202611201453"></script><script src="js/data/givaudan.js?v=202611201453"></script>
 </head>
 <body>
-<section class="hero hero-center">
+<section class="hero-card">
   <div class="wrap">
-    <h1 id="heroTitle"><span>Valuation, Transactions and Portfolio Risk</span></h1>
-    <p>Seven projects that cover the core work of investment banking, private equity, asset management and derivatives. A discounted cash flow (DCF) valuation of Givaudan, a leveraged buyout (LBO) of Temenos and a merger model of Nike and On, each with a deck and a fully linked Excel model. An options pricer with a live volatility surface, a Monte Carlo simulation, a portfolio optimiser with value at risk and an earnings preview, all running on daily market data. Every assumption is visible, sourced and can be changed on the page, so each result can be tested rather than taken on trust.</p>
+    <div class="bcard" role="group" aria-label="Business card">
+      <div class="corner"><span>ETH Zurich</span><span>Elric &amp; Company</span></div>
+      <div class="mid"><h1>Elric Pascali</h1><div class="line">Valuation &middot; Transactions &middot; Risk</div></div>
+      <div class="corner"><span>Zurich</span><a href="mailto:pascalielric@gmail.com">pascalielric@gmail.com</a></div>
+    </div>
+    <p class="intro">MSc student at ETH Zurich looking for investment banking, private equity and strategy consulting internships in Zurich. Seven working models below.</p>
+    <div class="hero-actions">
+      <a class="btn" href="#cases">See the cases <span class="arr" aria-hidden="true">&darr;</span></a>
+      <a class="btn ghost" href="downloads/Elric_Pascali_CV.pdf">Download CV</a>
+      <a class="btn ghost" href="https://www.linkedin.com/in/elricpascali" rel="noopener">LinkedIn <span class="arr" aria-hidden="true">&#8599;</span></a>
+    </div>
+    <div class="result-tiles">
+      <a class="tile" href="dcf.html"><div class="t">Givaudan DCF</div><div class="v">CHF 4,061</div><div class="s">Value per share: fairly valued against CHF 4,080</div></a>
+      <a class="tile" href="lbo.html"><div class="t">Temenos LBO</div><div class="v">12.8% IRR</div><div class="s">Internal rate of return; walk away above CHF 92</div></a>
+      <a class="tile" href="merger.html"><div class="t">Nike and On merger</div><div class="v">+9.9% EPS</div><div class="s">Accretive in FY29, yet value moves to On's holders</div></a>
+    </div>
   </div>
 </section>
 
 <main class="wrap">
-  <h2><span class="section-num">01</span>Transaction cases</h2>
-  <div class="grid g3 cases3">
-    <div class="project-card case" data-href="dcf.html">
-      <span class="tag">Investment banking &nbsp;&middot;&nbsp; Valuation</span>
-      <h3 class="title">Givaudan: discounted cash flow valuation</h3>
-      <div class="profile">
-        <p class="who">The world's largest maker of flavours and fragrances, based in Vernier, Geneva. Taste and Wellbeing supplies flavours to food and beverage brands; Fragrance and Beauty creates perfumes, scents for household products and cosmetic ingredients.</p>
-        <div class="facts">
-          <div><b>CHF 7.5bn</b>Sales 2025</div>
-          <div><b>CHF 1.75bn</b>EBITDA 2025, 23.4% margin</div>
-          <div><b>17’580</b>Employees</div>
-          <div><b>167</b>Sites, 77 of them production</div>
-        </div>
+  <h2 id="cases"><span class="section-num">01</span>Transaction cases</h2>
+  <div class="grid g3">
+    <article class="project-card case" data-href="dcf.html">
+      <span class="tag">Investment banking &middot; Valuation</span>
+      <h3 class="title"><a href="dcf.html">Givaudan: discounted cash flow valuation</a></h3>
+      <p class="finding">Fairly valued: CHF 4,061 per share against a share price of about CHF 4,080.</p>
+      <div class="facts">
+        <div><b>CHF 7.5bn</b>Sales 2025</div>
+        <div><b>23.4%</b>EBITDA margin 2025</div>
+        <div><b>17,580</b>Employees</div>
+        <div><b>167</b>Sites, 77 producing</div>
       </div>
-      <p class="finding"><span>Key finding</span>Fairly valued: CHF 4,061 per share against a share price of about CHF 4,080</p>
-      <p>Five year free cash flow model built by division, with a regression based cost of capital, two terminal value methods, trading comparables, precedent transactions, sensitivities and a football field.</p>
-      <div class="card-foot"><a class="more" href="dcf.html">Open model and valuation deck</a><span class="dl"><a href="downloads/Givaudan_Valuation_Deck.pdf">PDF</a> <a href="downloads/Givaudan_Valuation_Deck.pptx">PowerPoint</a> <a href="downloads/Givaudan_DCF_Model.xlsx">Excel</a></span></div>
-    </div>
-    <div class="project-card case" data-href="lbo.html">
-      <span class="tag">Private equity &nbsp;&middot;&nbsp; Buyout</span>
-      <h3 class="title">Temenos: take private leveraged buyout</h3>
-      <div class="profile">
-        <p class="who">The leading independent supplier of core banking software, based in Grand Lancy, Geneva. Banks run their accounts, payments and digital channels on its platform, on premise or in the cloud.</p>
-        <div class="facts">
-          <div><b>USD 1.07bn</b>Revenue 2025</div>
-          <div><b>USD 860m</b>Annual recurring revenue 2025</div>
-          <div><b>950+</b>Core banking clients</div>
-          <div><b>150+</b>Countries with clients</div>
-        </div>
+      <p class="who">The world's largest maker of flavours and fragrances, based in Geneva, valued division by division.</p>
+      <div class="card-foot">
+        <a class="btn small" href="dcf.html">Open the case <span class="arr" aria-hidden="true">&rarr;</span></a>
+        <div class="files"><a href="downloads/Givaudan_Valuation_Deck.pdf"><i>PDF</i>Deck</a><a href="downloads/Givaudan_Valuation_Deck.pptx"><i class="ppt">PPT</i>Deck</a><a href="downloads/Givaudan_DCF_Model.xlsx"><i class="xls">XLS</i>Model</a></div>
       </div>
-      <p class="finding"><span>Key finding</span>12.8% IRR at a 25% premium: below a 20% hurdle, walk away above CHF 92 per share</p>
-      <p>Sponsor buyout with a revenue and ARR build, revolver and two tranche debt schedule, linked financial statements, covenant tests, returns by exit year, a dividend recap and a walk away price.</p>
-      <div class="card-foot"><a class="more" href="lbo.html">Open model and investment committee deck</a><span class="dl"><a href="downloads/Temenos_LBO_IC_Deck.pdf">PDF</a> <a href="downloads/Temenos_LBO_IC_Deck.pptx">PowerPoint</a> <a href="downloads/Temenos_LBO_Model.xlsx">Excel</a></span></div>
-    </div>
-    <div class="project-card case" data-href="merger.html">
-      <span class="tag">Investment banking &nbsp;&middot;&nbsp; Merger</span>
-      <h3 class="title">Nike and On: merger model</h3>
-      <div class="profile">
-        <p class="who">A hypothetical acquisition of On, the Zurich running brand, by Nike, the world's largest sportswear company, in the middle of its turnaround. Paid half in Nike shares and half in cash.</p>
-        <div class="facts">
-          <div><b>USD 14.6bn</b>Equity value at a 35% premium</div>
-          <div><b>USD 250m</b>Run rate cost synergies</div>
-          <div><b>+9.9%</b>FY29 earnings per share accretion</div>
-          <div><b>22%</b>Premium the synergies justify</div>
-        </div>
+    </article>
+    <article class="project-card case" data-href="lbo.html">
+      <span class="tag">Private equity &middot; Buyout</span>
+      <h3 class="title"><a href="lbo.html">Temenos: take private leveraged buyout</a></h3>
+      <p class="finding">12.8% internal rate of return at a 25% premium: below a 20% hurdle, so walk away above CHF 92.</p>
+      <div class="facts">
+        <div><b>USD 1.07bn</b>Revenue 2025</div>
+        <div><b>USD 860m</b>Annual recurring revenue</div>
+        <div><b>950+</b>Core banking clients</div>
+        <div><b>150+</b>Countries with clients</div>
       </div>
-      <p class="finding"><span>Key finding</span>Accretive from year one because Nike's shares are expensive, but at a customary premium value moves from Nike's shareholders to On's</p>
-      <p>Offer and financing, purchase price allocation, calendarisation of On's year to Nike's, accretion and dilution, breakeven synergies, contribution, credit, value creation and the Swiss law and founder vote questions.</p>
-      <div class="card-foot"><a class="more" href="merger.html">Open model and board deck</a><span class="dl"><a href="downloads/Nike_On_Merger_Deck.pdf">PDF</a> <a href="downloads/Nike_On_Merger_Deck.pptx">PowerPoint</a> <a href="downloads/Nike_On_Merger_Model.xlsx">Excel</a></span></div>
-    </div>
+      <p class="who">The leading independent supplier of core banking software, based in Geneva, bought by a private equity fund.</p>
+      <div class="card-foot">
+        <a class="btn small" href="lbo.html">Open the case <span class="arr" aria-hidden="true">&rarr;</span></a>
+        <div class="files"><a href="downloads/Temenos_LBO_IC_Deck.pdf"><i>PDF</i>Deck</a><a href="downloads/Temenos_LBO_IC_Deck.pptx"><i class="ppt">PPT</i>Deck</a><a href="downloads/Temenos_LBO_Model.xlsx"><i class="xls">XLS</i>Model</a></div>
+      </div>
+    </article>
+    <article class="project-card case" data-href="merger.html">
+      <span class="tag">Investment banking &middot; Strategy</span>
+      <h3 class="title"><a href="merger.html">Nike and On: merger model</a></h3>
+      <p class="finding">Adds 9.9% to Nike's earnings per share, but at a 35% premium value moves from Nike's holders to On's.</p>
+      <div class="facts">
+        <div><b>USD 14.6bn</b>Equity value offered</div>
+        <div><b>USD 250m</b>Cost synergies a year</div>
+        <div><b>22%</b>Premium synergies justify</div>
+        <div><b>53%</b>Votes in founder Class B shares</div>
+      </div>
+      <p class="who">A hypothetical bid for the Zurich running brand, answered like a consulting brief: should Nike buy On?</p>
+      <div class="card-foot">
+        <a class="btn small" href="merger.html">Open the case <span class="arr" aria-hidden="true">&rarr;</span></a>
+        <div class="files"><a href="downloads/Nike_On_Merger_Deck.pdf"><i>PDF</i>Deck</a><a href="downloads/Nike_On_Merger_Deck.pptx"><i class="ppt">PPT</i>Deck</a><a href="downloads/Nike_On_Merger_Model.xlsx"><i class="xls">XLS</i>Model</a></div>
+      </div>
+    </article>
   </div>
 
-  <h2><span class="section-num">02</span>Analytics</h2>
+  <h2 id="analytics"><span class="section-num">02</span>Analytics</h2>
   <div class="grid g2">
-    <a class="project-card" href="options.html"><span class="tag">Derivatives</span><h3 class="title">Options pricing and volatility surface</h3><p>Black Scholes and binomial pricing with all Greeks, and an implied volatility surface rebuilt every weekday from listed option prices, with forwards from put call parity and an SVI fit of each smile.</p><span class="more">Price an option</span></a>
-    <a class="project-card" href="monte-carlo.html"><span class="tag">Quantitative methods</span><h3 class="title">Monte Carlo simulation</h3><p>Thousands of simulated futures for a portfolio, and a valuation that turns uncertain assumptions into a distribution of value per share.</p><span class="more">Run simulation</span></a>
-    <a class="project-card" href="portfolio.html"><span class="tag">Asset management</span><h3 class="title">Portfolio risk and optimisation</h3><p>Enter holdings and see volatility, value at risk, drawdowns, risk contributions, stress tests and the path to the efficient frontier.</p><span class="more">Analyse a portfolio</span></a>
-    <a class="project-card" href="earnings.html"><span class="tag">Equity research</span><h3 class="title">Earnings preview</h3><p>Next report date, consensus, track record, share price reaction to past reports and three scenarios with probabilities.</p><span class="more">Analyse a stock</span></a>
+    <article class="project-card case" data-href="options.html">
+      <span class="tag">Derivatives</span>
+      <h3 class="title"><a href="options.html">Options pricing and volatility surface</a></h3>
+      <p class="result" id="rOptions">S&amp;P 500 one month implied volatility: loading</p>
+      <p>Black Scholes and binomial pricing with all Greeks, and a volatility surface rebuilt every weekday from listed option prices.</p>
+      <div class="card-foot"><a class="btn small" href="options.html">Price an option <span class="arr" aria-hidden="true">&rarr;</span></a><div class="files"><a href="downloads/Options_Pricer.xlsx"><i class="xls">XLS</i>Pricer</a></div></div>
+    </article>
+    <article class="project-card case" data-href="portfolio.html">
+      <span class="tag">Asset management</span>
+      <h3 class="title"><a href="portfolio.html">Portfolio risk and optimisation</a></h3>
+      <p class="result" id="rPortfolio">95% one day value at risk: loading</p>
+      <p>Volatility, value at risk, drawdowns, risk contributions, stress tests and the efficient frontier for any set of holdings.</p>
+      <div class="card-foot"><a class="btn small" href="portfolio.html">Analyse a portfolio <span class="arr" aria-hidden="true">&rarr;</span></a></div>
+    </article>
+    <article class="project-card case" data-href="monte-carlo.html">
+      <span class="tag">Quantitative methods</span>
+      <h3 class="title"><a href="monte-carlo.html">Monte Carlo simulation</a></h3>
+      <p class="result" id="rMonte">Givaudan valuation, 10,000 runs: loading</p>
+      <p>Thousands of simulated futures for a portfolio, and a valuation that turns uncertain assumptions into a distribution of value.</p>
+      <div class="card-foot"><a class="btn small" href="monte-carlo.html">Run a simulation <span class="arr" aria-hidden="true">&rarr;</span></a></div>
+    </article>
+    <article class="project-card case" data-href="earnings.html">
+      <span class="tag">Equity research</span>
+      <h3 class="title"><a href="earnings.html">Earnings preview</a></h3>
+      <p class="result" id="rEarnings">Next report: loading</p>
+      <p>Report date, consensus, track record, share price reaction to past reports and three scenarios with probabilities.</p>
+      <div class="card-foot"><a class="btn small" href="earnings.html">Analyse a stock <span class="arr" aria-hidden="true">&rarr;</span></a></div>
+    </article>
   </div>
 
-  <h2><span class="section-num">03</span>Approach</h2>
-  <div class="grid g2 justify">
-    <div><h3>Why these cases</h3><p>Food science and economics let me read a business from both sides: the science that creates the product and the economics that create the value. That is why the valuation covers Givaudan, whose flavours business sits exactly at that intersection, why the buyout looks at Temenos, a Swiss software company with the recurring revenue a sponsor needs, and why the merger tests Nike buying On, the running brand founded in Zurich, from the buyer's side.</p><p>Assumptions are sourced, judgement calls are explained, and each model can be stress tested live.</p></div>
-    <div><h3>How it is built</h3><p>Static HTML and JavaScript hosted on GitHub Pages, charts with Plotly. The valuation engines are plain JavaScript functions shared by the website, the Excel models and the decks, so every number ties out across formats.</p><p>Prices and earnings data are refreshed every weekday by an automated pipeline (Python, Yahoo Finance, GitHub Actions). The note at the top right shows the date of the last refresh.</p></div>
+  <h2 id="approach"><span class="section-num">03</span>Approach</h2>
+  <div class="grid g2">
+    <div><h3>Why these cases</h3><p>Food science and economics let me read a business from both sides: the science that creates the product and the economics that create the value. Givaudan sits exactly at that intersection; Temenos is a Swiss software company with the recurring revenue a private equity fund needs; Nike and On tests a strategic deal from the buyer's side.</p><p>Assumptions are sourced, judgement calls are explained, and each model can be stress tested live.</p></div>
+    <div><h3>How it is built</h3><p>Static HTML and JavaScript on GitHub Pages, with charts in Plotly. The valuation engines are plain JavaScript functions shared by the website, the Excel models and the decks, so every number ties out across formats.</p><p>Prices, earnings and option data are refreshed every weekday by an automated pipeline (Python, Yahoo Finance, GitHub Actions). The market figure at the top right shows the date of the last refresh.</p></div>
   </div>
-  <h2><span class="section-num">04</span>About the author</h2>
+
+  <h2 id="about"><span class="section-num">04</span>About the author</h2>
   <div class="about-author">
     <div>
-      <h1>Elric Pascali</h1>
+      <div class="name">Elric Pascali</div>
       <p class="role">MSc in Management, Technology and Economics, ETH Zurich</p>
+      <ul class="evidence">
+        <li><b>Nestl&eacute;, Operational Excellence</b><span>Production and cost scenarios and savings cases for senior management; the internship continues into my Master's thesis.</span></li>
+        <li><b>Empa, research internship</b><span>Built a neural network to characterise biopolymers.</span></li>
+        <li><b>ETH Graduate Consulting Club</b><span>Active member since 2025: case training and events with consulting firms.</span></li>
+      </ul>
       <div class="bio">
-        <p>I am completing a Master's in Management, Technology and Economics at ETH Zurich, after a Bachelor's in Food Science at ETH. I moved from the laboratory to the business side because I wanted to understand how value is created and measured: what a company is worth, how a deal is financed and how much risk a portfolio really carries.</p>
-        <p>I am currently in a six month internship in the Operational Excellence team at Nestl&eacute;'s Maggi factory in Singen, which continues into my Master's thesis. I plan production and costs, model scenarios and turn plant data into savings cases for senior management. Before that I was a research intern at Empa, where I built a neural network to characterise biopolymers.</p>
-        <p>Outside work I follow financial markets and the companies behind them closely. I invest my own savings and build small models to test ideas under different assumptions, and I am an active member of the ETH Graduate Consulting Club. I am looking for internships and graduate programmes in investment banking, private equity and strategy consulting in Zurich.</p>
+        <p>I moved from the laboratory to the business side after a Bachelor's in Food Science at ETH because I wanted to understand how value is created and measured: what a company is worth, how a deal is financed and how much risk a portfolio really carries.</p>
+        <p>Outside work I follow financial markets and the companies behind them closely, invest my own savings and build small models to test ideas under different assumptions. I am looking for internships and graduate programmes in investment banking, private equity and strategy consulting in Zurich.</p>
       </div>
     </div>
     <aside class="facts-col">
       <div><div class="label">Education</div><div class="value">MSc MTEC, ETH Zurich, expected autumn 2027<br>BSc Food Science, ETH Zurich, 2024</div></div>
       <div><div class="label">Experience</div><div class="value">Operational Excellence Intern, Nestl&eacute;, Germany<br>Research Intern, Empa, Zurich</div></div>
-      <div><div class="label">Focus</div><div class="value">Investment banking, private equity, strategy consulting</div></div>
       <div><div class="label">Languages</div><div class="value">German and English (native), Italian, French</div></div>
       <div><div class="label">Tools</div><div class="value">Excel, Python, SQL, R, Power BI</div></div>
       <div><div class="label">Based in</div><div class="value">Zurich, Switzerland</div></div>
-      <div class="links"><a href="mailto:pascalielric@gmail.com">Email</a><a href="https://www.linkedin.com/in/elricpascali">LinkedIn</a><a id="cvLink" href="downloads/Elric_Pascali_CV.pdf" class="hidden">CV</a></div>
+      <div class="links"><a class="btn small" href="downloads/Elric_Pascali_CV.pdf">Download CV</a><a class="btn small ghost" href="mailto:pascalielric@gmail.com">Email</a><a class="btn small ghost" href="https://www.linkedin.com/in/elricpascali" rel="noopener">LinkedIn</a></div>
     </aside>
-    </div>
-  <p class="note page-notes" style="margin-top:28px">Abbreviations: DCF discounted cash flow; LBO leveraged buyout; EBITDA earnings before interest, taxes, depreciation and amortisation.</p>
-  <p class="note page-notes">Company figures: Givaudan 2025 Integrated Report and Full Year Results (29 Jan 2026); Temenos 2025 Annual Report and FY25 results (24 Feb 2026).</p>
+  </div>
+  <p class="note page-notes" style="margin-top:var(--s3)">Abbreviations: DCF discounted cash flow; LBO leveraged buyout; IRR internal rate of return; EPS earnings per share; EBITDA earnings before interest, taxes, depreciation and amortisation; MTEC Management, Technology and Economics.</p>
+  <p class="note page-notes">Company figures: Givaudan 2025 Integrated Report and Full Year Results (29 Jan 2026); Temenos 2025 Annual Report and FY25 results (24 Feb 2026); Nike and On as cited on the merger page.</p>
 </main>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    var c = window.SITE_CONFIG || {};
-    document.title = (c.siteName || "Elric & Company") + " · Valuation, Buyout and Risk Models";
-    // scale the headline so it runs exactly from one side of the column to the other
-    function fitTitle() {
-      var h = document.getElementById("heroTitle"); if (!h) return; var sp = h.firstElementChild;
-      h.style.fontSize = "100px"; var w = sp.getBoundingClientRect().width, target = h.clientWidth;
-      h.style.fontSize = Math.min(100, 100 * target / w) + "px";
-    }
-    fitTitle(); window.addEventListener("resize", fitTitle);
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitTitle);
-    // show the CV button only once the file is in the downloads folder
-    document.querySelectorAll(".project-card.case").forEach(function (c) { c.addEventListener("click", function (e) { if (!e.target.closest("a")) location.href = c.getAttribute("data-href"); }); });
-    fetch("downloads/Elric_Pascali_CV.pdf", { method: "HEAD" }).then(function (r) { if (r.ok) document.getElementById("cvLink").classList.remove("hidden"); }).catch(function () {});
-  });
-</script>
+<script src="js/pages/home.js?v=202611201453"></script>
 </body>
 </html>

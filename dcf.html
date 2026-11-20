@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Givaudan DCF · Elric &amp; Company</title>
+<title>Givaudan DCF valuation · Elric Pascali</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="css/style.css?v=202611191129">
-<script src="vendor/plotly.min.js?v=202611191129"></script>
-<script src="js/config.js?v=202611191129"></script><script src="js/ui.js?v=202611191129"></script><script src="js/api.js?v=202611191129"></script>
-<script src="js/engine/dcf.js?v=202611191129"></script><script src="js/data/givaudan.js?v=202611191129"></script><script src="js/data/peers.js?v=202611191129"></script>
+<meta property="og:type" content="website">
+<meta property="og:title" content="Givaudan DCF valuation · Elric Pascali">
+<meta property="og:description" content="What is Givaudan worth per share, and is today&#x27;s share price justified? About CHF 4,061 per share against a share price of about CHF 4,080: fairly valued, within 1%. The answer moves most with the cost of capital and terminal growth.">
+<meta property="og:image" content="https://pascalielric.github.io/financelab/img/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="description" content="What is Givaudan worth per share, and is today&#x27;s share price justified? About CHF 4,061 per share against a share price of about CHF 4,080: fairly valued, within 1%. The answer moves most with the cost of capital and terminal growth.">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css?v=202611201453">
+<script src="vendor/plotly.min.js?v=202611201453"></script>
+<script src="js/config.js?v=202611201453"></script><script src="js/ui.js?v=202611201453"></script><script src="js/api.js?v=202611201453"></script>
+<script src="js/engine/dcf.js?v=202611201453"></script><script src="js/data/givaudan.js?v=202611201453"></script><script src="js/data/peers.js?v=202611201453"></script>
 </head>
 <body>
 <main class="wrap">
@@ -15,11 +24,16 @@
     <div class="eyebrow">Investment banking &nbsp;&middot;&nbsp; Valuation</div>
     <h1>Givaudan SA: discounted cash flow valuation</h1>
     <p class="lead">Five year unlevered free cash flow model for the global leader in flavours and fragrances. Change any assumption and the valuation, sensitivities and football field update instantly. All figures in CHF millions unless stated.</p>
+    <div class="summary" aria-label="Summary">
+      <div><div class="k">The question</div><div class="v">What is Givaudan worth per share, and is today's share price justified?</div></div>
+      <div><div class="k">The answer</div><div class="v answer">About CHF 4,061 per share against a share price of about CHF 4,080: fairly valued, within 1%. The answer moves most with the cost of capital and terminal growth.</div></div>
+      <div><div class="k">Skills shown</div><div class="v">Division revenue build, WACC (weighted average cost of capital) with a regression beta, two terminal value methods, comparables and precedents, sensitivities, linked Excel model and deck.</div></div>
+    </div>
     <div class="profile-strip">
       <div><div class="label">The company</div><div class="about">World's largest maker of flavours and fragrances, Vernier (Geneva). Flavours for food and beverage brands; perfumes, product scents and cosmetic ingredients.</div></div>
       <div><div class="label">Sales 2025</div><div class="value">CHF 7.5bn</div></div>
       <div><div class="label">EBITDA margin 2025</div><div class="value">23.4%</div></div>
-      <div><div class="label">Employees</div><div class="value">17&rsquo;580</div></div>
+      <div><div class="label">Employees</div><div class="value">17,580</div></div>
       <div><div class="label">Listing</div><div class="value">SIX: GIVN</div></div>
     </div>
     <div class="downloads">
@@ -91,6 +105,6 @@
   <div class="card method" id="method"></div>
   <h3 class="sources-head">Sources</h3><ul id="sources" class="note"></ul>
 </main>
-<script src="js/pages/dcf-extra.js?v=202611191129"></script><script src="js/pages/dcf.js?v=202611191129"></script>
+<script src="js/pages/dcf-extra.js?v=202611201453"></script><script src="js/pages/dcf.js?v=202611201453"></script>
 </body>
 </html>

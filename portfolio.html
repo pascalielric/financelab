@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Portfolio risk and optimisation · Elric &amp; Company</title>
+<title>Portfolio risk and optimisation · Elric Pascali</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="css/style.css?v=202611191129">
-<script src="vendor/plotly.min.js?v=202611191129"></script>
-<script src="js/config.js?v=202611191129"></script><script src="js/ui.js?v=202611191129"></script><script src="js/api.js?v=202611191129"></script>
-<script src="js/engine/risk.js?v=202611191129"></script><script src="js/portfolio-kit.js?v=202611191129"></script>
+<meta property="og:type" content="website">
+<meta property="og:title" content="Portfolio risk and optimisation · Elric Pascali">
+<meta property="og:description" content="How risky is a portfolio, and could the same return be earned with less risk? Value at risk, drawdowns and risk contributions show where the risk sits; the efficient frontier shows the mix that keeps the return at lower risk.">
+<meta property="og:image" content="https://pascalielric.github.io/financelab/img/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="description" content="How risky is a portfolio, and could the same return be earned with less risk? Value at risk, drawdowns and risk contributions show where the risk sits; the efficient frontier shows the mix that keeps the return at lower risk.">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css?v=202611201453">
+<script src="vendor/plotly.min.js?v=202611201453"></script>
+<script src="js/config.js?v=202611201453"></script><script src="js/ui.js?v=202611201453"></script><script src="js/api.js?v=202611201453"></script>
+<script src="js/engine/risk.js?v=202611201453"></script><script src="js/portfolio-kit.js?v=202611201453"></script>
 </head>
 <body>
 <main class="wrap">
@@ -15,10 +24,15 @@
     <div class="eyebrow">Asset management &nbsp;&middot;&nbsp; Risk</div>
     <h1>Portfolio risk and optimisation</h1>
     <p class="lead">Enter any portfolio. The tool pulls market prices, measures realised and forward looking risk, attributes that risk to each position, stress tests it and shows how the same holdings could be reweighted along the efficient frontier.</p>
+    <div class="summary" aria-label="Summary">
+      <div><div class="k">The question</div><div class="v">How risky is a portfolio, and could the same return be earned with less risk?</div></div>
+      <div><div class="k">The answer</div><div class="v answer">Value at risk, drawdowns and risk contributions show where the risk sits; the efficient frontier shows the mix that keeps the return at lower risk.</div></div>
+      <div><div class="k">Skills shown</div><div class="v">Historical, parametric and Monte Carlo value at risk, expected shortfall, beta, risk contributions, stress tests, mean variance optimisation.</div></div>
+    </div>
   </div>
 
   <h2><span class="section-num">01</span>Portfolio</h2>
-  <div class="grid" style="grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)">
+  <div class="grid pf-grid">
     <div class="card">
       <div class="card-head"><h3>Holdings</h3><select id="preset" style="width:auto;min-width:260px"></select></div>
       <div class="preset-desc hidden" id="presetDesc" style="margin:0 0 16px"></div>
@@ -27,7 +41,7 @@
     </div>
     <div class="card">
       <div class="card-head"><h3>Settings</h3></div>
-      <div class="controls" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px">
+      <div class="controls pf-settings">
         <div class="ctl"><span class="field-label">Benchmark</span><select id="bench"><option value="SPY">S&amp;P 500 (SPY)</option><option value="^SSMI">Swiss Market Index</option><option value="URTH">MSCI World (URTH)</option><option value="VT">Global equities (VT)</option></select></div>
         <div class="ctl"><span class="field-label">History</span><select id="lookback"><option value="252">1 year</option><option value="504" selected>2 years</option><option value="756">3 years</option></select></div>
         <div class="ctl"><span class="field-label">VaR confidence</span><select id="conf"><option value="0.95">95%</option><option value="0.99">99%</option></select></div>
@@ -108,6 +122,6 @@
     <p><strong>Limits.</strong> Two to three years of history understate tail risk; correlations rise in crises; VaR says nothing about losses beyond the threshold, which is why CVaR and stress tests are shown next to it.</p>
   </div>
 </main>
-<script src="js/pages/portfolio.js?v=202611191129"></script>
+<script src="js/pages/portfolio.js?v=202611201453"></script>
 </body>
 </html>

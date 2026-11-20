@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Nike and On merger model · Elric &amp; Company</title>
+<title>Nike and On merger model · Elric Pascali</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="css/style.css?v=202611191129">
-<script src="vendor/plotly.min.js?v=202611191129"></script>
-<script src="js/config.js?v=202611191129"></script><script src="js/ui.js?v=202611191129"></script><script src="js/api.js?v=202611191129"></script>
-<script src="js/engine/merger.js?v=202611191129"></script><script src="js/data/nikeon.js?v=202611191129"></script>
+<meta property="og:type" content="website">
+<meta property="og:title" content="Nike and On merger model · Elric Pascali">
+<meta property="og:description" content="Should Nike buy On, and what is the most it should pay? Strategically yes, but only near a 22% premium. At 35% the deal adds 9.9% to FY29 earnings per share (EPS) yet moves about USD 1.4bn of value to On&#x27;s shareholders.">
+<meta property="og:image" content="https://pascalielric.github.io/financelab/img/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="description" content="Should Nike buy On, and what is the most it should pay? Strategically yes, but only near a 22% premium. At 35% the deal adds 9.9% to FY29 earnings per share (EPS) yet moves about USD 1.4bn of value to On&#x27;s shareholders.">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css?v=202611201453">
+<script src="vendor/plotly.min.js?v=202611201453"></script>
+<script src="js/config.js?v=202611201453"></script><script src="js/ui.js?v=202611201453"></script><script src="js/api.js?v=202611201453"></script>
+<script src="js/engine/merger.js?v=202611201453"></script><script src="js/data/nikeon.js?v=202611201453"></script>
 </head>
 <body>
 <main class="wrap">
@@ -15,6 +24,11 @@
     <div class="eyebrow">Investment banking &nbsp;&middot;&nbsp; Mergers and acquisitions</div>
     <h1>Project Swoosh Cloud: Nike acquires On</h1>
     <p class="lead">A hypothetical acquisition of the Zurich running brand by the world's largest sportswear company. The model tests whether the deal adds to Nike's earnings per share, how much of the premium the synergies can pay for, and what would stand in the way. Figures in USD millions; On reports in Swiss francs, converted at the current exchange rate.</p>
+    <div class="summary" aria-label="Summary">
+      <div><div class="k">The question</div><div class="v">Should Nike buy On, and what is the most it should pay?</div></div>
+      <div><div class="k">The answer</div><div class="v answer">Strategically yes, but only near a 22% premium. At 35% the deal adds 9.9% to FY29 earnings per share (EPS) yet moves about USD 1.4bn of value to On's shareholders.</div></div>
+      <div><div class="k">Skills shown</div><div class="v">Issue tree, accretion and dilution, purchase price allocation, calendarisation, breakeven synergies, contribution analysis, credit, Swiss merger law.</div></div>
+    </div>
     <div class="profile-strip">
       <div><div class="label">The buyer</div><div class="about">Nike, Beaverton (Oregon). Revenue of USD 46.4bn in FY26, in a turnaround under chief executive Elliott Hill.</div></div>
       <div><div class="label">The target</div><div class="about">On Holding, Zurich. Premium running shoes, founded in 2010, sales growing about 20% a year.</div></div>
@@ -31,25 +45,36 @@
 
   <div class="grid g5" id="kpis"></div>
 
-  <h2><span class="section-num">01</span>Deal terms</h2>
+  <h2 data-toc="The answer"><span class="section-num">01</span>The answer on one page</h2>
+  <div class="tree">
+    <div class="root"><div class="q">Should Nike buy On?</div><div class="a"><b>Yes, at the right price.</b> Open a founder level dialogue, anchor the premium near 22% and pay at least half in Nike shares. Holding the premium at 22% instead of 35% keeps about USD 1.4bn of value with Nike's shareholders.</div></div>
+    <div class="branches">
+      <div><div class="q">Is On strategically attractive for Nike?</div><div class="e">On grows about 20% a year at an EBITDA margin above 20%; Nike's revenue falls in FY27 and running is where it lost the most share.</div><span class="verdict pos">Yes</span></div>
+      <div><div class="q">Does the deal add to Nike's earnings per share?</div><div class="e">From year one, +9.9% in FY29: Nike's shares trade at about 26 times earnings, above the roughly 20 times it pays for On.</div><span class="verdict" style="color:var(--brass)">Yes, but flattering</span></div>
+      <div><div class="q">Does it create value at a customary premium?</div><div class="e">USD 250m of cost synergies are worth about USD 2.8bn; a 35% premium costs USD 3.8bn. The synergies support about 22%.</div><span class="verdict neg">Not at 35%</span></div>
+      <div><div class="q">Can it be done?</div><div class="e">The founders' Class B shares carry about 53% of the votes, Swiss merger law also needs the public holders, and antitrust review is likely.</div><span class="verdict" style="color:var(--brass)">Only with the founders</span></div>
+    </div>
+  </div>
+
+  <h2><span class="section-num">02</span>Deal terms</h2>
   <div class="legend-line"><b>EPS</b> earnings per share<span class="sep">&middot;</span><b>EV</b> enterprise value<span class="sep">&middot;</span><b>EBITDA</b> earnings before interest, taxes, depreciation and amortisation<span class="sep">&middot;</span><b>P/E</b> price to earnings<span class="sep">&middot;</span><b>FY</b> Nike year to May</div>
   <div class="card">
     <div class="card-head"><h3>Drag to change the offer; every table and chart recalculates</h3><button class="btn ghost small" id="reset">Reset</button></div>
     <div class="controls c5" id="controls"></div>
   </div>
 
-  <h2><span class="section-num">02</span>The two companies</h2>
+  <h2><span class="section-num">03</span>The two companies</h2>
   <div class="grid g2">
     <div><div id="profileTable"></div><p class="note" id="profileNote"></p></div>
     <div class="card"><h3>Share prices, rebased to 100 three years ago</h3><div id="chPrices" class="chart"></div></div>
   </div>
 
-  <h2><span class="section-num">03</span>What On is worth</h2>
+  <h2><span class="section-num">04</span>What On is worth</h2>
   <div class="card"><h3>Valuation ranges for one On share (USD) against the offer</h3><div id="chField" class="chart"></div></div>
   <h3 style="margin-top:22px">Trading comparables</h3><div id="compsTable"></div><p class="note" id="compsNote"></p>
   <h3 style="margin-top:22px">Precedent sportswear transactions</h3><div id="precTable"></div><p class="note">Control premium to the last undisturbed share price. The Puma deal was a minority block bought from a family, which explains its unusually high premium.</p>
 
-  <h2><span class="section-num">04</span>Financing and purchase price allocation</h2>
+  <h2><span class="section-num">05</span>Financing and purchase price allocation</h2>
   <div class="grid g2">
     <div><h3>Sources and uses</h3><div id="suTable"></div></div>
     <div><h3>What each On shareholder receives</h3><div id="considTable"></div></div>
@@ -59,7 +84,7 @@
     <div class="justify"><h3>How the price is booked</h3><p id="ppaNote"></p></div>
   </div>
 
-  <h2><span class="section-num">05</span>Accretion and dilution</h2>
+  <h2><span class="section-num">06</span>Accretion and dilution</h2>
   <div id="pfTable"></div>
   <p class="note" id="pfNote"></p>
   <div class="grid g2" style="margin-top:18px">
@@ -67,7 +92,7 @@
     <div class="card"><h3>Standalone and pro forma earnings per share (USD)</h3><div id="chEps" class="chart"></div></div>
   </div>
 
-  <h2><span class="section-num">06</span>Sensitivity analysis</h2>
+  <h2><span class="section-num">07</span>Sensitivity analysis</h2>
   <div class="grid g2">
     <div><h3 id="s1Title">FY29 accretion: premium vs. share of stock</h3><div id="sens1"></div></div>
     <div><h3 id="s2Title">FY29 accretion: premium vs. cost synergies</h3><div id="sens2"></div></div>
@@ -78,19 +103,19 @@
     <div class="card"><h3>Breakeven: synergies needed for zero accretion</h3><div id="beTable"></div><p class="note" id="beNote"></p></div>
   </div>
 
-  <h2><span class="section-num">07</span>Contribution and credit</h2>
+  <h2><span class="section-num">08</span>Contribution and credit</h2>
   <div class="grid g2">
     <div class="card"><h3>Contribution analysis: what On brings against what its owners get</h3><div id="chContrib" class="chart"></div></div>
     <div><div id="creditTable"></div><p class="note" id="creditNote"></p></div>
   </div>
 
-  <h2><span class="section-num">08</span>Accretion is not value creation</h2>
+  <h2><span class="section-num">09</span>Accretion is not value creation</h2>
   <div class="grid g2">
     <div class="card"><h3>Value of synergies against the premium paid (USD m)</h3><div id="chValue" class="chart"></div></div>
     <div class="justify" id="valueText"></div>
   </div>
 
-  <h2><span class="section-num">09</span>What would stand in the way</h2>
+  <h2><span class="section-num">10</span>What would stand in the way</h2>
   <div class="grid g2 justify">
     <div class="card"><h3>Control and Swiss company law</h3><ul>
       <li>On has two share classes. Ten Class B voting rights shares carry the economic rights of one Class A share but ten times the votes. At the end of 2025 there were 296.9m Class A shares and 341.2m Class B shares, almost all held by the founders and early team, who therefore control a majority of the votes. No deal happens without them.</li>
@@ -105,7 +130,7 @@
       <li>Timing: Nike is guiding to a high single digit revenue decline in FY27 while On grows about 20%. Investors may read the deal as buying growth instead of fixing the core, or as the fastest way to win back running.</li></ul></div>
   </div>
 
-  <h2><span class="section-num">10</span>Methodology</h2>
+  <h2><span class="section-num">11</span>Methodology</h2>
   <div class="grid g2 justify">
     <div><h3>How the model works</h3>
       <p>Pro forma net income is Nike's standalone net income plus On's net income converted into US dollars, plus after tax synergies, minus after tax interest on new debt, minus interest Nike no longer earns on the cash it uses, minus amortisation of the intangible assets created by the deal and of financing fees. Dividing by Nike's shares plus the new shares issued to On holders gives pro forma earnings per share.</p>
@@ -119,6 +144,6 @@
   <h3 class="sources-head">Sources</h3><ul id="srcList" class="note"></ul>
   <p class="note">Hypothetical transaction built from public information only. It does not imply knowledge of, or any view on, an actual transaction between these companies.</p>
 </main>
-<script src="js/pages/merger.js?v=202611191129"></script>
+<script src="js/pages/merger.js?v=202611201453"></script>
 </body>
 </html>

@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Options and volatility surface · Elric &amp; Company</title>
+<title>Options and volatility surface · Elric Pascali</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="css/style.css?v=202611191129">
-<script src="vendor/plotly.min.js?v=202611191129"></script>
-<script src="js/config.js?v=202611191129"></script><script src="js/ui.js?v=202611191129"></script><script src="js/api.js?v=202611191129"></script>
-<script src="js/engine/options.js?v=202611191129"></script>
+<meta property="og:type" content="website">
+<meta property="og:title" content="Options and volatility surface · Elric Pascali">
+<meta property="og:description" content="What is an option worth, and how much does the market charge for volatility? Black Scholes and the binomial tree agree to within cents. Index options price more volatility on the downside than the upside (skew), the normal pattern for equities.">
+<meta property="og:image" content="https://pascalielric.github.io/financelab/img/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="description" content="What is an option worth, and how much does the market charge for volatility? Black Scholes and the binomial tree agree to within cents. Index options price more volatility on the downside than the upside (skew), the normal pattern for equities.">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css?v=202611201453">
+<script src="vendor/plotly.min.js?v=202611201453"></script>
+<script src="js/config.js?v=202611201453"></script><script src="js/ui.js?v=202611201453"></script><script src="js/api.js?v=202611201453"></script>
+<script src="js/engine/options.js?v=202611201453"></script>
 </head>
 <body>
 <main class="wrap">
@@ -15,6 +24,11 @@
     <div class="eyebrow">Quantitative methods &nbsp;&middot;&nbsp; Derivatives</div>
     <h1>Options pricing and the volatility surface</h1>
     <p class="lead">A pricer that values any European or American option three ways and shows its sensitivities, and an implied volatility surface rebuilt every weekday from listed option prices. The market's forward and the volatility of each option are backed out here, not taken from a data vendor.</p>
+    <div class="summary" aria-label="Summary">
+      <div><div class="k">The question</div><div class="v">What is an option worth, and how much does the market charge for volatility?</div></div>
+      <div><div class="k">The answer</div><div class="v answer">Black Scholes and the binomial tree agree to within cents. Index options price more volatility on the downside than the upside (skew), the normal pattern for equities.</div></div>
+      <div><div class="k">Skills shown</div><div class="v">Black Scholes Merton, Greeks, Cox Ross Rubinstein tree for American options, implied volatility solver, forwards from put call parity, SVI smile fit.</div></div>
+    </div>
     <div class="downloads">
       <a class="btn" href="downloads/Options_Pricer.xlsx">Excel pricer</a>
     </div>
@@ -73,6 +87,6 @@
   </ul>
   <p class="note">Educational tool. Option prices outside US trading hours can be stale; nothing here is a trading recommendation.</p>
 </main>
-<script src="js/pages/options.js?v=202611191129"></script>
+<script src="js/pages/options.js?v=202611201453"></script>
 </body>
 </html>

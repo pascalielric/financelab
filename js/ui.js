@@ -11,11 +11,12 @@
     const cfg = window.SITE_CONFIG || {};
     const el = document.createElement("header");
     el.className = "topbar";
-    el.innerHTML = '<div class="topbar-in"><a class="brand" href="index.html" aria-label="Elric &amp; Company, home"><span class="w1">Elric</span><span class="w2">&amp; Company</span></a><nav class="nav">' +
+    el.innerHTML = '<div class="topbar-in"><a class="brand" href="index.html" aria-label="Elric Pascali, home">' + esc(cfg.ownerFullName || "Elric Pascali") + '</a><nav class="nav" aria-label="Models">' +
       PAGES.map(function (p) { return '<a href="' + p[0] + '"' + (p[0] === here ? ' class="active"' : "") + ">" + p[1] + "</a>"; }).join("") +
       '</nav><button class="mkt" id="dataPill" title="Daily closing prices from Yahoo Finance, refreshed every weekday. Click to add live data keys.">' +
       '<span class="mkt-k" id="mktK">Swiss Market Index</span><span class="mkt-v" id="mktV">&nbsp;</span></button></div>';
     document.body.prepend(el);
+    toc(el);
     refreshPill();
     document.getElementById("dataPill").onclick = keyModal;
   }
@@ -31,7 +32,7 @@
       if (q) {
         K.textContent = "SMI \u00b7 " + (live ? "live keys on \u00b7 " : "") + "close " + day(q.date);
         const ch = q.pct * 100, sign = ch >= 0 ? "+" : "\u2212";
-        V.innerHTML = '<b>' + q.price.toLocaleString("de-CH", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/'/g, "\u2019") + '</b>' +
+        V.innerHTML = '<b>' + q.price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</b>' +
           '<i class="' + (ch >= 0 ? "up" : "dn") + '">' + sign + Math.abs(ch).toFixed(2) + '%</i>';
         return;
       }
@@ -39,6 +40,35 @@
         if (ix && ix.updated) { K.textContent = "Market data"; V.innerHTML = "<b>Close " + day(ix.updated) + "</b>"; }
       });
     });
+  }
+
+  /* Contents menu for long model pages: one link per numbered section, sticky under the header */
+  function toc(headerEl) {
+    if (!document.querySelector(".page-head")) return;
+    const hs = Array.prototype.slice.call(document.querySelectorAll("main h2"));
+    if (hs.length < 4) return;
+    const links = hs.map(function (h, i) {
+      const num = h.querySelector(".section-num");
+      const text = h.getAttribute("data-toc") || (h.textContent.replace(num ? num.textContent : "", "").trim());
+      if (!h.id) h.id = "s" + (i + 1) + "-" + text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      return '<a href="#' + h.id + '">' + esc(text) + "</a>";
+    });
+    const nav = document.createElement("nav");
+    nav.className = "toc"; nav.setAttribute("aria-label", "On this page");
+    nav.innerHTML = '<div class="toc-in">' + links.join("") + "</div>";
+    headerEl.after(nav);
+    if ("IntersectionObserver" in window) {
+      const as = nav.querySelectorAll("a");
+      const io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          const i = hs.indexOf(e.target);
+          as.forEach(function (a, j) { a.classList.toggle("on", j === i); });
+          const a = as[i]; if (a && a.scrollIntoView && nav.scrollWidth > nav.clientWidth) nav.querySelector(".toc-in").scrollLeft = a.offsetLeft - 24;
+        });
+      }, { rootMargin: "-130px 0px -65% 0px" });
+      hs.forEach(function (h) { io.observe(h); });
+    }
   }
 
   function footer() {
@@ -73,11 +103,13 @@
   }
 
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
-  function fmt(v, d) { if (v == null || !isFinite(v)) return "n.a."; d = d == null ? 0 : d; const s = Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d }).replace(/,/g, "’"); return v < 0 ? "(" + s + ")" : s; }
+  function fmt(v, d) { if (v == null || !isFinite(v)) return "n.a."; d = d == null ? 0 : d; const s = Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d }); return v < 0 ? "(" + s + ")" : s; }
   function pct(v, d) { if (v == null || !isFinite(v)) return "n.a."; return (v * 100).toFixed(d == null ? 1 : d).replace(/^-/, "\u2212") + "%"; }
   function mult(v, d) { if (v == null || !isFinite(v)) return "n.a."; return v.toFixed(d == null ? 1 : d) + "x"; }
   function signPct(v, d) { if (v == null || !isFinite(v)) return "n.a."; return (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(d == null ? 1 : d) + "%"; }
   function cls(v) { return v >= 0 ? "pos" : "neg"; }
+  // Valuation gaps: neutral ink within the band (default plus or minus 5%), colour only for clearly positive or negative results
+  function clsBand(v, band) { band = band == null ? 0.05 : band; return Math.abs(v) <= band ? "" : (v > 0 ? "pos" : "neg"); }
 
   /* Simple table: cols = [{h, n(umeric), f(row)}], rows = array, opts.rowClass(row) */
   function table(el, cols, rows, opts) {
@@ -123,18 +155,18 @@
     return "rgba(122,30,30," + (0.05 + 0.22 * -t).toFixed(2) + ")";
   }
 
-  // Plotly defaults: one typeface, warm greys, oxblood only where it carries meaning
+  // Plotly defaults: the data typeface (Inter), warm greys, oxblood only where it carries meaning
   const INK = "#111111", MUTED = "#6E6A61", RULE = "#E4DFD3", NEG = "#7A1E1E", POS = "#2F4A36", BRASS = "#8C6D3F";
   const FILL = "#111111";
   const COLORS = [FILL, "#8C877C", NEG, "#4A4A4A", "#B9B3A6", POS, BRASS, "#5E5A52", "#CFC9BC", "#2E2E2E"];
-  const FONT = "Times New Roman, Times, Liberation Serif, serif";
+  const FONT = "Inter, system-ui, -apple-system, Segoe UI, Arial, sans-serif";
   function axis(extra) { return Object.assign({ gridcolor: RULE, zerolinecolor: "#BDB7AA", linecolor: "#BDB7AA", tickfont: { size: 13 }, title: { font: { size: 13, color: MUTED } }, automargin: true }, extra || {}); }
   function layout(extra) {
     extra = extra || {};
     const out = Object.assign({
       font: { family: FONT, size: 13, color: "#2E2E2E" },
       margin: { l: 60, r: 24, t: 24, b: 48 }, paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)",
-      separators: ".\u2019", legend: { orientation: "h", y: -0.2, font: { size: 13 } }, colorway: COLORS,
+      separators: ".,", legend: { orientation: "h", y: -0.2, font: { size: 13 } }, colorway: COLORS,
       hoverlabel: { font: { family: FONT, size: 13 }, bgcolor: "#FCFBF8", bordercolor: INK }
     }, extra);
     ["xaxis", "yaxis", "yaxis2", "xaxis2"].forEach(function (k) {
@@ -175,5 +207,5 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () { header(); footer(); });
-  window.UI = { INK, FILL, MUTED, NEG, POS, BRASS, RULE, FONT, esc, fmt, pct, mult, signPct, cls, table, fin, sens, heat, plot, layout, COLORS, rng, gauss, mean, std, quantile, covMatrix, cholesky, download, refreshPill, keyModal };
+  window.UI = { INK, FILL, MUTED, NEG, POS, BRASS, RULE, FONT, esc, fmt, pct, mult, signPct, cls, clsBand, table, fin, sens, heat, plot, layout, COLORS, rng, gauss, mean, std, quantile, covMatrix, cholesky, download, refreshPill, keyModal };
 })();

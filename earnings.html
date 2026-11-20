@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Earnings scenarios · Elric &amp; Company</title>
+<title>Earnings preview · Elric Pascali</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="css/style.css?v=202611191129">
-<script src="vendor/plotly.min.js?v=202611191129"></script>
-<script src="js/config.js?v=202611191129"></script><script src="js/ui.js?v=202611191129"></script><script src="js/api.js?v=202611191129"></script>
-<script src="js/engine/earnings.js?v=202611191129"></script>
+<meta property="og:type" content="website">
+<meta property="og:title" content="Earnings preview · Elric Pascali">
+<meta property="og:description" content="What does the market expect before a company reports? Consensus, the record of past beats and misses and the typical share price reaction give a base, bull and bear case with probabilities.">
+<meta property="og:image" content="https://pascalielric.github.io/financelab/img/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="description" content="What does the market expect before a company reports? Consensus, the record of past beats and misses and the typical share price reaction give a base, bull and bear case with probabilities.">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css?v=202611201453">
+<script src="vendor/plotly.min.js?v=202611201453"></script>
+<script src="js/config.js?v=202611201453"></script><script src="js/ui.js?v=202611201453"></script><script src="js/api.js?v=202611201453"></script>
+<script src="js/engine/earnings.js?v=202611201453"></script>
 </head>
 <body>
 <main class="wrap">
@@ -15,6 +24,11 @@
     <div class="eyebrow">Equity research &nbsp;&middot;&nbsp; Event analysis</div>
     <h1>Earnings preview: bull, base and bear</h1>
     <p class="lead">Pick a stock to see when it reports next, what analysts expect, how it has performed against expectations, how the share price reacted to past reports, and three scenarios with probabilities for the next one.</p>
+    <div class="summary" aria-label="Summary">
+      <div><div class="k">The question</div><div class="v">What does the market expect before a company reports?</div></div>
+      <div><div class="k">The answer</div><div class="v answer">Consensus, the record of past beats and misses and the typical share price reaction give a base, bull and bear case with probabilities.</div></div>
+      <div><div class="k">Skills shown</div><div class="v">Consensus analysis, earnings surprise history, event study of price reactions, scenario weighting.</div></div>
+    </div>
   </div>
   <div class="toolbar">
     <div class="group"><span>Company</span><select id="pick" style="width:auto;min-width:280px"></select></div>
@@ -65,6 +79,6 @@
     <p><strong>Limits.</strong> Eight to sixteen past reports are a small sample. Reactions depend more on guidance and positioning than on the EPS number itself, and consensus data can lag. The model is a structured starting point for judgement, and its stated confidence is low by design. EPS = earnings per share.</p>
   </div>
 </main>
-<script src="js/pages/earnings.js?v=202611191129"></script>
+<script src="js/pages/earnings.js?v=202611201453"></script>
 </body>
 </html>
