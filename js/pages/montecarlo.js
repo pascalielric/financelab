@@ -116,53 +116,6 @@
     $("runP").disabled = false;
   }
 
-  // ---------- Stochastic DCF ----------
-  const G = window.GIVAUDAN, sc = G.scenarios.base;
-  let givPx = null;
-  API.localQuote("GIVN.SW").then(function (q) { if (q) givPx = q.price; });
-  const DCTRL = [
-    { k: "sg", label: "Revenue growth, std. dev.", min: 0, max: 0.03, step: 0.0025, v: 0.01, f: function (v) { return (v * 100).toFixed(2) + " pt"; } },
-    { k: "sm", label: "EBITDA margin, std. dev.", min: 0, max: 0.03, step: 0.0025, v: 0.01, f: function (v) { return (v * 100).toFixed(2) + " pt"; } },
-    { k: "sw", label: "WACC, std. dev.", min: 0, max: 0.015, step: 0.0005, v: 0.004, f: function (v) { return (v * 100).toFixed(2) + " pt"; } },
-    { k: "st", label: "Terminal growth, std. dev.", min: 0, max: 0.01, step: 0.0005, v: 0.0035, f: function (v) { return (v * 100).toFixed(2) + " pt"; } },
-    { k: "sx", label: "Exit multiple, std. dev.", min: 0, max: 5, step: 0.25, v: 2, f: function (v) { return v.toFixed(2) + "x"; } }
-  ];
-  const ds = {};
-  function baseIn() { return Object.assign({}, G.common, { base: G.base, years: G.years, growth: sc.growth, ebitdaMargin: sc.ebitdaMargin, tgr: sc.tgr, exitMultiple: sc.exitMultiple, netDebt: G.netDebt, otherClaims: G.otherClaims, sharesOut: G.sharesOut, price: G.referencePrice }); }
-  function shifted(a, dg, dm, w, t, x) {
-    return Object.assign({}, a, { growth: a.growth.map(function (v) { return v + dg; }), ebitdaMargin: a.ebitdaMargin.map(function (v) { return v + dm; }), waccOverride: w, tgr: t, exitMultiple: x });
-  }
-  function runDcf() {
-    const a = baseIn(), w0 = DCF.run(a).r, rnd = UI.rng(13579), N = 10000, out = new Array(N), price = givPx || G.referencePrice;
-    for (let i = 0; i < N; i++) {
-      const t = Math.min(0.03, Math.max(0.005, a.tgr + ds.st * UI.gauss(rnd)));
-      const w = Math.max(t + 0.01, w0 + ds.sw * UI.gauss(rnd));
-      out[i] = DCF.run(shifted(a, ds.sg * UI.gauss(rnd), ds.sm * UI.gauss(rnd), w, t, Math.max(8, a.exitMultiple + ds.sx * UI.gauss(rnd)))).blended.perShare;
-    }
-    out.sort(function (x, y) { return x - y; });
-    const q = function (p) { return UI.quantile(out, p); }, pAbove = out.filter(function (v) { return v > price; }).length / N, base = DCF.run(a).blended.perShare;
-    $("dKpis").innerHTML =
-      '<div class="kpi dark"><div class="label">Median value per share</div><div class="value">CHF ' + UI.fmt(q(0.5)) + '</div><div class="sub">Point estimate CHF ' + UI.fmt(base) + "</div></div>" +
-      '<div class="kpi"><div class="label">5th to 95th percentile</div><div class="value" style="font-size:1.35rem">' + UI.fmt(q(0.05)) + " to " + UI.fmt(q(0.95)) + '</div><div class="sub">CHF per share</div></div>' +
-      '<div class="kpi"><div class="label">Probability above share price</div><div class="value">' + UI.pct(pAbove, 0) + '</div><div class="sub">Price CHF ' + UI.fmt(price) + "</div></div>" +
-      '<div class="kpi"><div class="label">Mean</div><div class="value">CHF ' + UI.fmt(UI.mean(out)) + '</div><div class="sub">Right skewed: mean above median</div></div>' +
-      '<div class="kpi"><div class="label">Coefficient of variation</div><div class="value">' + UI.pct(UI.std(out) / UI.mean(out), 0) + '</div><div class="sub">Std. dev. / mean</div></div>';
-    UI.plot("chDcf", [{ type: "histogram", x: out.filter(function (v) { return v < q(0.995); }), nbinsx: 80, marker: { color: "#8C877C" } }], {
-      showlegend: false, bargap: 0.03, margin: { l: 60, r: 24, t: 34, b: 52 }, xaxis: { tickformat: ",.0f", title: "Value per share, CHF" }, yaxis: { title: "Number of runs" },
-      shapes: [{ type: "line", x0: price, x1: price, yref: "paper", y0: 0, y1: 1, line: { color: "#7A1E1E", dash: "dash", width: 2 } }, { type: "line", x0: q(0.5), x1: q(0.5), yref: "paper", y0: 0, y1: 1, line: { color: "#111111", width: 2 } }],
-      annotations: [{ x: price, yref: "paper", y: 1, yanchor: "bottom", xanchor: price < q(0.5) ? "right" : "left", xshift: price < q(0.5) ? -6 : 6, text: "Share price", showarrow: false, font: { size: 13, color: "#7A1E1E" } }, { x: q(0.5), yref: "paper", y: 1, yanchor: "bottom", xanchor: price < q(0.5) ? "left" : "right", xshift: price < q(0.5) ? 6 : -6, text: "Median", showarrow: false, font: { size: 13, color: "#111111" } }]
-    });
-    const one = function (dg, dm, dw, dt, dx) { return DCF.run(shifted(a, dg, dm, w0 + dw, a.tgr + dt, a.exitMultiple + dx)).blended.perShare; };
-    const tor = [["Revenue growth", one(-ds.sg, 0, 0, 0, 0), one(ds.sg, 0, 0, 0, 0)], ["EBITDA margin", one(0, -ds.sm, 0, 0, 0), one(0, ds.sm, 0, 0, 0)], ["WACC", one(0, 0, ds.sw, 0, 0), one(0, 0, -ds.sw, 0, 0)],
-      ["Terminal growth", one(0, 0, 0, -ds.st, 0), one(0, 0, 0, ds.st, 0)], ["Exit multiple", one(0, 0, 0, 0, -ds.sx), one(0, 0, 0, 0, ds.sx)]].sort(function (x, y) { return Math.abs(x[2] - x[1]) - Math.abs(y[2] - y[1]); });
-    UI.plot("chTor", [
-      { type: "bar", orientation: "h", y: tor.map(function (t) { return t[0]; }), x: tor.map(function (t) { return t[1] - base; }), base: base, marker: { color: "#7A1E1E" }, name: "Unfavourable", text: tor.map(function (t) { return UI.fmt(t[1]); }), textposition: "outside" },
-      { type: "bar", orientation: "h", y: tor.map(function (t) { return t[0]; }), x: tor.map(function (t) { return t[2] - base; }), base: base, marker: { color: "#2F4A36" }, name: "Favourable", text: tor.map(function (t) { return UI.fmt(t[2]); }), textposition: "outside" }
-    ], { barmode: "overlay", margin: { l: 120, r: 50, t: 20, b: 60 }, xaxis: { title: "CHF per share", tickformat: ",.0f", range: [Math.min.apply(null, tor.map(function (t) { return t[1]; })) - 150, Math.max.apply(null, tor.map(function (t) { return t[2]; })) + 150] }, legend: { orientation: "h", y: -0.28 } });
-    UI.table("dTable", [{ h: "Percentile", f: function (x) { return x[0]; } }, { h: "Value per share (CHF)", n: 1, f: function (x) { return UI.fmt(x[1]); } }, { h: "vs. share price", n: 1, f: function (x) { return '<span class="' + UI.clsBand(x[1] / price - 1) + '">' + UI.signPct(x[1] / price - 1) + "</span>"; } }],
-      [["5th", q(0.05)], ["25th", q(0.25)], ["50th (median)", q(0.5)], ["75th", q(0.75)], ["95th", q(0.95)]]);
-  }
-
   document.addEventListener("DOMContentLoaded", function () {
     $("pSel").innerHTML = options(); $("ownFrom").innerHTML = options();
     if (!ownRows) ownRows = PF.PRESETS[2].h.map(function (r) { return r.slice(); });
@@ -179,16 +132,6 @@
     });
     ["yrs", "n", "rf"].forEach(function (id) { $(id).oninput = labels; }); labels();
     $("runP").onclick = runPortfolio;
-    $("dControls").innerHTML = DCTRL.map(function (c) { ds[c.k] = c.v; return '<div class="ctl"><label><span>' + c.label + '</span><output id="o_' + c.k + '">' + c.f(c.v) + '</output></label><input type="range" id="c_' + c.k + '" min="' + c.min + '" max="' + c.max + '" step="' + c.step + '" value="' + c.v + '"></div>'; }).join("");
-    DCTRL.forEach(function (c) { $("c_" + c.k).oninput = function (e) { ds[c.k] = +e.target.value; $("o_" + c.k).textContent = c.f(ds[c.k]); }; });
-    $("runD").onclick = runDcf;
-    document.querySelectorAll(".tabs button").forEach(function (b) {
-      b.onclick = function () {
-        document.querySelectorAll(".tabs button").forEach(function (x) { x.classList.remove("on"); }); b.classList.add("on");
-        $("t_port").classList.toggle("hidden", b.dataset.t !== "port"); $("t_dcf").classList.toggle("hidden", b.dataset.t !== "dcf");
-        if (b.dataset.t === "dcf") runDcf();
-      };
-    });
     runPortfolio();
   });
 })();

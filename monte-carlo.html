@@ -6,30 +6,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Monte Carlo simulation · Elric Pascali">
-<meta property="og:description" content="How wide is the range of outcomes behind a single forecast? For Givaudan, about half of 10,000 valuation runs land above the share price: the point estimate hides a wide range. Portfolio paths show the spread of final values and drawdowns.">
+<meta property="og:description" content="How wide is the range of outcomes behind a single forecast? A correlated simulation of thousands of portfolio paths shows the spread of final values, the chance of a loss and the drawdowns along the way.">
 <meta property="og:image" content="https://pascalielric.github.io/financelab/img/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="description" content="How wide is the range of outcomes behind a single forecast? For Givaudan, about half of 10,000 valuation runs land above the share price: the point estimate hides a wide range. Portfolio paths show the spread of final values and drawdowns.">
+<meta name="description" content="How wide is the range of outcomes behind a single forecast? A correlated simulation of thousands of portfolio paths shows the spread of final values, the chance of a loss and the drawdowns along the way.">
 <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=202611202125">
-<script src="vendor/plotly.min.js?v=202611202125"></script>
-<script src="js/config.js?v=202611202125"></script><script src="js/ui.js?v=202611202125"></script><script src="js/api.js?v=202611202125"></script>
-<script src="js/engine/risk.js?v=202611202125"></script><script src="js/portfolio-kit.js?v=202611202125"></script><script src="js/engine/dcf.js?v=202611202125"></script><script src="js/data/givaudan.js?v=202611202125"></script>
+<link rel="stylesheet" href="css/style.css?v=202611202145">
+<script src="vendor/plotly.min.js?v=202611202145"></script>
+<script src="js/config.js?v=202611202145"></script><script src="js/ui.js?v=202611202145"></script><script src="js/api.js?v=202611202145"></script>
+<script src="js/engine/risk.js?v=202611202145"></script><script src="js/portfolio-kit.js?v=202611202145"></script>
 </head>
 <body>
 <main class="wrap">
   <div class="page-head">
     <div class="eyebrow">Quantitative methods</div>
     <h1>Monte Carlo simulation</h1>
-    <p class="lead">Two applications of the same idea: replace single point assumptions with distributions and look at the full range of outcomes. First for a portfolio's future value, then for the Givaudan valuation.</p>
+    <p class="lead">Replace a single forecast with thousands of simulated futures and look at the full range of outcomes for a portfolio: where it most likely ends, how bad the bad cases are, and how deep the falls along the way.</p>
     <div class="summary" aria-label="Summary">
       <div><div class="k">The question</div><div class="v">How wide is the range of outcomes behind a single forecast?</div></div>
-      <div><div class="k">The answer</div><div class="v answer">For Givaudan, about half of 10,000 valuation runs land above the share price: the point estimate hides a wide range. Portfolio paths show the spread of final values and drawdowns.</div></div>
-      <div><div class="k">Skills shown</div><div class="v">Correlated simulation with a Cholesky factor, geometric Brownian motion, percentile bands, drawdowns, simulated valuation inputs, tornado chart.</div></div>
+      <div><div class="k">The answer</div><div class="v answer">Much wider than one forecast suggests: even a diversified portfolio has a real chance of ending below its starting value after five years, and most paths suffer a sizeable fall on the way.</div></div>
+      <div><div class="k">Skills shown</div><div class="v">Correlated simulation with a Cholesky factor, geometric Brownian motion, historical block bootstrap, percentile bands, value at risk at the horizon, drawdowns.</div></div>
     </div>
   </div>
-  <div class="tabs"><button class="on" data-t="port">Portfolio paths</button><button data-t="dcf">Stochastic DCF</button></div>
 
   <section id="t_port">
     <div class="card">
@@ -78,21 +77,7 @@
     </div>
   </section>
 
-  <section id="t_dcf" class="hidden">
-    <div class="card">
-      <p style="margin-top:0">Each run draws growth, margin, discount rate and terminal assumptions for the <a href="dcf.html">Givaudan DCF</a> from the distributions below and recomputes value per share.</p>
-      <div class="controls c5" id="dControls"></div>
-      <div class="row" style="margin-top:14px"><button class="btn" id="runD">Run 10'000 valuations</button></div>
-    </div>
-    <div class="grid g5" id="dKpis" style="margin-top:20px"></div>
-    <div class="grid g2" style="margin-top:18px">
-      <div class="card"><h3>Distribution of value per share (CHF)</h3><div id="chDcf" class="chart" style="min-height:380px"></div></div>
-      <div class="card"><h3>Which assumption moves value most (±1 standard deviation)</h3><div id="chTor" class="chart" style="min-height:380px"></div></div>
-    </div>
-    <div style="margin-top:18px" id="dTable"></div>
-    <p class="note">Draws are independent normal distributions (terminal growth is truncated between 0.5% and 3.0%, WACC is floored 1 point above terminal growth). The headline value uses the average of the Gordon growth and exit multiple terminal values, as on the DCF page.</p>
-  </section>
 </main>
-<script src="js/pages/montecarlo.js?v=202611202125"></script>
+<script src="js/pages/montecarlo.js?v=202611202145"></script>
 </body>
 </html>

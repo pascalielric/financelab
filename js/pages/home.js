@@ -31,20 +31,25 @@
     $("rPortfolio").innerHTML = "95% one day value at risk: <b>" + UI.pct(v, 2) + "</b> of value for the " + P.name.toLowerCase() + " portfolio (two years of daily data)";
   }
 
-  // Monte Carlo: the same 10,000 run Givaudan valuation (same seed) as the Monte Carlo page
+  // Monte Carlo: the default run of the Monte Carlo page (first model portfolio, 5 years, 5,000 weekly paths, same seed)
   async function monteLine() {
-    const G = window.GIVAUDAN, sc = G.scenarios.base;
-    const price = G.referencePrice;
-    const a = Object.assign({}, G.common, { base: G.base, years: G.years, growth: sc.growth, ebitdaMargin: sc.ebitdaMargin, tgr: sc.tgr, exitMultiple: sc.exitMultiple, netDebt: G.netDebt, otherClaims: G.otherClaims, sharesOut: G.sharesOut, price: G.referencePrice });
-    const ds = { sg: 0.01, sm: 0.01, sw: 0.004, st: 0.0035, sx: 2 };
-    const shifted = function (dg, dm, w, t, x) { return Object.assign({}, a, { growth: a.growth.map(function (v) { return v + dg; }), ebitdaMargin: a.ebitdaMargin.map(function (v) { return v + dm; }), waccOverride: w, tgr: t, exitMultiple: x }); };
-    const w0 = DCF.run(a).r, rnd = UI.rng(13579), N = 10000; let above = 0;
-    for (let i = 0; i < N; i++) {
-      const t = Math.min(0.03, Math.max(0.005, a.tgr + ds.st * UI.gauss(rnd)));
-      const wv = Math.max(t + 0.01, w0 + ds.sw * UI.gauss(rnd));
-      if (DCF.run(shifted(ds.sg * UI.gauss(rnd), ds.sm * UI.gauss(rnd), wv, t, Math.max(8, a.exitMultiple + ds.sx * UI.gauss(rnd)))).blended.perShare > price) above++;
+    const P = PF.PRESETS[0], syms = P.h.map(function (r) { return r[0]; }), all = syms.concat([P.bench]);
+    const tot = P.h.reduce(function (s, r) { return s + r[1]; }, 0), w = P.h.map(function (r) { return r[1] / tot; });
+    const h = await API.history(all, 757);
+    if (all.some(function (s) { return !h.data[s]; }) || (h.demoSymbols && h.demoSymbols.length)) throw new Error();
+    const al = RISK.align(h.data, all), R = al.prices.map(RISK.logReturns), rb = R.pop(), n = syms.length;
+    const ERP = 0.055, rf = 0.02, STEPS = 52, years = 5, N = 5000, T = years * STEPS, dt = 1 / STEPS, sq = Math.sqrt(dt);
+    const C = RISK.covMatrix(R).map(function (r) { return r.map(function (v) { return v * 252; }); });
+    const mu = R.map(function (r) { return rf + RISK.beta(r, rb) * ERP; }), L = RISK.cholesky(C), rnd = UI.rng(987654321);
+    const vals = new Float64Array(N).fill(1), z = new Array(n);
+    for (let t = 1; t <= T; t++) for (let p = 0; p < N; p++) {
+      let pr = 0;
+      for (let i = 0; i < n; i++) z[i] = UI.gauss(rnd);
+      for (let i = 0; i < n; i++) { let x = (mu[i] - 0.5 * C[i][i]) * dt; for (let k = 0; k <= i; k++) x += L[i][k] * z[k] * sq; pr += w[i] * (Math.exp(x) - 1); }
+      vals[p] *= 1 + pr;
     }
-    $("rMonte").innerHTML = "Givaudan valuation, 10,000 runs: <b>" + UI.pct(above / N, 0) + "</b> of outcomes above the share price of CHF " + UI.fmt(price) + " (" + G.referencePriceDate + ")";
+    const fin = Array.from(vals).sort(function (a, b) { return a - b; }), loss = fin.filter(function (v) { return v < 1; }).length / N;
+    $("rMonte").innerHTML = P.name + ", five years, 5,000 paths: <b>" + UI.pct(loss, 0) + "</b> chance of ending below the starting value";
   }
 
   // Earnings: the next report among the companies analysed on this site
@@ -68,6 +73,6 @@
     safe(optionsLine, "rOptions", "Live implied volatility surface for six underlyings");
     safe(portfolioLine, "rPortfolio", "Value at risk, drawdowns and the efficient frontier");
     safe(earningsLine, "rEarnings", "Consensus, track record and three scenarios");
-    setTimeout(function () { safe(monteLine, "rMonte", "Distribution of value per share for Givaudan"); }, 300);
+    setTimeout(function () { safe(monteLine, "rMonte", "Range of final values for a model portfolio"); }, 300);
   });
 })();
