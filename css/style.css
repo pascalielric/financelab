@@ -1,5 +1,5 @@
 /* Elric Pascali: portfolio design system.
-   Words in a screen serif (Newsreader), data, labels and buttons in a sans serif with tabular figures (Inter),
+   Words in a screen serif (Newsreader), data, labels and buttons in Times New Roman (labels, axes, chart text),
    and one "card stock" moment in Cormorant SC for the name on the business card. Bone paper, black ink,
    hairline rules, square corners, no shadows. Colour is reserved for meaning: oxblood for clearly negative
    results, dark green for clearly positive ones. Spacing follows one scale: 8, 16, 24, 40, 64 pixels. */
@@ -22,7 +22,7 @@
   --pos: #2F4A36;
   --brass: #8C6D3F;
   --serif: "Newsreader", Georgia, "Times New Roman", serif;
-  --sans: "Inter", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --sans: "Times New Roman", Times, "Liberation Serif", Tinos, serif;
   --card-face: "Cormorant SC", "Copperplate", "Times New Roman", serif;
   --s1: 8px; --s2: 16px; --s3: 24px; --s4: 40px; --s5: 64px;
   --label: 13px;

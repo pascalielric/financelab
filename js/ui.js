@@ -155,11 +155,11 @@
     return "rgba(122,30,30," + (0.05 + 0.22 * -t).toFixed(2) + ")";
   }
 
-  // Plotly defaults: the data typeface (Inter), warm greys, oxblood only where it carries meaning
+  // Plotly defaults: Times New Roman for all chart text, warm greys, oxblood only where it carries meaning
   const INK = "#111111", MUTED = "#6E6A61", RULE = "#E4DFD3", NEG = "#7A1E1E", POS = "#2F4A36", BRASS = "#8C6D3F";
   const FILL = "#111111";
   const COLORS = [FILL, "#8C877C", NEG, "#4A4A4A", "#B9B3A6", POS, BRASS, "#5E5A52", "#CFC9BC", "#2E2E2E"];
-  const FONT = "Inter, system-ui, -apple-system, Segoe UI, Arial, sans-serif";
+  const FONT = "Times New Roman, Times, Liberation Serif, Tinos, serif";
   function axis(extra) { return Object.assign({ gridcolor: RULE, zerolinecolor: "#BDB7AA", linecolor: "#BDB7AA", tickfont: { size: 13 }, title: { font: { size: 13, color: MUTED } }, automargin: true }, extra || {}); }
   function layout(extra) {
     extra = extra || {};
